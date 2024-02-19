@@ -89,13 +89,11 @@ number = {digit}+
 letter = [a-zA-Z]
 identifier = {letter}+
 
-ID = [_a-zA-Z][_a-zA-Z0-9]*
 
 
+ID = [_a-zA-Z][_a-zA-Z0-9]*                                                               //from the c minus specification
 NUM = [0-9]+
-
-
-TRUTH = false | true
+TRUTH = [false|true]
 
    
 %%
@@ -107,34 +105,35 @@ TRUTH = false | true
    regular expression. */
 
 
-"bool"             { return symbol(sym.BOOL)}   
+"bool"             { return symbol(sym.BOOL);}   
 "else"             { return symbol(sym.ELSE); }
 "if"               { return symbol(sym.IF); }
 "int"              { return symbol(sym.INT); }
 "return"           { return symbol(sym.RETURN); }
 "void"             { return symbol(sym.VOID); }
-"while"            { return symbol(sym.WHILE)} 
+"while"            { return symbol(sym.WHILE);} 
 
-"+"                { return symbol(sym.PLUS)}
-"-"                { return symbol(sym.MINUS)}
-"*"                { return symbol(sym.MULT)}
-"/"                { return symbol(sym.DIV)}
-"<"                { return symbol(sym.LESS)}
-"<="                { return symbol(sym.LESSEQ)}
-"=="                { return symbol(sym.EQUAL)}
-"!="                { return symbol(sym.NEQUAL)}
-"~"                { return symbol(sym.NOT)}
-"||"                { return symbol(sym.OR)}
-"&&"                { return symbol(sym.AND)}
-"="                { return symbol(sym.ASSIGN)}
-";"                { return symbol(sym.SEMICOLON)}
-","                { return symbol(sym.COMMA)}
-"("                { return symbol(sym.LPAREN)}
-")"                { return symbol(sym.RPAREN)}
-"["                { return symbol(sym.LBRACKET)}
-"]"                { return symbol(sym.RBRACKET)}
-"{"                { return symbol(sym.LCURLY)}
-"}"                { return symbol(sym.RCURlY)}
+"+"                { return symbol(sym.PLUS);}
+"-"                { return symbol(sym.MINUS);}
+"*"                { return symbol(sym.MULT);}
+"/"                { return symbol(sym.DIV);}
+"<"                { return symbol(sym.LESS);}
+"<="               { return symbol(sym.LESSEQ);}
+"=="               { return symbol(sym.EQUAL);}
+"!="               { return symbol(sym.NEQUAL);}
+"~"                { return symbol(sym.NOT);}
+"||"               { return symbol(sym.OR);}
+"&&"               { return symbol(sym.AND);}
+"="                { return symbol(sym.ASSIGN);}
+";"                { return symbol(sym.SEMICOLON);}
+","                { return symbol(sym.COMMA);}
+"("                { return symbol(sym.LPAREN);}
+")"                { return symbol(sym.RPAREN);}
+"["                { return symbol(sym.LBRACKET);}
+"]"                { return symbol(sym.RBRACKET);}
+"{"                { return symbol(sym.LCURLY);}
+"}"                { return symbol(sym.RCURLY);}
+
 
 
 "then"             { return symbol(sym.THEN); }
@@ -144,16 +143,23 @@ TRUTH = false | true
 "read"             { return symbol(sym.READ); }
 "write"            { return symbol(sym.WRITE); }
 ":="               { return symbol(sym.ASSIGN); }
-"="                { return symbol(sym.EQ); }
-"<"                { return symbol(sym.LT); }
+//"="                { return symbol(sym.EQ); }
+//"<"                { return symbol(sym.LT); }
 ">"                { return symbol(sym.GT); }
 "+"                { return symbol(sym.PLUS); }
 "-"                { return symbol(sym.MINUS); }
-"*"                { return symbol(sym.TIMES); }
-"/"                { return symbol(sym.OVER); }
+//"*"                { return symbol(sym.TIMES); }
+//"/"                { return symbol(sym.OVER); }
 "("                { return symbol(sym.LPAREN); }
 ")"                { return symbol(sym.RPAREN); }
-";"                { return symbol(sym.SEMI); }
+//";"                { return symbol(sym.SEMI); }
+
+
+{NUM}              { return symbol(sym.NUM, yytext()); }
+{ID}               { return symbol(sym.ID, yytext()); }
+{TRUTH}            { return symbol(sym.TRUTH, yytext()); }
+
+
 {number}           { return symbol(sym.NUM, yytext()); }
 {identifier}       { return symbol(sym.ID, yytext()); }
 {WhiteSpace}+      { /* skip whitespace */ }   

@@ -95,6 +95,7 @@ ID = [_a-zA-Z][_a-zA-Z0-9]*                                                     
 NUM = [0-9]+
 TRUTH = [false|true]
 
+COMMENT = \*[a-zA-Z0-9 \r\n \r\n]**\
    
 %%
 /* ------------------------Lexical Rules Section---------------------- */
@@ -119,6 +120,8 @@ TRUTH = [false|true]
 "/"                { return symbol(sym.DIV);}
 "<"                { return symbol(sym.LESS);}
 "<="               { return symbol(sym.LESSEQ);}
+">"                { return symbol(sym.GREATER);}
+">="               { return symbol(sym.GREATEREQ);}
 "=="               { return symbol(sym.EQUAL);}
 "!="               { return symbol(sym.NEQUAL);}
 "~"                { return symbol(sym.NOT);}
@@ -136,7 +139,9 @@ TRUTH = [false|true]
 
 
 
+//"if"               { return symbol(sym.IF); }
 "then"             { return symbol(sym.THEN); }
+//"else"             { return symbol(sym.ELSE); }
 "end"              { return symbol(sym.END); }
 "repeat"           { return symbol(sym.REPEAT); }
 "until"            { return symbol(sym.UNTIL); }
@@ -145,7 +150,7 @@ TRUTH = [false|true]
 ":="               { return symbol(sym.ASSIGN); }
 //"="                { return symbol(sym.EQ); }
 //"<"                { return symbol(sym.LT); }
-">"                { return symbol(sym.GT); }
+//">"                { return symbol(sym.GT); }
 "+"                { return symbol(sym.PLUS); }
 "-"                { return symbol(sym.MINUS); }
 //"*"                { return symbol(sym.TIMES); }

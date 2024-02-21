@@ -81,9 +81,21 @@ terminal EQ, LT, GT, TIMES, OVER, UMINUS, SEMI;
 terminal ERROR;
 
 /*c minus terminals*/
-terminal PLUS, MINUS, MULT, DIV, LESS, LESSEQ, EQUAL, NEQUAL, NOT, OR, AND, ASSIGN, SEMICOLON, COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY;           
+terminal PLUS, MINUS, MULT, DIV, LESS, LESSEQ, GREATER, GREATEREQ, EQUAL, NEQUAL, NOT, OR, AND, ASSIGN, SEMICOLON, COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY;           
 terminal BOOL, ELSE, IF, INT, RETURN, VOID, WHILE;
 terminal String ID, NUM, TRUTH;
+
+/*c minus nonTerminals*/
+/*
+non terminal Exp program, declaration, var_declaration, fun_declaration, fun_prototype, type_specifier, params, compound_stmt,
+             param, local_declarations, statement, expression_stmt, selection_stmt, iteration_stmt,
+             return_stmt, expression, var, obool_expression, abool_expression, ubool_expression, simple_expression, additive_expression,
+             relop, term, addop, mulop, signed_factor, factor, call, args;
+*/
+
+non terminal ExpList declaration_list, param_list, statement_list, arg_list;
+ 
+
 
    
 non terminal Exp program1;

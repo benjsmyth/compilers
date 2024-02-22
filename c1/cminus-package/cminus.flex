@@ -137,6 +137,10 @@ COMMENT = \*[a-zA-Z0-9 \r\n \r\n]**\
 "{"                { return symbol(sym.LCURLY);}
 "}"                { return symbol(sym.RCURLY);}
 
+{NUM}              { return symbol(sym.NUM, yytext()); }
+{ID}               { return symbol(sym.ID, yytext()); }
+{TRUTH}            { return symbol(sym.TRUTH, yytext()); }
+
 
 
 //"if"               { return symbol(sym.IF); }
@@ -160,9 +164,7 @@ COMMENT = \*[a-zA-Z0-9 \r\n \r\n]**\
 //";"                { return symbol(sym.SEMI); }
 
 
-{NUM}              { return symbol(sym.NUM, yytext()); }
-{ID}               { return symbol(sym.ID, yytext()); }
-{TRUTH}            { return symbol(sym.TRUTH, yytext()); }
+
 
 
 {number}           { return symbol(sym.NUM, yytext()); }

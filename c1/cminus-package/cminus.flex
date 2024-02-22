@@ -80,7 +80,7 @@ WhiteSpace     = {LineTerminator} | [ \t\f]
 ID = [_a-zA-Z][_a-zA-Z0-9]*                                                  //from the c minus specification
 NUM = [0-9]+
 
-COMMENT = "/*".*"*/"
+COMMENT = "/*"(. | {WhiteSpace})*"*/"
    
 %%
 /* ------------------------Lexical Rules Section---------------------- */

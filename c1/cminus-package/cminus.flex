@@ -76,27 +76,12 @@ LineTerminator = \r|\n|\r\n
    
 /* White space is a line terminator, space, tab, or form feed. */
 WhiteSpace     = {LineTerminator} | [ \t\f]
-   
-/* A literal integer is is a number beginning with a number between
-   one and nine followed by zero or more numbers between zero and nine
-   or just a zero.  */
-digit = [0-9]
-number = {digit}+
-   
-/* A identifier integer is a word beginning a letter between A and
-   Z, a and z, or an underscore followed by zero or more letters
-   between A and Z, a and z, zero and nine, or an underscore. */
-
-letter = [a-zA-Z]
-identifier = {letter}+
-
-
 
 ID = [_a-zA-Z][_a-zA-Z0-9]*                                                               //from the c minus specification
 NUM = [0-9]+
 TRUTH = [false|true]
 
-COMMENT = "/*"[.]*"*/"
+COMMENT = "/*".*"*/"
    
 %%
 /* ------------------------Lexical Rules Section---------------------- */
@@ -105,7 +90,6 @@ COMMENT = "/*"[.]*"*/"
    This section contains regular expressions and actions, i.e. Java
    code, that will be executed when the scanner matches the associated
    regular expression. */
-
 
 "bool"             { System.out.println("bool");  return symbol(sym.BOOL);}   
 "else"             { System.out.println("else");  return symbol(sym.ELSE); }
@@ -138,13 +122,10 @@ COMMENT = "/*"[.]*"*/"
 "{"                { System.out.println("{");  return symbol(sym.LCURLY);}
 "}"                { System.out.println("}");  return symbol(sym.RCURLY);}
 
-{COMMENT}          { /* skip comments */ System.out.println("comment");  }
-
 {NUM}              { System.out.println("NUM");  return symbol(sym.NUM, yytext()); }
 {ID}               { System.out.println("ID");  return symbol(sym.ID, yytext()); }
 {TRUTH}            { System.out.println("TRUTH");  return symbol(sym.TRUTH, yytext()); }
 
-{number}           { System.out.println("number");  return symbol(sym.NUM, yytext()); }
-{identifier}       { System.out.println("identifier");  return symbol(sym.ID, yytext()); }
-{WhiteSpace}+      { /* skip whitespace */ System.out.println("whitespace");  }   
+{WhiteSpace}+      { /* skip whitespace */ System.out.println("whitespace");  }  
+{COMMENT}          { /* skip comments */ System.out.println("comment");  } 
 .                  { System.out.println("error");  return symbol(sym.ERROR); }

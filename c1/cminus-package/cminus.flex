@@ -77,9 +77,8 @@ LineTerminator = \r|\n|\r\n
 /* White space is a line terminator, space, tab, or form feed. */
 WhiteSpace     = {LineTerminator} | [ \t\f]
 
-ID = [_a-zA-Z][_a-zA-Z0-9]*[^"true" | "false"]                                                      //from the c minus specification
+ID = [_a-zA-Z][_a-zA-Z0-9]*                                                  //from the c minus specification
 NUM = [0-9]+
-TRUTH = [false|true]
 
 COMMENT = "/*"(. | {WhiteSpace})*"*/"
    
@@ -123,8 +122,13 @@ COMMENT = "/*"(. | {WhiteSpace})*"*/"
 "}"                { System.out.println("}");  return symbol(sym.RCURLY);}
 
 {NUM}              { System.out.println("NUM");  return symbol(sym.NUM, yytext()); }
-{TRUTH}            { System.out.println("TRUTH");  return symbol(sym.TRUTH, yytext()); }
-{ID}               { System.out.println("ID");  return symbol(sym.ID, yytext()); }
+{ID}               { 
+                     if (yytext().equals("true") || yytext().equals("false")){
+                        System.out.println("TRUTH");
+                        return symbol(sym.TRUTH, yytext());
+                     }
+                     System.out.println("ID");  return symbol(sym.ID, yytext()); 
+                   }
 
 {WhiteSpace}+      { /* skip whitespace */ System.out.println("whitespace");  }  
 {COMMENT}          { /* skip comments */ System.out.println("comment");  } 

@@ -47,6 +47,7 @@ import java_cup.runtime.*;
   scanner actions.  
 */
 %{   
+
     /* To create a new java_cup.runtime.Symbol with information about
        the current token, the token will have no value in this
        case. */
@@ -95,7 +96,7 @@ ID = [_a-zA-Z][_a-zA-Z0-9]*                                                     
 NUM = [0-9]+
 TRUTH = [false|true]
 
-COMMENT = "/""*"[.]"*""/"
+COMMENT = "/*"[.]*"*/"
    
 %%
 /* ------------------------Lexical Rules Section---------------------- */
@@ -106,44 +107,44 @@ COMMENT = "/""*"[.]"*""/"
    regular expression. */
 
 
-"bool"             { return symbol(sym.BOOL);}   
-"else"             { return symbol(sym.ELSE); }
-"if"               { return symbol(sym.IF); }
-"int"              { return symbol(sym.INT); }
-"return"           { return symbol(sym.RETURN); }
-"void"             { return symbol(sym.VOID); }
-"while"            { return symbol(sym.WHILE);} 
+"bool"             { System.out.println("bool");  return symbol(sym.BOOL);}   
+"else"             { System.out.println("else");  return symbol(sym.ELSE); }
+"if"               { System.out.println("if");  return symbol(sym.IF); }
+"int"              { System.out.println("int");  return symbol(sym.INT); }
+"return"           { System.out.println("return");  return symbol(sym.RETURN); }
+"void"             { System.out.println("void");  return symbol(sym.VOID); }
+"while"            { System.out.println("while");  return symbol(sym.WHILE);} 
 
-"+"                { return symbol(sym.PLUS);}
-"-"                { return symbol(sym.MINUS);}
-"*"                { return symbol(sym.MULT);}
-"/"                { return symbol(sym.DIV);}
-"<"                { return symbol(sym.LESS);}
-"<="               { return symbol(sym.LESSEQ);}
-">"                { return symbol(sym.GREATER);}
-">="               { return symbol(sym.GREATEREQ);}
-"=="               { return symbol(sym.EQUAL);}
-"!="               { return symbol(sym.NEQUAL);}
-"~"                { return symbol(sym.NOT);}
-"||"               { return symbol(sym.OR);}
-"&&"               { return symbol(sym.AND);}
-"="                { return symbol(sym.ASSIGN);}
-";"                { return symbol(sym.SEMICOLON);}
-","                { return symbol(sym.COMMA);}
-"("                { return symbol(sym.LPAREN);}
-")"                { return symbol(sym.RPAREN);}
-"["                { return symbol(sym.LBRACKET);}
-"]"                { return symbol(sym.RBRACKET);}
-"{"                { return symbol(sym.LCURLY);}
-"}"                { return symbol(sym.RCURLY);}
+"+"                { System.out.println("+");  return symbol(sym.PLUS);}
+"-"                { System.out.println("-");  return symbol(sym.MINUS);}
+"*"                { System.out.println("*");  return symbol(sym.MULT);}
+"/"                { System.out.println("/");  return symbol(sym.DIV);}
+"<"                { System.out.println("<");  return symbol(sym.LESS);}
+"<="               { System.out.println("<=");  return symbol(sym.LESSEQ);}
+">"                { System.out.println(">");  return symbol(sym.GREATER);}
+">="               { System.out.println(">=");  return symbol(sym.GREATEREQ);}
+"=="               { System.out.println("==");  return symbol(sym.EQUAL);}
+"!="               { System.out.println("!=");  return symbol(sym.NEQUAL);}
+"~"                { System.out.println("~");  return symbol(sym.NOT);}
+"||"               { System.out.println("||");  return symbol(sym.OR);}
+"&&"               { System.out.println("&&");  return symbol(sym.AND);}
+"="                { System.out.println("=");  return symbol(sym.ASSIGN);}
+";"                { System.out.println(";");  return symbol(sym.SEMICOLON);}
+","                { System.out.println(",");  return symbol(sym.COMMA);}
+"("                { System.out.println("(");  return symbol(sym.LPAREN);}
+")"                { System.out.println(")");  return symbol(sym.RPAREN);}
+"["                { System.out.println("[");  return symbol(sym.LBRACKET);}
+"]"                { System.out.println("]");  return symbol(sym.RBRACKET);}
+"{"                { System.out.println("{");  return symbol(sym.LCURLY);}
+"}"                { System.out.println("}");  return symbol(sym.RCURLY);}
 
-{COMMENT}          { /* skip comments */ }
+{COMMENT}          { /* skip comments */ System.out.println("comment");  }
 
-{NUM}              { return symbol(sym.NUM, yytext()); }
-{ID}               { return symbol(sym.ID, yytext()); }
-{TRUTH}            { return symbol(sym.TRUTH, yytext()); }
+{NUM}              { System.out.println("NUM");  return symbol(sym.NUM, yytext()); }
+{ID}               { System.out.println("ID");  return symbol(sym.ID, yytext()); }
+{TRUTH}            { System.out.println("TRUTH");  return symbol(sym.TRUTH, yytext()); }
 
-{number}           { return symbol(sym.NUM, yytext()); }
-{identifier}       { return symbol(sym.ID, yytext()); }
-{WhiteSpace}+      { /* skip whitespace */ }   
-.                  { return symbol(sym.ERROR); }
+{number}           { System.out.println("number");  return symbol(sym.NUM, yytext()); }
+{identifier}       { System.out.println("identifier");  return symbol(sym.ID, yytext()); }
+{WhiteSpace}+      { /* skip whitespace */ System.out.println("whitespace");  }   
+.                  { System.out.println("error");  return symbol(sym.ERROR); }

@@ -81,7 +81,7 @@ ID = [_a-zA-Z][_a-zA-Z0-9]*                                                     
 NUM = [0-9]+
 TRUTH = [false|true]
 
-COMMENT = "/*".*"*/"
+COMMENT = "/*"(. | {WhiteSpace})*"*/"
    
 %%
 /* ------------------------Lexical Rules Section---------------------- */

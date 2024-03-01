@@ -79,12 +79,39 @@ terminal ERROR;
 
 /*c minus nonTerminals*/
 
-non terminal Exp program, declaration, var_declaration, fun_declaration, fun_prototype, type_specifier, params, compound_stmt,
-             param, local_declarations, statement, expression_stmt, selection_stmt, iteration_stmt,
-             return_stmt, expression, var, obool_expression, abool_expression, ubool_expression, simple_expression, additive_expression,
-             relop, term, addop, mulop, signed_factor, factor, call, args;
+non terminal DecList program, declaration_list;
 
-non terminal ExpList declaration_list, param_list, statement_list, arg_list;
+non terminal Dec declaration;
+
+non terminal VarDec var_declaration;
+
+non terminal FunctionDec fun_declaration, fun_prototype;
+
+non terminal NameTy type_specifier;
+
+non terminal VarDecList params, local_declarations, param_list;
+
+non terminal CompoundExp compound_stmt;
+
+non terminal VarDec param;
+
+non terminal Exp statement, expression_stmt, expression, simple_expression, additive_expression;
+
+non terminal IfExp selection_stmt;
+
+non terminal WhileExp iteration_stmt;
+
+non terminal ReturnExp return_stmt;
+
+non terminal Var var;
+
+non terminal BoolExp obool_expression, abool_expression, ubool_expression;
+
+non terminal OpExp relop, term, addop, mulop, signed_factor, factor;
+
+non terminal CallExp call;
+
+non terminal ExpList args, statement_list arg_list;
 
 precedence nonassoc LESSEQ, GREATEREQ, EQUAL, NEQUAL;
 precedence left PLUS, MINUS;
@@ -96,10 +123,19 @@ precedence right UMINUS;
    
 start with program;
 
-program ::= declaration_list ;
+program ::= declaration_list:dl
+               {: RESULT = dl; :}
+ ;
 
-declaration_list ::= declaration_list declaration
-			| declaration
+declaration_list ::= declaration_list:d1 declaration:d2
+               {: DecList t = d1;
+                  while( t.tail != null )
+                     t = t.tail;
+                  t.tail = new DecList(d2, null);
+                  RESULT = d1;
+               :}
+			| declaration:d
+           {: RESULT = new DecList(d, null); :}
          ;
 
 declaration ::= var_declaration
@@ -142,7 +178,8 @@ statement_list ::= statement_list statement
 		| {: //placeholder for epsilon transition :}
       ;
 
-statement ::= expression_stmt | compound_stmt
+statement ::= expression_stmt 
+      | compound_stmt
 		| selection_stmt
 		| iteration_stmt
 		| return_stmt

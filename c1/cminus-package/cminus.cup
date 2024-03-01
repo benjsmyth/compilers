@@ -117,7 +117,7 @@ precedence nonassoc LESS, GREATER, LESSEQ, GREATEREQ, EQUAL, NEQUAL;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV; 
 precedence left AND, OR, NOT;
-precedence right UMINUS; 
+precedence right UMINUS, ELSE; 
 
 
 /* ----------------------------Grammar Section-------------------- */

@@ -111,11 +111,12 @@ non terminal OpExp relop, term, addop, mulop, signed_factor, factor;
 
 non terminal CallExp call;
 
-non terminal ExpList args, statement_list arg_list;
+non terminal ExpList args, statement_list, arg_list;
 
-precedence nonassoc LESSEQ, GREATEREQ, EQUAL, NEQUAL;
+precedence nonassoc LESS, GREATER, LESSEQ, GREATEREQ, EQUAL, NEQUAL;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV; 
+precedence left AND, OR, NOT;
 precedence right UMINUS; 
 
 

@@ -1,20 +1,22 @@
-package absyn;
+package absym;
 
 public class IfExp extends Exp {
-  public Exp test;
-  public ExpList thenpart;
-  public ExpList elsepart;
+    
+    public Exp test;
+    public Exp then;
+    public Exp else;
+    
 
-  public IfExp( int row, int col, Exp test, ExpList thenpart, ExpList elsepart ) {
-    this.row = row;
-    this.col = col;
-    this.test = test;
-    this.thenpart = thenpart;
-    this.elsepart = elsepart;
-  }
+    public IfExp( int row, int col, Exp test, Exp then, Exp else){
+    
+        this.row = row;
+        this.col = col;
+        this.test = test;
+        this.then = then;
+        this.else = else;
+    }
 
   public void accept( AbsynVisitor visitor, int level ) {
     visitor.visit( this, level );
   }
 }
-

@@ -139,13 +139,18 @@ declaration_list ::= declaration_list:d1 declaration:d2
            {: RESULT = new DecList(d, null); :}
          ;
 
-declaration ::= var_declaration
-		| fun_declaration
-		| fun_prototype
+declaration ::= var_declaration:v
+           {: RESULT = v; :}
+		| fun_declaration:fd
+           {: RESULT = fd; :}
+		| fun_prototype:fp
+           {: RESULT = fp; :}
       ;
 
-var_declaration ::= type_specifier ID SEMICOLON
-		| type_specifier ID LBRACKET NUM RBRACKET SEMICOLON
+var_declaration ::= type_specifier:t ID:name SEMICOLON
+           {: RESULT = new SimpleDec(tleft, tright, t, name); :}
+		| type_specifier:t ID:name LBRACKET NUM:n RBRACKET SEMICOLON
+           {: RESULT = new ArrayDec(tleft, tright, t, name, Integer.parseInt(n)); :}
       ;
 
 type_specifier ::= BOOL 

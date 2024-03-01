@@ -158,7 +158,7 @@ type_specifier ::= BOOL:b
 		| INT:i
            {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
 		| VOID:v
-           {: RESULT = new NameTy(vleft, vright, NameTy.INT); :}
+           {: RESULT = new NameTy(vleft, vright, NameTy.VOID); :}
       ;
 
 fun_declaration ::= type_specifier ID LPAREN params RPAREN compound_stmt ;

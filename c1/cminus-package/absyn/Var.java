@@ -1,4 +1,4 @@
 package absyn;
 
-public class Var extends Absyn {
+abstract public class Var extends Absyn {
 }

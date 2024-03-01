@@ -42,7 +42,7 @@ public interface AbsynVisitor {
 
   public void visit( VarDec exp, int level );
 
-  public void visit( VerDecList exp, int level );
+  public void visit( VarDecList exp, int level );
 
   public void visit( VarExp exp, int level );
 

@@ -153,9 +153,12 @@ var_declaration ::= type_specifier:t ID:name SEMICOLON
            {: RESULT = new ArrayDec(tleft, tright, t, name, Integer.parseInt(n)); :}
       ;
 
-type_specifier ::= BOOL 
-		| INT 
-		| VOID
+type_specifier ::= BOOL:b 
+           {: RESULT = new NameTy(bleft, bright, NameTy.BOOL); :}
+		| INT:i
+           {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
+		| VOID:v
+           {: RESULT = new NameTy(vleft, vright, NameTy.INT); :}
       ;
 
 fun_declaration ::= type_specifier ID LPAREN params RPAREN compound_stmt ;

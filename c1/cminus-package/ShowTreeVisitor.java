@@ -38,9 +38,12 @@ public class ShowTreeVisitor implements AbsynVisitor {
     return;
   }
 
-  public void visit( DecList exp, int level ){
+  public void visit( DecList decList, int level ){
     System.out.println("DecList");
-    return;
+    while( decList != null ) {
+      decList.head.accept( this, level );
+      decList = decList.tail;
+    } 
   }
 
   public void visit( ExpList exp, int level ){

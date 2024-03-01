@@ -1,4 +1,4 @@
-package absym;
+package absyn;
 
 public class VarExp extends Exp {
     

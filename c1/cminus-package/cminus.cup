@@ -96,7 +96,7 @@ non terminal CompoundExp compound_stmt;
 non terminal VarDec param;
 
 non terminal Exp statement, expression_stmt, expression, simple_expression, additive_expression,
-                  obool_expression, abool_expression, ubool_expression;
+                  obool_expression, abool_expression, ubool_expression, factor;
 
 non terminal IfExp selection_stmt;
 
@@ -108,7 +108,7 @@ non terminal Var var;
 
 //non terminal BoolExp obool_expression, abool_expression, ubool_expression;
 
-non terminal OpExp relop, term, addop, mulop, signed_factor, factor;
+non terminal OpExp relop, term, addop, mulop, signed_factor;
 
 non terminal CallExp call;
 
@@ -312,39 +312,68 @@ relop ::= LESSEQ:le
            {: RESULT = new OpExp(nleft, nright, null, OpExp.NEQUAL, null); :}
    ;
 
-additive_expression ::= additive_expression addop term
-		| term
+additive_expression ::= additive_expression:e addop:a term:t
+           {: RESULT = new OpExp(eleft, eright, e, a.op, t); :}
+		| term:t
+           {: RESULT = t; :}
       ;
 
-addop ::= PLUS 
-	| MINUS
+addop ::= PLUS:p 
+           {: RESULT = new OpExp(pleft, pright, null, OpExp.PLUS, null); :}
+	| MINUS:m
+           {: RESULT = new OpExp(mleft, mright, null, OpExp.MINUS, null); :}
    ;
 
-term ::= term mulop signed_factor
-		| signed_factor
+term ::= term:t mulop:m signed_factor:s
+           {: RESULT = new OpExp(tleft, tright, t, m.op, s); :}
+		| signed_factor:s
+           {: RESULT = s; :}
       ;
 
-mulop ::= MULT
-	| DIV
+mulop ::= MULT:m
+           {: RESULT = new OpExp(mleft, mright, null, OpExp.MULT, null); :}
+	| DIV:d
+           {: RESULT = new OpExp(dleft, dright, null, OpExp.DIV, null); :}
    ;
 
-signed_factor ::= UMINUS signed_factor
-		| factor
+signed_factor ::= UMINUS signed_factor:s
+           {: RESULT = new OpExp(sleft, sright, s, OpExp.UMINUS, null); :}
+		| factor:f
+           {: RESULT = new OpExp(fleft, fright, f, -1, null); :}
       ;
 
-factor ::= LPAREN expression RPAREN
-		| var
-		| call
-		| NUM
-		| TRUTH
+factor ::= LPAREN expression:e RPAREN
+           {: RESULT = e; :}
+		| var:v
+           {: RESULT = new VarExp(vleft, vright, v); :}
+		| call:c
+           {: RESULT = c; :}
+		| NUM:n
+           {: RESULT = new IntExp(nleft, nright, Integer.parseInt(n)); :}
+		| TRUTH:t
+           {: if (t.equals("true"))
+                RESULT = new BoolExp(tleft, tright, true); 
+              else if (t.equals("false"))
+                RESULT = new BoolExp(tleft, tright, false); 
+           :}
       ;
 
-call ::= ID LPAREN args RPAREN ;
+call ::= ID:i LPAREN args:a RPAREN 
+           {: RESULT = new CallExp(ileft, iright, i, a); :}
+;
 
-args ::= arg_list
+args ::= arg_list:a
+           {: RESULT = a; :}
 	| {: //placeholder for epsilon transition :}
    ;
 
-arg_list ::= arg_list COMMA expression
-		| expression
+arg_list ::= arg_list:a COMMA expression:e
+           {: ExpList t = a;
+              while( t.tail != null )
+                 t = t.tail;
+              t.tail = new ExpList(e, null);
+              RESULT = a;
+           :}
+		| expression:e
+           {: RESULT = new ExpList(e, null); :}
       ;

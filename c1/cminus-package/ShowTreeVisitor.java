@@ -8,15 +8,23 @@ public class ShowTreeVisitor implements AbsynVisitor {
     for( int i = 0; i < level * SPACES; i++ ) System.out.print( " " );
   }
 
-  public void visit( ArrayDec exp, int level ){
+  public void visit( ArrayDec arrayDec, int level ){
     indent( level );
     System.out.println("ArrayDec");
+
     return;
   }
   
-  public void visit( AssignExp exp, int level ){
+  public void visit( AssignExp assignExp, int level ){
     indent( level );
     System.out.println("AssignExp");
+
+    level ++;
+    if (assignExp.lhs != null)
+      assignExp.lhs.accept( this, level );
+
+    if (assignExp.rhs != null)
+      assignExp.rhs.accept( this, level );
     return;
   }
 
@@ -113,9 +121,22 @@ public class ShowTreeVisitor implements AbsynVisitor {
     return;
   }
 
-  public void visit( OpExp exp, int level ){
+  public void visit( OpExp opExp, int level ){
     indent( level );
     System.out.println("OpExp");
+    level ++;
+    if (opExp.left != null)
+      opExp.left.accept( this, level );
+    
+    if (opExp.op != -1){
+      indent( level );
+      System.out.println(opExp.op);
+    }
+
+    if (opExp.right != null)
+      opExp.right.accept( this, level );
+
+
     return;
   }
 

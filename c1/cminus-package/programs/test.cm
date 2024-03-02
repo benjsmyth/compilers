@@ -7,8 +7,12 @@ int world(int hello, int hi){
     int pot;
     int j;
 
-    j = 1 || 2 && 3;
+    j = ~1 || 2 && 3;
 
     pot = 1;
     return 1;
+}
+
+int main(void){
+    world(1, 2);
 }

@@ -161,9 +161,17 @@ type_specifier ::= BOOL:b
            {: RESULT = new NameTy(vleft, vright, NameTy.VOID); :}
       ;
 
-fun_declaration ::= type_specifier ID LPAREN params RPAREN compound_stmt ;
+fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c
+            {: RESULT = new FunctionDec(tleft, tright, t, name, p, c); :}
+      ;
 
-fun_prototype ::= type_specifier ID LPAREN params RPAREN SEMICOLON ;
+//fun_prototype ::= type_specifier ID LPAREN params RPAREN SEMICOLON ;
+
+
+fun_prototype ::= type_specifier:t ID:name LPAREN params:p RPAREN:r SEMICOLON 
+            {: RESULT = new FunctionDec(tleft, tright, t, name, p, new NilExp(pright, rleft)); :}         //position for NillExp?
+      ;
+
 
 params ::= param_list 
 		| VOID
@@ -202,10 +210,15 @@ selection_stmt ::= IF LPAREN expression RPAREN statement
 		| IF LPAREN expression RPAREN statement ELSE statement
       ;
 
-iteration_stmt ::= WHILE LPAREN expression RPAREN statement ;
+iteration_stmt ::= WHILE:w LPAREN expression:e RPAREN statement:s 
+         {: RESULT = new WhileExp(wleft, wright, e, s); :}
+      ;
 
-return_stmt ::= RETURN expression SEMICOLON 
-		| RETURN SEMICOLON
+return_stmt ::= RETURN:r expression:e SEMICOLON 
+            {: RESULT = new ReturnExp(rleft, rright, e); :}
+
+		      | RETURN:r SEMICOLON:s
+            {: RESULT = new ReturnExp(rleft, rright, new NilExp(rright, sleft)); :}
       ;
 
 expression ::= var ASSIGN expression 

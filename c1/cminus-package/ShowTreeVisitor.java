@@ -65,8 +65,12 @@ public class ShowTreeVisitor implements AbsynVisitor {
   public void visit( ExpList exp, int level ){
     System.out.println("ExpList");
     level ++;
-    return;
+    while( exp != null ) {
+      exp.head.accept( this, level );
+      exp = exp.tail;
+    } 
   }
+  
 
   public void visit( FunctionDec functionDec, int level ){
     indent( level );
@@ -146,7 +150,10 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
   public void visit( VarDecList exp, int level ){
     System.out.println("VarDecList");
-    return;
+    while( exp != null ) {
+      exp.head.accept( this, level );
+      exp = exp.tail;
+    } 
   }
 
   public void visit( VarExp exp, int level ){

@@ -205,12 +205,17 @@ statement_list ::= statement_list statement
 		| {: //placeholder for epsilon transition :}
       ;
 
-statement ::= expression_stmt 
-      | compound_stmt
-		| selection_stmt
-		| iteration_stmt
-		| return_stmt
-      ;
+statement ::= expression_stmt:e
+               {: RESULT = e; :}
+            | compound_stmt:c
+               {: RESULT = c; :}
+		      | selection_stmt:s
+               {: RESULT = s; :}
+		      | iteration_stmt:i
+               {: RESULT = i; :}
+		      | return_stmt:r
+               {: RESULT = r; :}
+            ;
 
 expression_stmt ::= expression SEMICOLON 
       | SEMICOLON
@@ -233,7 +238,8 @@ return_stmt ::= RETURN:r expression:e SEMICOLON
 
 expression ::= var:v ASSIGN expression:e
             {: RESULT = new AssignExp(vleft, vright, v, e); :}          //why does the ast not print this??
-		| obool_expression
+		| obool_expression:o
+      {: /*     ?    */  :}
       ;
 
 var ::= ID
@@ -256,12 +262,18 @@ simple_expression ::= additive_expression relop additive_expression
 		| additive_expression
       ;
 
-relop ::= LESSEQ 
-	| LESS
-	| GREATER
-	| GREATEREQ
-	| EQUAL
-	| NEQUAL
+relop ::= LESSEQ
+         //{: RESULT = OpExp.LESSEQ; :}         //not needed?
+	      | LESS:s
+         //{: RESULT = OpExp.LESS; :}
+	      | GREATER:g
+         //{: RESULT = OpExp.GREATER; :}
+	      | GREATEREQ:q
+         //{: RESULT = OpExp.GREATEREQ; :}
+	      | EQUAL:e
+         //{: RESULT = OpExp.EQUAL; :}
+	      | NEQUAL:n
+         //{: RESULT = OpExp.NEQUAL; :}
    ;
 
 additive_expression ::= additive_expression addop term

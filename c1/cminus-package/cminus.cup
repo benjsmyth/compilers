@@ -196,38 +196,8 @@ compound_stmt ::= LCURLY:l local_declarations:ld statement_list:sd RCURLY
            {: RESULT = new CompoundExp(lleft, lright, ld, sd); :}
 ;
 
-/*
-fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c
-            {: RESULT = new FunctionDec(tleft, tright, t, name, p, c); :}
-      ;
-
-//fun_prototype ::= type_specifier ID LPAREN params RPAREN SEMICOLON ;
-
-
-fun_prototype ::= type_specifier:t ID:name LPAREN params:p RPAREN:r SEMICOLON 
-            {: RESULT = new FunctionDec(tleft, tright, t, name, p, new NilExp(pright, rleft)); :}         //position for NillExp?
-      ;
-
-
-params ::= param_list 
-		| VOID
-      ;
-
-param_list ::= param_list COMMA param 
-		| param
-      ;
-
-param ::= type_specifier ID 
-		| type_specifier ID LBRACKET RBRACKET
-      ;
-
-
-
-compound_stmt ::= LCURLY local_declarations statement_list RCURLY ;
-
-*/
-
-local_declarations ::= local_declarations var_declaration
+local_declarations ::= local_declarations:d1 var_declaration:d2
+           {: RESULT = new VarDecList(d2, null); :}
 		| {: //placeholder for epsilon transition :}
       ;
 

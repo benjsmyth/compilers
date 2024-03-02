@@ -9,28 +9,43 @@ public class ShowTreeVisitor implements AbsynVisitor {
   }
 
   public void visit( ArrayDec exp, int level ){
+    indent( level );
     System.out.println("ArrayDec");
     return;
   }
   
   public void visit( AssignExp exp, int level ){
+    indent( level );
     System.out.println("AssignExp");
     return;
   }
 
   public void visit( BoolExp exp, int level ){
+    indent( level );
     System.out.println("BoolExp");
     return;
   }
 
   public void visit( CallExp exp, int level ){
+    indent( level );
     System.out.println("CallExp");
     return;
   }
 
-  public void visit( CompoundExp exp, int level ){
+  public void visit( CompoundExp compoundExp, int level ){
+    indent( level );
     System.out.println("CompoundExp");
-    return;
+    level ++;
+    VarDecList varDecList = compoundExp.decs;
+    while( varDecList != null ) {
+      varDecList.head.accept( this, level );
+      varDecList = varDecList.tail;
+    } 
+    ExpList expList = compoundExp.exps;
+    while( expList != null ) {
+      expList.head.accept( this, level );
+      expList = expList.tail;
+    } 
   }
 
   public void visit( Dec exp, int level ){
@@ -40,6 +55,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
   public void visit( DecList decList, int level ){
     System.out.println("DecList");
+    level ++;
     while( decList != null ) {
       decList.head.accept( this, level );
       decList = decList.tail;
@@ -48,19 +64,25 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
   public void visit( ExpList exp, int level ){
     System.out.println("ExpList");
+    level ++;
     return;
   }
 
   public void visit( FunctionDec functionDec, int level ){
+    indent( level );
     System.out.println("FunctionDec");
+    level ++;
     VarDecList varDecList = functionDec.params;
     while( varDecList != null ) {
       varDecList.head.accept( this, level );
       varDecList = varDecList.tail;
     } 
+
+    functionDec.body.accept( this, level );
   }
 
   public void visit( IfExp exp, int level ){
+    indent( level );
     System.out.println("IfExp");
     return;
   }
@@ -71,6 +93,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
   }
 
   public void visit( IntExp exp, int level ){
+    indent( level );
     System.out.println("IntExp");
     return;
   }
@@ -81,26 +104,31 @@ public class ShowTreeVisitor implements AbsynVisitor {
   }
 
   public void visit( NilExp exp, int level ){
+    indent( level );
     System.out.println("NilExp");
     return;
   }
 
   public void visit( OpExp exp, int level ){
+    indent( level );
     System.out.println("OpExp");
     return;
   }
 
   public void visit( ReturnExp exp, int level ){
+    indent( level );
     System.out.println("ReturnExp");
     return;
   }
 
   public void visit( SimpleDec exp, int level ){
+    indent( level );
     System.out.println("SimpleDec");
     return;
   }
 
   public void visit( SimpleVar exp, int level ){
+    indent( level );
     System.out.println("SimpleVar");
     return;
   }
@@ -111,6 +139,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
   }
 
   public void visit( VarDec exp, int level ){
+    indent( level );
     System.out.println("VarDec");
     return;
   }
@@ -121,11 +150,13 @@ public class ShowTreeVisitor implements AbsynVisitor {
   }
 
   public void visit( VarExp exp, int level ){
+    indent( level );
     System.out.println("VarExp");
     return;
   }
 
   public void visit( WhileExp exp, int level ){
+    indent( level );
     System.out.println("WhileExp");
     return;
   }

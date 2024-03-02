@@ -3,6 +3,6 @@ int hello;
 
 int world(void);
 
-int world(int hello){
-    
+int world(int hello, int hi){
+    int pot;
 }

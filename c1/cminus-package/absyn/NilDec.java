@@ -1,9 +1,9 @@
 package absyn;
 
-public class NilExp extends Exp {
+public class NilDec extends VarDec {
     
 
-    public NilExp( int row, int col){
+    public NilDec( int row, int col){
     
         this.row = row;
         this.col = col;

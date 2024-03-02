@@ -161,20 +161,35 @@ type_specifier ::= BOOL:b
            {: RESULT = new NameTy(vleft, vright, NameTy.VOID); :}
       ;
 
-fun_declaration ::= type_specifier ID LPAREN params RPAREN compound_stmt ;
+fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c 
+           {: RESULT = new FunctionDec(tleft, tright, t, name, p, c); :}
+;
 
-fun_prototype ::= type_specifier ID LPAREN params RPAREN SEMICOLON ;
+fun_prototype ::= type_specifier:t ID:name LPAREN params:p RPAREN SEMICOLON 
+           {: RESULT = new FunctionDec(tleft, tright, t, name, p, null); :}
+;
 
-params ::= param_list 
-		| VOID
+params ::= param_list:p 
+           {: RESULT = p; :}
+		| VOID:v
+           {: RESULT = new VarDecList(new NilDec(vleft, vright), null); :}
       ;
 
-param_list ::= param_list COMMA param 
-		| param
+param_list ::= param_list:p1 COMMA param:p2 
+           {: VarDecList t = p1;
+               while( t.tail != null )
+                  t = t.tail;
+               t.tail = new VarDecList(p2, null);
+               RESULT = p1;
+           :}
+		| param:p
+           {: RESULT = new VarDecList(p, null); :}
       ;
 
-param ::= type_specifier ID 
-		| type_specifier ID LBRACKET RBRACKET
+param ::= type_specifier:t ID:name 
+           {: RESULT = new SimpleDec(tleft, tright, t, name); :}
+		| type_specifier:t ID:name LBRACKET RBRACKET
+           {: RESULT = new ArrayDec(tleft, tright, t, name, 0); :}
       ;
 
 compound_stmt ::= LCURLY local_declarations statement_list RCURLY ;

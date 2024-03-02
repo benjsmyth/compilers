@@ -76,8 +76,8 @@ public class ShowTreeVisitor implements AbsynVisitor {
     return;
   }
 
-  public void visit( NilExp exp, int level ){
-    System.out.println("NilExp");
+  public void visit( NilDec exp, int level ){
+    System.out.println("NilDec");
     return;
   }
 

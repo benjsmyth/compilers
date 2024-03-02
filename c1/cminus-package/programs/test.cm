@@ -1,2 +1,8 @@
 
 int hello;
+
+int world(void);
+
+int world(int i){
+
+}

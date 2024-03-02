@@ -28,7 +28,7 @@ public interface AbsynVisitor {
 
   public void visit( NameTy exp, int level );
 
-  public void visit( NilExp exp, int level );
+  public void visit( NilDec exp, int level );
 
   public void visit( OpExp exp, int level );
 

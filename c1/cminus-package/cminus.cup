@@ -95,7 +95,8 @@ non terminal CompoundExp compound_stmt;
 
 non terminal VarDec param;
 
-non terminal Exp statement, expression_stmt, expression, simple_expression, additive_expression;
+non terminal Exp statement, expression_stmt, expression, simple_expression, additive_expression,
+                  obool_expression, abool_expression, ubool_expression;
 
 non terminal IfExp selection_stmt;
 
@@ -103,9 +104,9 @@ non terminal WhileExp iteration_stmt;
 
 non terminal ReturnExp return_stmt;
 
-non terminal VarExp var;
+non terminal Var var;
 
-non terminal BoolExp obool_expression, abool_expression, ubool_expression;
+//non terminal BoolExp obool_expression, abool_expression, ubool_expression;
 
 non terminal OpExp relop, term, addop, mulop, signed_factor, factor;
 
@@ -262,43 +263,53 @@ return_stmt ::= RETURN:r expression:e SEMICOLON
       ;
 
 expression ::= var:v ASSIGN expression:e
-            {: RESULT = new AssignExp(vleft, vright, v, e); :}          //why does the ast not print this??
+            {: RESULT = new AssignExp(vleft, vright, new VarExp(vleft, vright, v), e); :}          //why does the ast not print this??
 		| obool_expression:o
-      {: /*     ?    */  :}
+            {: RESULT = o; :}//
       ;
 
-var ::= ID
-		| ID LBRACKET expression RBRACKET
+var ::= ID:i
+            {: RESULT = new SimpleVar(ileft, iright, i); :}
+		| ID:i LBRACKET expression:e RBRACKET
+            {: RESULT = new IndexVar(ileft, iright, i, e); :}
       ;
 
-obool_expression ::= obool_expression OR abool_expression
-		| abool_expression
+obool_expression ::= obool_expression:o OR abool_expression:a
+            {: RESULT = new OpExp(oleft, oright, o, OpExp.OR, a); :}
+		| abool_expression:a
+            {: RESULT = a; :}
       ;
 
-abool_expression ::= abool_expression AND abool_expression
-		| ubool_expression
+abool_expression ::= abool_expression:a1 AND abool_expression:a2
+            {: RESULT = new OpExp(a1left, a2right, a1, OpExp.AND, a2); :}
+		| ubool_expression:u
+            {: RESULT = u; :}
       ;
 
-ubool_expression ::= NOT ubool_expression
-		| simple_expression
+ubool_expression ::= NOT ubool_expression:u
+            {: RESULT = new OpExp(uleft, uright, u, OpExp.NOT, null); :}
+		| simple_expression:s
+            {: RESULT = s; :}
       ;
 
-simple_expression ::= additive_expression relop additive_expression
-		| additive_expression
+simple_expression ::= additive_expression:a1 relop:r additive_expression:a2
+            {: RESULT = new OpExp(a1left, a1right, a1, r.op, a2); :}
+		| additive_expression:a
+            {: RESULT = a; :}
       ;
 
-relop ::= LESSEQ
-         //{: RESULT = OpExp.LESSEQ; :}         //not needed?
-	      | LESS:s
-         //{: RESULT = OpExp.LESS; :}
+relop ::= LESSEQ:le
+           {: RESULT = new OpExp(leleft, leright, null, OpExp.LESSEQ, null); :}         //not needed?
+	      | LESS:l
+           {: RESULT = new OpExp(lleft, lright, null, OpExp.LESS, null); :}
 	      | GREATER:g
-         //{: RESULT = OpExp.GREATER; :}
-	      | GREATEREQ:q
-         //{: RESULT = OpExp.GREATEREQ; :}
+           {: RESULT = new OpExp(gleft, gright, null, OpExp.GREATER, null); :}
+	      | GREATEREQ:ge
+           {: RESULT = new OpExp(geleft, geright, null, OpExp.GREATEREQ, null); :}
 	      | EQUAL:e
-         //{: RESULT = OpExp.EQUAL; :}
+           {: RESULT = new OpExp(eleft, eright, null, OpExp.EQUAL, null); :}
 	      | NEQUAL:n
-         //{: RESULT = OpExp.NEQUAL; :}
+           {: RESULT = new OpExp(nleft, nright, null, OpExp.NEQUAL, null); :}
    ;
 
 additive_expression ::= additive_expression addop term

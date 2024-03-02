@@ -197,11 +197,32 @@ compound_stmt ::= LCURLY:l local_declarations:ld statement_list:sd RCURLY
 ;
 
 local_declarations ::= local_declarations:d1 var_declaration:d2
-           {: RESULT = new VarDecList(d2, null); :}
+           {: if (d1 != null) {
+                  VarDecList t = d1;
+                  while( t.tail != null )
+                     t = t.tail;
+                  t.tail = new VarDecList(d2, null);
+                  RESULT = d1;
+               }
+               else {
+                  RESULT = new VarDecList(d2, null);
+               }
+           :}
 		| {: //placeholder for epsilon transition :}
       ;
 
-statement_list ::= statement_list statement 
+statement_list ::= statement_list:s1 statement:s2 
+           {: if (s1 != null) {
+                  ExpList t = s1;
+                  while( t.tail != null )
+                     t = t.tail;
+                  t.tail = new ExpList(s2, null);
+                  RESULT = s1;
+               }
+               else {
+                  RESULT = new ExpList(s2, null);
+               }
+           :}
 		| {: //placeholder for epsilon transition :}
       ;
 
@@ -217,12 +238,16 @@ statement ::= expression_stmt:e
                {: RESULT = r; :}
             ;
 
-expression_stmt ::= expression SEMICOLON 
-      | SEMICOLON
+expression_stmt ::= expression:e SEMICOLON 
+              {: RESULT = e; :}
+      | SEMICOLON:s
+              {: RESULT = new NilExp(sleft, sright); :}
       ;
 
-selection_stmt ::= IF LPAREN expression RPAREN statement
-		| IF LPAREN expression RPAREN statement ELSE statement
+selection_stmt ::= IF:i LPAREN expression:e RPAREN statement:s
+              {: RESULT = new IfExp(ileft, iright, e, s, null); :}
+		| IF:i LPAREN expression:e RPAREN statement:s1 ELSE statement:s2
+              {: RESULT = new IfExp(ileft, iright, e, s1, s2); :}
       ;
 
 iteration_stmt ::= WHILE:w LPAREN expression:e RPAREN statement:s 

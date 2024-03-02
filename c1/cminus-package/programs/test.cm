@@ -5,4 +5,5 @@ int world(void);
 
 int world(int hello, int hi){
     int pot;
+    pot = 1;
 }

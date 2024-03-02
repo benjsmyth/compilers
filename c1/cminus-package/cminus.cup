@@ -103,7 +103,7 @@ non terminal WhileExp iteration_stmt;
 
 non terminal ReturnExp return_stmt;
 
-non terminal Var var;
+non terminal VarExp var;
 
 non terminal BoolExp obool_expression, abool_expression, ubool_expression;
 
@@ -231,7 +231,8 @@ return_stmt ::= RETURN:r expression:e SEMICOLON
             {: RESULT = new ReturnExp(rleft, rright, new NilExp(rright, sleft)); :}
       ;
 
-expression ::= var ASSIGN expression 
+expression ::= var:v ASSIGN expression:e
+            {: RESULT = new AssignExp(vleft, vright, v, e); :}          //why does the ast not print this??
 		| obool_expression
       ;
 

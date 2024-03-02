@@ -96,7 +96,7 @@ non terminal CompoundExp compound_stmt;
 non terminal VarDec param;
 
 non terminal Exp statement, expression_stmt, expression, simple_expression, additive_expression,
-                  obool_expression, abool_expression, ubool_expression, factor;
+                  obool_expression, abool_expression, ubool_expression, factor, signed_factor, term;
 
 non terminal IfExp selection_stmt;
 
@@ -108,7 +108,7 @@ non terminal Var var;
 
 //non terminal BoolExp obool_expression, abool_expression, ubool_expression;
 
-non terminal OpExp relop, term, addop, mulop, signed_factor;
+non terminal OpExp relop, addop, mulop;
 
 non terminal CallExp call;
 
@@ -339,7 +339,7 @@ mulop ::= MULT:m
 signed_factor ::= UMINUS signed_factor:s
            {: RESULT = new OpExp(sleft, sright, s, OpExp.UMINUS, null); :}
 		| factor:f
-           {: RESULT = new OpExp(fleft, fright, f, -1, null); :}
+           {: RESULT = f; :}
       ;
 
 factor ::= LPAREN expression:e RPAREN

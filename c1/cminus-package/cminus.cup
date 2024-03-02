@@ -166,7 +166,7 @@ fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stm
 ;
 
 fun_prototype ::= type_specifier:t ID:name LPAREN params:p RPAREN SEMICOLON 
-           {: RESULT = new FunctionDec(tleft, tright, t, name, p, null); :}
+           {: RESULT = new FunctionDec(tleft, tright, t, name, p, new NilExp(pright, pleft)); :}
 ;
 
 params ::= param_list:p 

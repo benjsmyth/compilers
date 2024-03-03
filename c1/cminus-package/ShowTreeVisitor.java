@@ -252,6 +252,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
   public void visit( WhileExp exp, int level ){
     indent( level );
     System.out.println("WhileExp");
+    level++;
     exp.test.accept( this, level );
     exp.body.accept( this, level );
   }

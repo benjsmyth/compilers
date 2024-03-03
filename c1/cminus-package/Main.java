@@ -15,9 +15,17 @@ import java.io.*;
 import absyn.*;
    
 class Main {
-  public final static boolean SHOW_TREE = true;
+  public static boolean SHOW_TREE = false;
   static public void main(String argv[]) {    
     /* Start the parser */
+
+    for(String arg : argv){
+      if (arg.equals("-a")){
+        SHOW_TREE = true;
+      }
+    }
+
+
     try {
       parser p = new parser(new Lexer(new FileReader(argv[0])));
       Absyn result = (Absyn)(p.parse().value);      

@@ -7,7 +7,7 @@ public class IfExp extends Exp {
     public Exp elsepart;
     
 
-    public IfExp( int row, int col, Exp test, Exp then, Exp elsepart){
+    public IfExp( int row, int col, Exp test, Exp thenpart, Exp elsepart){
     
         this.row = row;
         this.col = col;

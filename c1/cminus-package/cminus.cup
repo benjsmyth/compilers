@@ -272,7 +272,7 @@ return_stmt ::= RETURN:r expression:e SEMICOLON
 ;
 
 expression ::= var:v ASSIGN expression:e
-           {: RESULT = new AssignExp(vleft, vright, new VarExp(vleft, vright, v), e); :}          //why does the ast not print this??
+           {: RESULT = new AssignExp(vleft, vright, new VarExp(vleft, vright, v), e); :}  
 		| obool_expression:o
            {: RESULT = o; :}
 ;
@@ -308,7 +308,7 @@ simple_expression ::= additive_expression:a1 relop:r additive_expression:a2
 ;
 
 relop ::= LESSEQ:le
-           {: RESULT = new OpExp(leleft, leright, null, OpExp.LESSEQ, null); :}         //not needed?
+           {: RESULT = new OpExp(leleft, leright, null, OpExp.LESSEQ, null); :}     
 	        | LESS:l
            {: RESULT = new OpExp(lleft, lright, null, OpExp.LESS, null); :}
 	        | GREATER:g

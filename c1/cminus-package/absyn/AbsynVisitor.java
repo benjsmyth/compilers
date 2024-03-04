@@ -12,8 +12,6 @@ public interface AbsynVisitor {
 
   public void visit( CompoundExp exp, int level );
 
-  public void visit( Dec exp, int level );
-
   public void visit( DecList exp, int level );
 
   public void visit( ExpList exp, int level );
@@ -37,10 +35,6 @@ public interface AbsynVisitor {
   public void visit( SimpleDec exp, int level );
 
   public void visit( SimpleVar exp, int level );
-
-  public void visit( Var exp, int level );
-
-  public void visit( VarDec exp, int level );
 
   public void visit( VarDecList exp, int level );
 

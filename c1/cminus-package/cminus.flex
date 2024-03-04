@@ -132,4 +132,4 @@ COMMENT = "/*"~"*/"
 
 {WhiteSpace}+      { /* skip whitespace */ System.out.println("whitespace");  }  
 {COMMENT}          { /* skip comments */ System.out.println("comment");  } 
-.                  { System.out.println("error");  return symbol(sym.ERROR); }
+.                  { System.err.println("error"); return symbol(sym.ERROR); }

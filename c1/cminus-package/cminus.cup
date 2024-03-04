@@ -43,7 +43,8 @@ parser code {:
                        the column number of the error in the input. */
                     m.append(", column "+(s.right+1));
             }
-	    m.append(String.format(" at `%s'", s.value));
+	    if (s.value != null) 
+         m.append(String.format(" at `%s'", s.value));
         }
    
         /* Add to the end of the StringBuffer error message created in
@@ -142,7 +143,7 @@ var_declaration ::= type_specifier:t ID:name SEMICOLON
 		| type_specifier:t ID:name LBRACKET NUM:n RBRACKET SEMICOLON
            {: RESULT = new ArrayDec(tleft, tright, t, name, Integer.parseInt(n)); :}
 		| type_specifier:t ID:name LBRACKET NUM:n RBRACKET error:e
-	   {: report_error("Missing semicolon", e); :}
+	   {: report_error("Missing semicolon at line ", e); :}
 		| type_specifier:t ID:name LBRACKET NUM:n error:e
 	   {: report_error("Missing closing bracket", e); :}
 		| type_specifier:t ID:name LBRACKET error:e

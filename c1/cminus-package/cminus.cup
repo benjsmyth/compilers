@@ -163,12 +163,12 @@ type_specifier ::= BOOL:b
 
 fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c 
            {: RESULT = new FunctionDec(tleft, tright, t, name, p, c); :}
+		| type_specifier:t ID:name LPAREN params:p RPAREN error:e
+	   {: report_error("Missing semicolon or function body", e); :}
 ;
 
 fun_prototype ::= type_specifier:t ID:name LPAREN params:p RPAREN SEMICOLON 
            {: RESULT = new FunctionDec(tleft, tright, t, name, p, new NilExp(pright, pleft)); :}
-		| type_specifier:t ID:name LPAREN params:p RPAREN error:e
-	   {: report_error("Missing semicolon", e); :}
 		| type_specifier:t ID:name LPAREN error:e
 	   {: report_error("Invalid function prototype", e); :}
 ;
@@ -266,6 +266,8 @@ return_stmt ::= RETURN:r expression:e SEMICOLON
            {: RESULT = new ReturnExp(rleft, rright, e); :}
 		| RETURN:r SEMICOLON:s
            {: RESULT = new ReturnExp(rleft, rright, new NilExp(rright, sleft)); :}
+		| RETURN:r error:e
+	   {: report_error("Missing semicolon", e); :}
 ;
 
 expression ::= var:v ASSIGN expression:e

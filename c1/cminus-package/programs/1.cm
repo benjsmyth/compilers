@@ -1,1 +1,1 @@
-in a;
+int a(int a, bool b[]) {

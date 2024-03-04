@@ -18,7 +18,7 @@ parser code {:
        reason for the error which is passed into the method in the
        String 'message'. */
     public void report_error(String message, Object info) {
-   
+
         /* Create a StringBuffer called 'm' with the string 'Error' in it. */
         StringBuffer m = new StringBuffer("Error");
    
@@ -29,7 +29,7 @@ parser code {:
                information in the object info that is being typecasted
                as a java_cup.runtime.Symbol object. */
             java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
-   
+
             /* Check if the line number in the input is greater or
                equal to zero. */
             if (s.left >= 0) {                
@@ -43,7 +43,7 @@ parser code {:
                        the column number of the error in the input. */
                     m.append(", column "+(s.right+1));
             }
-	    m.append(String.format(" for \"%s\"", s.value));
+	    m.append(String.format(" at `%s'", s.value));
         }
    
         /* Add to the end of the StringBuffer error message created in
@@ -94,11 +94,10 @@ non terminal IfExp selection_stmt;
 non terminal WhileExp iteration_stmt;
 non terminal ReturnExp return_stmt;
 non terminal Var var;
-//non terminal BoolExp obool_expression, abool_expression, ubool_expression;
 non terminal OpExp relop, addop, mulop;
 non terminal CallExp call;
 non terminal ExpList args, statement_list, arg_list;
-//non terminal error_production;
+non terminal error_token;
 
 precedence nonassoc LESS, GREATER, LESSEQ, GREATEREQ, EQUAL, NEQUAL;
 precedence left OR; 
@@ -115,6 +114,7 @@ start with program;
 
 program ::= declaration_list:dl
            {: RESULT = dl; :}
+		| error_token:et
 ;
 
 declaration_list ::= declaration_list:dl declaration:d
@@ -141,6 +141,14 @@ var_declaration ::= type_specifier:t ID:name SEMICOLON
            {: RESULT = new SimpleDec(tleft, tright, t, name); :}
 		| type_specifier:t ID:name LBRACKET NUM:n RBRACKET SEMICOLON
            {: RESULT = new ArrayDec(tleft, tright, t, name, Integer.parseInt(n)); :}
+		| type_specifier:t ID:name LBRACKET NUM:n RBRACKET error:e
+	   {: report_error("Missing semicolon", e); :}
+		| type_specifier:t ID:name LBRACKET NUM:n error:e
+	   {: report_error("Missing closing bracket", e); :}
+		| type_specifier:t ID:name LBRACKET error:e
+	   {: report_error("Invalid array access", e); :}
+		| type_specifier:t ID:name error:e
+	   {: report_error("Missing semicolon", e); :}
 ;
 
 type_specifier ::= BOOL:b 
@@ -150,10 +158,7 @@ type_specifier ::= BOOL:b
 		| VOID:v
            {: RESULT = new NameTy(vleft, vright, NameTy.VOID); :}
 		| error:e
-	   {:
-	      report_error("Type error", e);
-//	      RESULT = new NameTy(0, 0, NameTy.ERROR);
-           :}
+	   {: report_error("Invalid type declaration", e); :}
 ;
 
 fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c 
@@ -162,21 +167,26 @@ fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stm
 
 fun_prototype ::= type_specifier:t ID:name LPAREN params:p RPAREN SEMICOLON 
            {: RESULT = new FunctionDec(tleft, tright, t, name, p, new NilExp(pright, pleft)); :}
+		| type_specifier:t ID:name LPAREN params:p RPAREN error:e
+	   {: report_error("Missing semicolon", e); :}
+		| type_specifier:t ID:name LPAREN error:e
+	   {: report_error("Invalid function prototype", e); :}
 ;
 
 params ::= param_list:p 
            {: RESULT = p; :}
 		| VOID:v
-           {: //dont know what to do here :}
+		| error:e
+	   {: report_error("Invalid parameter list", e); :}
 ;
 
-param_list ::= param_list:p1 COMMA param:p2 
+param_list ::= param_list:pl COMMA param:p 
            {:
-               VarDecList t = p1;
+               VarDecList t = pl;
                while( t.tail != null )
                   t = t.tail;
-               t.tail = new VarDecList(p2, null);
-               RESULT = p1;
+               t.tail = new VarDecList(p, null);
+               RESULT = pl;
            :}
 		| param:p
            {: RESULT = new VarDecList(p, null); :}
@@ -377,4 +387,5 @@ arg_list ::= arg_list:a COMMA expression:e
            {: RESULT = new ExpList(e, null); :}
 ;
 
-//error_production ::= ERROR SEMICOLON;
+error_token ::= ERROR {: report_error("Illegal character", null); :}
+;

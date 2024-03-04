@@ -79,38 +79,22 @@ terminal ERROR;
 /*c minus nonTerminals*/
 
 non terminal DecList program, declaration_list;
-
 non terminal Dec declaration;
-
 non terminal VarDec var_declaration;
-
 non terminal FunctionDec fun_declaration, fun_prototype;
-
 non terminal NameTy type_specifier;
-
 non terminal VarDecList params, local_declarations, param_list;
-
 non terminal CompoundExp compound_stmt;
-
 non terminal VarDec param;
-
 non terminal Exp statement, expression_stmt, expression, simple_expression, additive_expression,
                   obool_expression, abool_expression, ubool_expression, factor, signed_factor, term;
-
 non terminal IfExp selection_stmt;
-
 non terminal WhileExp iteration_stmt;
-
 non terminal ReturnExp return_stmt;
-
 non terminal Var var;
-
 //non terminal BoolExp obool_expression, abool_expression, ubool_expression;
-
 non terminal OpExp relop, addop, mulop;
-
 non terminal CallExp call;
-
 non terminal ExpList args, statement_list, arg_list;
 
 precedence nonassoc LESS, GREATER, LESSEQ, GREATEREQ, EQUAL, NEQUAL;
@@ -160,8 +144,11 @@ type_specifier ::= BOOL:b
            {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
 		| VOID:v
            {: RESULT = new NameTy(vleft, vright, NameTy.VOID); :}
-		| error:te
-	   {: report_error("Type error", te); :}
+		| error:e
+	   {:
+	      RESULT = new NameTy(0, 0, ERROR);
+	      report_error("Type error", e);
+           :}
 ;
 
 fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c 

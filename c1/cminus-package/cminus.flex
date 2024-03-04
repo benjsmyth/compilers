@@ -63,33 +63,18 @@ import java_cup.runtime.*;
 %}
    
 
-/*
-  Macro Declarations
-  
-  These declarations are regular expressions that will be used latter
-  in the Lexical Rules Section.  
-*/
+/* Macros */
    
-/* A line terminator is a \r (carriage return), \n (line feed), or
-   \r\n. */
-LineTerminator = \r|\n|\r\n
-   
-/* White space is a line terminator, space, tab, or form feed. */
-WhiteSpace     = {LineTerminator} | [ \t\f]
-
-ID = [_a-zA-Z][_a-zA-Z0-9]*                                                  //from the c minus specification
+ID = [_a-zA-Z][_a-zA-Z0-9]*
 NUM = [0-9]+
-
 COMMENT = "/*"~"*/"
+TERMINATOR = \r|\n|\r\n
+WHITESPACE = {TERMINATOR} | [ \t\f]
    
 %%
+
 /* ------------------------Lexical Rules Section---------------------- */
    
-/*
-   This section contains regular expressions and actions, i.e. Java
-   code, that will be executed when the scanner matches the associated
-   regular expression. */
-
 "bool"             { System.out.println("bool");  return symbol(sym.BOOL);}   
 "else"             { System.out.println("else");  return symbol(sym.ELSE); }
 "if"               { System.out.println("if");  return symbol(sym.IF); }
@@ -121,15 +106,15 @@ COMMENT = "/*"~"*/"
 "{"                { System.out.println("{");  return symbol(sym.LCURLY);}
 "}"                { System.out.println("}");  return symbol(sym.RCURLY);}
 
-{NUM}              { System.out.println("NUM");  return symbol(sym.NUM, yytext()); }
+{NUM}              { System.out.println(String.format("NUM(%s)", yytext()));  return symbol(sym.NUM, yytext()); }
 {ID}               { 
                      if (yytext().equals("true") || yytext().equals("false")){
-                        System.out.println("TRUTH");
+                        System.out.println(String.format("TRUTH(%s)", yytext()));
                         return symbol(sym.TRUTH, yytext());
                      }
-                     System.out.println("ID");  return symbol(sym.ID, yytext()); 
+                     System.out.println(String.format("ID(%s)", yytext()));  return symbol(sym.ID, yytext()); 
                    }
 
-{WhiteSpace}+      { /* skip whitespace */ System.out.println("whitespace");  }  
-{COMMENT}          { /* skip comments */ System.out.println("comment");  } 
-.                  { System.err.println("error"); return symbol(sym.ERROR); }
+{WHITESPACE}+      { /* skip whitespace */ System.out.println("WHITESPACE"); }
+{COMMENT}          { /* skip comments */ System.out.println("COMMENT"); } 
+.                  { System.err.println("ERROR"); return symbol(sym.ERROR); }

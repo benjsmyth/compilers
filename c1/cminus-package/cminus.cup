@@ -191,12 +191,20 @@ param_list ::= param_list:pl COMMA param:p
            :}
 		| param:p
            {: RESULT = new VarDecList(p, null); :}
+      | param_list:pl error:e param:p 
+            {: report_error("Missing comma for parameter list", e); :}
 ;
 
 param ::= type_specifier:t ID:name 
            {: RESULT = new SimpleDec(tleft, tright, t, name); :}
 		| type_specifier:t ID:name LBRACKET RBRACKET
            {: RESULT = new ArrayDec(tleft, tright, t, name, 0); :}
+      | type_specifier:t error:e 
+            {: report_error("Missing identifier", e); :}
+      | type_specifier:t ID:name error:e RBRACKET
+            {: report_error("Missing left bracket", e); :}
+      | type_specifier:t ID:name LBRACKET error:e
+            {: report_error("Missing right bracket", e); :}      
 ;
 
 compound_stmt ::= LCURLY:l local_declarations:ld statement_list:sd RCURLY 
@@ -275,6 +283,8 @@ expression ::= var:v ASSIGN expression:e
            {: RESULT = new AssignExp(vleft, vright, new VarExp(vleft, vright, v), e); :}  
 		| obool_expression:o
            {: RESULT = o; :}
+      | var:v ASSIGN error:e
+            {: report_error("Missing Assignment", e); :}
 ;
 
 var ::= ID:i

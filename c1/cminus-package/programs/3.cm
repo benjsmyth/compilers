@@ -1,4 +1,6 @@
-/* Missing semi colon error */
+/* Missing semi colon error 
+    - self-explanatory
+*/
 
 void main(void) {
   int x; 

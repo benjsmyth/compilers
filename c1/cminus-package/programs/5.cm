@@ -1,6 +1,12 @@
 /*
 Invalid parameter list
+ - coder might think that you don't have to put anything inside the function
+   parameters
 Invalid argument list
+ - coder might forget a comma
+ - anything invalid within a function call
+
+REPEATS
 Missing semicolon
 Invalid type specifier
 Invalid expression within parentheses

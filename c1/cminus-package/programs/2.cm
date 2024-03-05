@@ -1,10 +1,13 @@
-/* Invalid type specifier */
+/* Invalid type specifier 
+    - in cases where the type is either misspelled
+      or the coder believes that the type exists in cminus
+*/
 
 void hello(void){
   return 1;
 }
 void main(void) {
-  double x; 
+  in x; 
   int fac;
   bool test;
 

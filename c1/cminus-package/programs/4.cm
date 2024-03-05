@@ -1,4 +1,7 @@
-/* Empty While loop expression and for loop expression */
+/* Invalid While loop expression and for loop expression 
+    - coder might forget to put anything in the parentheses
+    - coder might incorrectly put things in the parentheses
+*/
 
 void main(void) {
   int x; 
@@ -7,7 +10,7 @@ void main(void) {
 
   x = input();
   fac = 1;
-  while () {
+  while (fb gd) {
     fac = fac * x;
     x = x - 1;
   } 

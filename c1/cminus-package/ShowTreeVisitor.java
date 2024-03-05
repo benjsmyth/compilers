@@ -89,7 +89,8 @@ public class ShowTreeVisitor implements AbsynVisitor {
     System.out.println("DecList");
     level ++;
     while( decList != null ) {
-      decList.head.accept( this, level );
+      if (decList.head != null)
+        decList.head.accept( this, level );
       decList = decList.tail;
     } 
   }
@@ -99,7 +100,8 @@ public class ShowTreeVisitor implements AbsynVisitor {
     System.out.println("ExpList");
     level ++;
     while( expList != null ) {
-      expList.head.accept( this, level );
+      if (expList.head != null)
+        expList.head.accept( this, level );
       expList = expList.tail;
     } 
   }
@@ -298,7 +300,8 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     level ++;
     while( varDecList != null ) {
-      varDecList.head.accept( this, level );
+      if (varDecList.head != null)
+        varDecList.head.accept( this, level );
       varDecList = varDecList.tail;
     } 
   }

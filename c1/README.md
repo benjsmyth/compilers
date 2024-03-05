@@ -15,5 +15,5 @@ where `filename` is the name of the C- program.
 ## AST Generation
 To generate the abstract syntax tree associated with the C- program, run
 `java -classpath /usr/share/java/cup.jar:. Main <filename>.cm -a`. The AST will be written to
-`<filename>.abs`.
+`<structure>.abs`.
 

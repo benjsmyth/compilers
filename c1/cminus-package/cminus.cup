@@ -159,6 +159,8 @@ type_specifier ::= BOOL:b
            {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
 		| VOID:v
            {: RESULT = new NameTy(vleft, vright, NameTy.VOID); :}
+      | error:e
+           {: report_error("Invalid type specifier", e); :}
 ;
 
 fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c 
@@ -256,10 +258,16 @@ selection_stmt ::= IF:i LPAREN expression:e RPAREN statement:s
            {: RESULT = new IfExp(ileft, iright, e, s, null); :}
 		| IF:i LPAREN expression:e RPAREN statement:s1 ELSE statement:s2
            {: RESULT = new IfExp(ileft, iright, e, s1, s2); :}
+      | IF:w LPAREN error:e RPAREN statement:s 
+         {: report_error("Invalid Expression within Parentheses", e); :}
+      | IF:w LPAREN error:e RPAREN statement:s ELSE statement:s2
+         {: report_error("Invalid Expression within Parentheses", e); :}
 ;
 
 iteration_stmt ::= WHILE:w LPAREN expression:e RPAREN statement:s 
            {: RESULT = new WhileExp(wleft, wright, e, s); :}
+         | WHILE:w LPAREN error:e RPAREN statement:s 
+         {: report_error("Invalid Expression within Parentheses", e); :}
 ;
 
 return_stmt ::= RETURN:r expression:e SEMICOLON 
@@ -330,8 +338,6 @@ addop ::= PLUS:p
            {: RESULT = new OpExp(pleft, pright, null, OpExp.PLUS, null); :}
 	        | MINUS:m
            {: RESULT = new OpExp(mleft, mright, null, OpExp.MINUS, null); :}
-		| error:ae
-	   {: report_error("Addition error", ae); :}
 ;
 
 term ::= term:t mulop:m signed_factor:s
@@ -375,6 +381,8 @@ call ::= ID:i LPAREN args:a RPAREN
 
 args ::= arg_list:a
            {: RESULT = a; :}
+           | error:e
+            {: report_error("Invalid argument list", e); :}
 	        | {: //placeholder for epsilon transition :}
 ;
 

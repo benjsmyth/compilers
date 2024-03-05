@@ -1,0 +1,20 @@
+/* Empty While loop expression and for loop expression */
+
+void main(void) {
+  int x; 
+  int fac;
+  bool test;
+
+  x = input();
+  fac = 1;
+  while () {
+    fac = fac * x;
+    x = x - 1;
+  } 
+
+  if (){
+
+  }
+
+  output(fac);
+}

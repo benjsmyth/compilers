@@ -1,0 +1,29 @@
+/*
+Invalid parameter list
+Invalid argument list
+Missing semicolon
+Invalid type specifier
+Invalid expression within parentheses
+*/
+
+int gcd() {
+  if (v == 0) return u;
+  else return gcd(v, u - u/v*v);
+}
+
+void main(void) {
+  it z;
+  int x;  
+  int y
+
+  x = input();
+
+  while(){
+
+  }
+
+  int a[s];
+
+  y = input();
+  output(gcd(x y));
+}

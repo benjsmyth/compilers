@@ -15,6 +15,7 @@ import java.io.*;
 import absyn.*;
    
 class Main {
+  public static String fileName;
   public static boolean SHOW_TREE = false;
   static public void main(String argv[]) {    
     /* Start the parser */
@@ -23,12 +24,15 @@ class Main {
       if (arg.equals("-a")){
         SHOW_TREE = true;
       }
+      if (arg.endsWith(".c")){
+	fileName = arg.substring(0, arg.lastIndexOf('.'));
+      }
     }
-    String filename = "./ast/structure.ast";
+    String filename = "./ast/structure.abs";
     try {
       File f = new File(filename);
       if (f.createNewFile()) {
-        System.out.println("File Created: " + f.getName());
+        System.out.println("File created: " + f.getName());
       }
     }
     catch (Exception e) {

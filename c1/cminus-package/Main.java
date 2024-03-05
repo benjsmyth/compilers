@@ -24,11 +24,11 @@ class Main {
       if (arg.equals("-a")){
         SHOW_TREE = true;
       }
-      if (arg.endsWith(".c")){
+      if (arg.endsWith(".cm")){
 	fileName = arg.substring(0, arg.lastIndexOf('.'));
       }
     }
-    String filename = "./ast/structure.abs";
+    String filename = "./structure.abs";
     try {
       File f = new File(filename);
       if (f.createNewFile()) {

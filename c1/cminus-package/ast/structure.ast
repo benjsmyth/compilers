@@ -1,0 +1,76 @@
+The abstract syntax tree is:
+DecList
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: t6
+                ArrayDec
+                    type: INT
+                    name: t1
+                    size: 5
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: t2
+                    IntExp
+                        value: 5
+                BoolExp
+                    value: true
+                CallExp
+                    function name: t4
+                    ExpList
+                        VarExp
+                            SimpleVar
+                                name: x
+                        VarExp
+                            SimpleVar
+                                name: y
+                        VarExp
+                            SimpleVar
+                                name: z
+                IfExp:
+                    BoolExp
+                        value: true
+                    CompoundExp
+                        ExpList
+                            BoolExp
+                                value: true
+                    ELSE
+                    CompoundExp
+                        ExpList
+                            BoolExp
+                                value: false
+                VarExp
+                    IndexVar
+                        name: t5
+                        IntExp
+                            value: 4
+                WhileExp
+                    BoolExp
+                        value: true
+                    CompoundExp
+                        ExpList
+                            CallExp
+                                function name: do
+                ReturnExp
+                    VarExp
+                        SimpleVar
+                            name: t7
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: x
+            SimpleDec
+                NameTy
+                    type: BOOL
+                name: y
+            SimpleDec
+                NameTy
+                    type: VOID
+                name: z

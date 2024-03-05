@@ -24,8 +24,22 @@ class Main {
         SHOW_TREE = true;
       }
     }
-
-
+    String filename = "./ast/structure.ast";
+    try {
+      File f = new File(filename);
+      if (f.createNewFile()) {
+        System.out.println("File Created: " + f.getName());
+      }
+    }
+    catch (Exception e) {
+      System.out.println("Unexpected exception:");
+      e.printStackTrace();
+    }
+    //for storing the output to system.out
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(baos);
+    PrintStream old = System.out;
+    System.setOut(ps);
     try {
       parser p = new parser(new Lexer(new FileReader(argv[0])));
       Absyn result = (Absyn)(p.parse().value);      
@@ -38,5 +52,21 @@ class Main {
       /* do cleanup here -- possibly rethrow e */
       e.printStackTrace();
     }
+
+    if (SHOW_TREE){
+      try{
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        writer.write(baos.toString());
+        writer.close();
+      }
+      catch (Exception e) {
+        System.out.println("Unexpected exception:");
+        e.printStackTrace();
+      }
+    }
+    System.out.flush();
+    System.setOut(old);
+
+    System.out.print(baos.toString());
   }
 }

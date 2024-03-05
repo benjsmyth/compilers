@@ -159,6 +159,8 @@ type_specifier ::= BOOL:b
            {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
 		| VOID:v
            {: RESULT = new NameTy(vleft, vright, NameTy.VOID); :}
+		| error:e
+	   {: report_error("Invalid type specifier", e); :}
 ;
 
 fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c 

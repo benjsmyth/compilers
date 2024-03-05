@@ -116,6 +116,7 @@ start with program;
 program ::= declaration_list:dl
            {: RESULT = dl; :}
 		| error_token:et
+      |
 ;
 
 declaration_list ::= declaration_list:dl declaration:d
@@ -158,8 +159,8 @@ type_specifier ::= BOOL:b
            {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
 		| VOID:v
            {: RESULT = new NameTy(vleft, vright, NameTy.VOID); :}
-		| error:e
-	   {: report_error("Invalid type declaration", e); :}
+		//| error:e
+	   //{: report_error("Invalid type declaration", e); :}
 ;
 
 fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c 
@@ -201,6 +202,10 @@ param ::= type_specifier:t ID:name
 
 compound_stmt ::= LCURLY:l local_declarations:ld statement_list:sd RCURLY 
            {: RESULT = new CompoundExp(lleft, lright, ld, sd); :}
+      | LCURLY:l local_declarations:ld statement_list:sd error:e
+           {: report_error("Missing Closing Curly Bracket", e);
+              RESULT = new CompoundExp(lleft, lright, ld, sd); 
+           :}
 ;
 
 local_declarations ::= local_declarations:d1 var_declaration:d2

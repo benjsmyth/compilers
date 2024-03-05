@@ -165,12 +165,12 @@ type_specifier ::= BOOL:b
 
 fun_declaration ::= type_specifier:t ID:name LPAREN params:p RPAREN compound_stmt:c 
            {: RESULT = new FunctionDec(tleft, tright, t, name, p, c); :}
-		| type_specifier:t ID:name LPAREN params:p RPAREN error:e
-	   {: report_error("Missing semicolon or function body", e); :}
 ;
 
 fun_prototype ::= type_specifier:t ID:name LPAREN params:p RPAREN SEMICOLON 
            {: RESULT = new FunctionDec(tleft, tright, t, name, p, new NilExp(pright, pleft)); :}
+		| type_specifier:t ID:name LPAREN params:p RPAREN error:e
+	   {: report_error("Missing semicolon", e); :}
 		| type_specifier:t ID:name LPAREN error:e
 	   {: report_error("Invalid function prototype", e); :}
 ;
@@ -203,7 +203,7 @@ param ::= type_specifier:t ID:name
 compound_stmt ::= LCURLY:l local_declarations:ld statement_list:sd RCURLY 
            {: RESULT = new CompoundExp(lleft, lright, ld, sd); :}
       | LCURLY:l local_declarations:ld statement_list:sd error:e
-           {: report_error("Missing Closing Curly Bracket", e);
+           {: report_error("Missing closing curly Bracket", e);
               RESULT = new CompoundExp(lleft, lright, ld, sd); 
            :}
 ;

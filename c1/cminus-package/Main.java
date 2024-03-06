@@ -1,34 +1,24 @@
-/*
-  Created by: Fei Song
-  File Name: Main.java
-  To Build: 
-  After the Scanner.java, tiny.flex, and tiny.cup have been processed, do:
-    javac Main.java
-  
-  To Run: 
-    java -classpath /usr/share/java/cup.jar:. Main gcd.tiny
-
-  where gcd.tiny is an test input file for the tiny language.
-*/
-   
 import java.io.*;
 import absyn.*;
-   
-class Main {
-  public static String fileName;
-  public static boolean SHOW_TREE = false;
-  static public void main(String argv[]) {    
-    /* Start the parser */
 
-    for(String arg : argv){
-      if (arg.equals("-a")){
+class Main {
+  public static String programName;
+  public static boolean SHOW_TREE = false;
+  static public void main(String argv[]) {
+
+    for (String arg : argv) {
+      if (arg.equals("-a")) {
         SHOW_TREE = true;
       }
-      if (arg.endsWith(".cm")){
-	fileName = arg.substring(0, arg.lastIndexOf('.'));
+      if (arg.endsWith(".cm")) {
+        int e = arg.lastIndexOf('.');
+        int p = arg.lastIndexOf('/');
+        programName = (p == -1) ? arg.substring(0, e)
+          : arg.substring(p + 1, e);
       }
     }
-    String filename = "./structure.abs";
+    String filename = String.format("./ast/%s.abs", programName);
+//    String filename = "./structure.abs";
     try {
       File f = new File(filename);
       if (f.createNewFile()) {
@@ -44,9 +34,11 @@ class Main {
     PrintStream ps = new PrintStream(baos);
     PrintStream old = System.out;
     System.setOut(ps);
+
+    /* Start the parser */
     try {
       parser p = new parser(new Lexer(new FileReader(argv[0])));
-      Absyn result = (Absyn)(p.parse().value);      
+      Absyn result = (Absyn)(p.parse().value);
       if (SHOW_TREE && result != null) {
          System.out.println("The abstract syntax tree is:");
          AbsynVisitor visitor = new ShowTreeVisitor();

@@ -1,0 +1,23 @@
+/* Invalid While loop expression and for loop expression 
+    - coder might forget to put anything in the parentheses
+    - coder might incorrectly put things in the parentheses
+*/
+
+void main(void) {
+  int x; 
+  int fac;
+  bool test;
+
+  x = input();
+  fac = 1;
+  while (fb gd) {
+    fac = fac * x;
+    x = x - 1;
+  } 
+
+  if (){
+
+  }
+
+  output(fac);
+}

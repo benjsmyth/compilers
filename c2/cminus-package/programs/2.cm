@@ -1,0 +1,25 @@
+/* Invalid type specifier 
+    - in cases where the type is either misspelled
+      or the coder believes that the type exists in cminus
+*/
+
+void hello(void){
+  return 1;
+}
+void main(void) {
+  in x; 
+  int fac;
+  bool test;
+
+  test = true;
+
+  x = input();
+  fac = 1;
+  while (x > 1) {
+    fac = fac * x;
+    x = x - 1;
+  } 
+  real x;
+
+  output(fac);
+}

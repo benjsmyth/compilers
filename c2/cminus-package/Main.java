@@ -4,11 +4,15 @@ import absyn.*;
 class Main {
   public static String programName;
   public static boolean SHOW_TREE = false;
+  public static boolean SYMBOL_TABLE = false;
   static public void main(String argv[]) {
 
     for (String arg : argv) {
       if (arg.equals("-a")) {
         SHOW_TREE = true;
+      }
+      if (arg.equals("-s")) {
+        SYMBOL_TABLE = true;
       }
       if (arg.endsWith(".cm")) {
         int e = arg.lastIndexOf('.');
@@ -43,6 +47,12 @@ class Main {
          System.out.println("The abstract syntax tree is:");
          AbsynVisitor visitor = new ShowTreeVisitor();
          result.accept(visitor, 0); 
+      }
+      
+      if (SYMBOL_TABLE && result != null) {
+        System.out.println("The symbol table is:");
+        AbsynVisitor visitor = new SemanticAnalyzer();
+        result.accept(visitor, 0); 
       }
     } catch (Exception e) {
       /* do cleanup here -- possibly rethrow e */

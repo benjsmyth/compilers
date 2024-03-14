@@ -1,0 +1,27 @@
+/* Test file for symbol table stuff*/
+
+int reduce(int i){
+  return i - 1;
+}
+
+
+void main(void) {
+
+int i;
+int j;
+bool k;
+
+i = 6;
+j = 3;
+
+while(j < i){
+
+    i = reduce(i);
+}
+
+if(j < i){
+
+    i = reduce(i);
+}
+
+}

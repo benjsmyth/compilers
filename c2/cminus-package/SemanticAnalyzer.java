@@ -1,12 +1,18 @@
 import absyn.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
 
 
 
 public class SemanticAnalyzer implements AbsynVisitor {
 
       public HashMap<String, ArrayList<NodeType>> table;
+
+      public SemanticAnalyzer() {
+        this.table = new HashMap<>();
+      }
 
       public void delete(String key) {
         table.remove(key);
@@ -25,6 +31,26 @@ public class SemanticAnalyzer implements AbsynVisitor {
           return table.get(key);
         }
 
+
+      public void printHashTable(){
+        System.out.println("Created HashMap:");
+        Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+        iterator = table.entrySet().iterator();
+        while (iterator.hasNext()) {
+          HashMap.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+          System.out.println(entry.getKey() + ": " + entry.getValue().toString());
+        }        
+      }
+
+      /*public boolean isInterger(Dec dtype){
+        if(dtype.typ == 1){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }*/
+
       final static int SPACES = 4;
 
       private void indent( int level ) {
@@ -34,7 +60,31 @@ public class SemanticAnalyzer implements AbsynVisitor {
       
 
       public void visit( ArrayDec arrayDec, int level ){
+        //indent(level);
         //System.out.println("1");
+        switch(arrayDec.typ.type){
+          case 0:
+            indent(level);
+            System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": bool");
+            break;
+          case 1:
+            indent(level);
+            System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": int");
+            break;
+          case 2:
+            indent(level);
+            System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": void");
+            break;
+
+          default:
+            System.out.println("Error: no type");
+
+        }
+
+        NodeType newNode = new NodeType(arrayDec.name, arrayDec, level);
+        insert(arrayDec.name, newNode);
+        //printHashTable();
+        
       }
       
       public void visit( AssignExp assignExp, int level ){
@@ -92,8 +142,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
     
       public void visit( FunctionDec functionDec, int level ){
 
-        indent( level );
+        //indent( level );
         //System.out.println("8");
+        indent( level );
         System.out.println("Entering the scope for function " + functionDec.func + ":");
         int prevLevel = level;
         level ++;
@@ -139,7 +190,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       }
     
       public void visit( NameTy nameTy, int level ){
-        //System.out.println("12"); we can ignore this I think
+        //System.out.println("12"); 
       }
     
       public void visit( NilExp nilExp, int level ){
@@ -178,10 +229,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
             System.out.println("Error: no type");
 
         }
-        /*
-        System.out.println("name: " + simpleDec.name);
-        indent(level);
-        System.out.println("type: " + simpleDec.typ.type);*/
+
+        NodeType newNode = new NodeType(simpleDec.name, simpleDec, level);
+        insert(simpleDec.name, newNode);
+        //printHashTable();
         
       }
     

@@ -1,5 +1,9 @@
 /* Test file for symbol table stuff*/
 
+int e;
+int arr[5];
+
+
 int reduce(int i){
   return i - 1;
 }
@@ -21,6 +25,7 @@ while(j < i){
 
 if(j < i){
 
+    int h;
     i = reduce(i);
 }
 

@@ -10,4 +10,9 @@ public class NodeType {
         this.def = def;
         this.level = level;
     }
+
+    public String toString() {
+        return "NodeType{" +
+                "name='" + name + '\'' + ", def=" + def + ", level=" + level + '}';
+    }
 }

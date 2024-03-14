@@ -149,6 +149,28 @@ public class SemanticAnalyzer implements AbsynVisitor {
         int prevLevel = level;
         level ++;
 
+        switch(functionDec.result.type){
+          case 0:
+            indent(level);
+            System.out.println("function " + functionDec.func + ": bool");
+            break;
+          case 1:
+            indent(level);
+            System.out.println("function " + functionDec.func + ": int");
+            break;
+          case 2:
+            indent(level);
+            System.out.println("function " + functionDec.func + ": void");
+            break;
+
+          default:
+            System.out.println("Error: no type");
+
+        }
+
+        NodeType newNode = new NodeType(functionDec.func, functionDec, level);
+        insert(functionDec.func, newNode);
+
         if (functionDec.params != null)
           functionDec.params.accept( this, level );
         else {

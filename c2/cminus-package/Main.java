@@ -3,76 +3,93 @@ import absyn.*;
 
 class Main {
   public static String programName;
-  public static boolean SHOW_TREE = false;
-  public static boolean SYMBOL_TABLE = false;
+  public static boolean GEN_TREE = false;
+  public static boolean GEN_TABLE = false;
   static public void main(String argv[]) {
 
     for (String arg : argv) {
       if (arg.equals("-a")) {
-        SHOW_TREE = true;
+        GEN_TREE = true;
       }
-      if (arg.equals("-s")) {
-        SYMBOL_TABLE = true;
+      else if (arg.equals("-s")) {
+        GEN_TABLE = true;
       }
-      if (arg.endsWith(".cm")) {
+      else if (arg.endsWith(".cm")) {
         int e = arg.lastIndexOf('.');
         int p = arg.lastIndexOf('/');
         programName = (p == -1) ? arg.substring(0, e)
           : arg.substring(p + 1, e);
       }
     }
-    String filename = String.format("./ast/%s.abs", programName);
-//    String filename = "./structure.abs";
-    try {
-      File f = new File(filename);
-      if (f.createNewFile()) {
-        System.out.println("File created: " + f.getName());
+
+    String absFile = String.format("./ast/%s.abs", programName);
+    String symFile = String.format("./sym/%s.sym", programName);
+
+    if (GEN_TREE) {
+      try {
+        File f = new File(absFile);
+        if (f.createNewFile()) {
+          System.out.println("Created " + f.getName());
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     }
-    catch (Exception e) {
-      System.out.println("Unexpected exception:");
-      e.printStackTrace();
+    if (GEN_TABLE) {
+      try {
+        File f = new File(symFile);
+        if (f.createNewFile()) {
+          System.out.println("Created " + f.getName());
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
-    //for storing the output to system.out
+
+    // For storing the output
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(baos);
     PrintStream old = System.out;
     System.setOut(ps);
 
-    /* Start the parser */
+    // Start the parser
     try {
       parser p = new parser(new Lexer(new FileReader(argv[0])));
       Absyn result = (Absyn)(p.parse().value);
-      if (SHOW_TREE && result != null) {
-         System.out.println("The abstract syntax tree is:");
+      if (GEN_TREE && result != null) {
          AbsynVisitor visitor = new ShowTreeVisitor();
-         result.accept(visitor, 0); 
+         result.accept(visitor, 0);
       }
-      
-      if (SYMBOL_TABLE && result != null) {
-        System.out.println("The symbol table is:");
+      if (GEN_TABLE && result != null) {
         AbsynVisitor visitor = new SemanticAnalyzer();
-        result.accept(visitor, 0); 
+        result.accept(visitor, 0);
       }
     } catch (Exception e) {
-      /* do cleanup here -- possibly rethrow e */
       e.printStackTrace();
     }
 
-    if (SHOW_TREE){
-      try{
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+    if (GEN_TREE) {
+      try {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(absFile));
         writer.write(baos.toString());
         writer.close();
       }
       catch (Exception e) {
-        System.out.println("Unexpected exception:");
         e.printStackTrace();
       }
     }
     System.out.flush();
-    System.setOut(old);
 
-    System.out.print(baos.toString());
+    if (GEN_TABLE) {
+      try {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(symFile));
+        writer.write(baos.toString());
+        writer.close();
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    System.out.flush();
   }
 }

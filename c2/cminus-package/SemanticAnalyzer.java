@@ -28,6 +28,35 @@ public class SemanticAnalyzer implements AbsynVisitor {
     table.remove(key);
   }
 
+  public void deleteLevelEntries(int level) {        //for deleting a level from the hashmap
+    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+    iterator = table.entrySet().iterator();
+
+    while (iterator.hasNext()) {
+        Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+        ArrayList<NodeType> nodeList = entry.getValue();
+        for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
+            NodeType node = nodeIter.next();
+            if (node.level == level) {
+               nodeIter.remove();
+            }
+        }
+        if (nodeList.isEmpty()) {
+            iterator.remove();
+        }
+    }
+}
+
+  public void printHashTable() {
+    System.out.println("\nHash Table:");
+    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+    iterator = table.entrySet().iterator();
+    while (iterator.hasNext()) {
+      HashMap.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+      System.out.println(entry.getKey() + ": " + entry.getValue().toString());
+    }
+  }
+
   // Indent method
   private void indent(int level) {
     for (int i = 0; i < level * 4; i++) System.out.print(" ");
@@ -138,6 +167,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (functionDec.body != null)
           functionDec.body.accept(this, level);
       }
+      deleteLevelEntries(level);                    //not sure if this should delete the function dec 
       indent(prevLevel);
       System.out.println("Exiting function scope");
     }
@@ -154,6 +184,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       ifExp.thenpart.accept(this, level);
     if (ifExp.elsepart != null)
       ifExp.elsepart.accept( this, level );
+    deleteLevelEntries(level);
     indent(prevLevel);
     System.out.println("Exiting block scope");
   }
@@ -244,19 +275,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
       whileExp.test.accept(this, level);
     if (whileExp.body != null)
       whileExp.body.accept(this, level);
+    deleteLevelEntries(level);
     indent(prevLevel);
     System.out.println("Exiting block scope");
   }
 
-  public void printHashTable() {
-    System.out.println("\nHash Table:");
-    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
-    iterator = table.entrySet().iterator();
-    while (iterator.hasNext()) {
-      HashMap.Entry<String, ArrayList<NodeType>> entry = iterator.next();
-      System.out.println(entry.getKey() + ": " + entry.getValue().toString());
-    }
-  }
 
   /*
   public boolean isInteger(Dec dtype) {

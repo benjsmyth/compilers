@@ -2,6 +2,7 @@
 
 int e;
 int arr[5];
+int i;
 
 
 int reduce(int i){
@@ -12,6 +13,7 @@ int reduce(int i){
 
 void main(void) {
 
+int i;
 int j;
 bool k;
 

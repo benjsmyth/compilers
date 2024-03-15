@@ -1,0 +1,9 @@
+DecList
+    SimpleDec
+        NameTy
+            type: INT
+        name: a
+    SimpleDec
+        NameTy
+            type: BOOL
+        name: a

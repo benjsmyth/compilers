@@ -1,0 +1,3 @@
+Entering global scope:
+    a: int
+Exiting global scope

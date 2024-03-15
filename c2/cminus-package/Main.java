@@ -51,6 +51,9 @@ class Main {
     PrintStream ps = new PrintStream(baos);
     System.setOut(ps);
 
+    ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+    PrintStream ps2 = new PrintStream(baos2);
+
     // Start the parser
     try {
       parser p = new parser(new Lexer(new FileReader(argv[0])));
@@ -58,7 +61,14 @@ class Main {
       if (GEN_TREE && result != null) {
          AbsynVisitor visitor = new ShowTreeVisitor();
          result.accept(visitor, 0);
+
+         BufferedWriter writer = new BufferedWriter(new FileWriter(absFile));
+         writer.write(baos.toString());
+         writer.close();
       }
+
+      System.setOut(ps2);
+
       if (GEN_TABLE && result != null) {
         AbsynVisitor visitor = new SemanticAnalyzer();
         result.accept(visitor, 0);
@@ -67,20 +77,10 @@ class Main {
       e.printStackTrace();
     }
 
-    if (GEN_TREE) {
-      try {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(absFile));
-        writer.write(baos.toString());
-        writer.close();
-      }
-      catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    else if (GEN_TABLE) {
+    if (GEN_TABLE) {
       try {
         BufferedWriter writer = new BufferedWriter(new FileWriter(symFile));
-        writer.write(baos.toString());
+        writer.write(baos2.toString());
         writer.close();
       }
       catch (Exception e) {

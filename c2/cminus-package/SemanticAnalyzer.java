@@ -3,13 +3,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+import java.io.PrintStream;
 
 public class SemanticAnalyzer implements AbsynVisitor {
   public HashMap<String, ArrayList<NodeType>> table;
+  public PrintStream old;
+  public PrintStream tableStream;
 
   // Constructor
-  public SemanticAnalyzer() {
+  public SemanticAnalyzer(PrintStream old, PrintStream current) {
     this.table = new HashMap<String, ArrayList<NodeType>>();
+    this.old = old;
+    this.tableStream = current;
   }
 
   // Table methods
@@ -65,7 +70,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   // Visitor methods (semantic rules)
   public void visit(ArrayDec arrayDec, int level) {
     if (lookup(arrayDec.name) != null) {
-      System.err.println(
+      printError(
         String.format("Error in line %d, column %d at `%s': Redeclaration error",
           arrayDec.row, arrayDec.col, arrayDec.name)
       );
@@ -132,7 +137,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(FunctionDec functionDec, int level) {
     if (lookup(functionDec.func) != null) {
-      System.err.println(
+      printError(
         String.format("Error in line %d, column %d at `%s': Redeclaration error",
           functionDec.row, functionDec.col, functionDec.func)
       );
@@ -217,7 +222,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     if (simpleDec.typ != null)
       simpleDec.typ.accept(this, level);
     if (lookup(simpleDec.name) != null) {
-      System.err.println(
+      printError(
         String.format("Error in line %d, column %d at `%s': Redeclaration error",
           simpleDec.row, simpleDec.col, simpleDec.name)
       );
@@ -246,8 +251,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public void visit(SimpleVar simpleVar, int level) {
     //simpleVar.accept(this, level);
     if (lookup(simpleVar.name) == null) {
-      System.err.println(
-        String.format("Error in line %d, column %d at `%s': Undefined error",
+      printError(
+        String.format("Error in line %d, column %d at `%s': Undefined variable error",
           simpleVar.row, simpleVar.col, simpleVar.name)
       );
     }
@@ -282,6 +287,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
     System.out.println("Exiting block scope");
   }
 
+  public void printError(String err){
+    System.setOut(this.old);
+    System.err.println(err);
+    System.setOut(this.tableStream);
+  }
 
   /*
   public boolean isInteger(Dec dtype) {

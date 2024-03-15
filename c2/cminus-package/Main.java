@@ -60,7 +60,7 @@ class Main {
     try {
       parser p = new parser(new Lexer(new FileReader(argv[0])));
       Absyn result = (Absyn)(p.parse().value);
-      if (GEN_TREE && result != null) {
+      if (result != null) {
          AbsynVisitor visitor = new ShowTreeVisitor();
          result.accept(visitor, 0);
 
@@ -71,8 +71,8 @@ class Main {
 
       System.setOut(ps2);
 
-      if (GEN_TABLE && result != null) {
-        AbsynVisitor visitor = new SemanticAnalyzer();
+      if (result != null) {
+        AbsynVisitor visitor = new SemanticAnalyzer(old, ps2);
         result.accept(visitor, 0);
       }
     } catch (Exception e) {
@@ -92,6 +92,7 @@ class Main {
 
     System.setOut(old);
 
-    System.out.print(baos.toString() + baos2.toString());
+    if (GEN_TREE) System.out.print(baos.toString());
+    if (GEN_TABLE) System.out.print(baos2.toString());
   }
 }

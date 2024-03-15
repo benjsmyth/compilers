@@ -102,39 +102,45 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(FunctionDec functionDec, int level) {
-    indent(level);
-    System.out.println(
-      String.format("Entering function scope for `%s':", functionDec.func)
-    );
-    int prevLevel = level;
-    level++;
-    switch(functionDec.result.type) {
-      case 0:
-        indent(level);
-        System.out.println("function " + functionDec.func + ": bool");
-        break;
-      case 1:
-        indent(level);
-        System.out.println("function " + functionDec.func + ": int");
-        break;
-      case 2:
-        indent(level);
-        System.out.println("function " + functionDec.func + ": void");
-        break;
-      default:
-        System.out.println("Error: No type");
-	break;
+    if (lookup(functionDec.func) != null) {
+      System.err.println(
+        String.format("Error in line %d, column %d at `%s': Redeclaration error",
+          functionDec.row, functionDec.col, functionDec.func)
+      );
     }
-    NodeType newNode = new NodeType(functionDec.func, functionDec, level);
-    insert(functionDec.func, newNode);
-    if (functionDec.params != null)
-        functionDec.params.accept(this, level);
     else {
-      if (functionDec.body != null)
-        functionDec.body.accept(this, level);
+      indent(level);
+      System.out.println(
+        String.format("Entering function scope for `%s':", functionDec.func)
+      );
+      int prevLevel = level;
+      level++;
+      indent(level);
+      switch(functionDec.result.type) {
+        case 0:
+          System.out.println("function " + functionDec.func + ": bool");
+          break;
+        case 1:
+          System.out.println("function " + functionDec.func + ": int");
+          break;
+        case 2:
+          System.out.println("function " + functionDec.func + ": void");
+          break;
+        default:
+          System.out.println("Error: No type");
+	  break;
+      }
+      NodeType newNode = new NodeType(functionDec.func, functionDec, level);
+      insert(functionDec.func, newNode);
+      if (functionDec.params != null)
+          functionDec.params.accept(this, level);
+      else {
+        if (functionDec.body != null)
+          functionDec.body.accept(this, level);
+      }
+      indent(prevLevel);
+      System.out.println("Exiting function scope");
     }
-    indent(prevLevel);
-    System.out.println("Exiting function scope");
   }
 
   public void visit(IfExp ifExp, int level) {

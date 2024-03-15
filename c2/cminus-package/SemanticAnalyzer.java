@@ -103,7 +103,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": void");
           break;
         default:
-          System.out.println("Error: No type");
+          printError("Error: No type");
 	  break;
       }
       NodeType newNode = new NodeType(arrayDec.name, arrayDec, level);

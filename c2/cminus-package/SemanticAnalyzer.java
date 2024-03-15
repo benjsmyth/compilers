@@ -69,13 +69,26 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   // Visitor methods (semantic rules)
   public void visit(ArrayDec arrayDec, int level) {
+
+    boolean error = false;
     if (lookup(arrayDec.name) != null) {
-      printError(
-        String.format("Error in line %d, column %d at `%s': Redeclaration error",
-          arrayDec.row, arrayDec.col, arrayDec.name)
-      );
+      
+      ArrayList<NodeType> node = lookup(arrayDec.name);
+      if (node != null) {
+        for (NodeType n : node) {
+          if(n.level == level){
+            error = true;
+            printError(
+              String.format("Error in line %d, column %d at `%s': Redeclaration error",
+              arrayDec.row, arrayDec.col, arrayDec.name)
+            );
+          }
+        }
+      }
+    
     }
-    else {
+
+    if(error == false){
       switch(arrayDec.typ.type){
         case 0:
           indent(level);
@@ -136,13 +149,26 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(FunctionDec functionDec, int level) {
+
+    boolean error = false;
+
     if (lookup(functionDec.func) != null) {
-      printError(
-        String.format("Error in line %d, column %d at `%s': Redeclaration error",
-          functionDec.row, functionDec.col, functionDec.func)
-      );
+      
+      ArrayList<NodeType> node = lookup(functionDec.func);
+      if (node != null) {
+        for (NodeType n : node) {
+          if(n.level == level){
+            error = true;
+            printError(
+              String.format("Error in line %d, column %d at `%s': Redeclaration error",
+              functionDec.row, functionDec.col, functionDec.func)
+            );
+          }
+        }
+      }
+    
     }
-    else {
+    if(error == false){
       indent(level);
       System.out.println(
         String.format("Entering function scope for `%s':", functionDec.func)
@@ -221,13 +247,23 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public void visit(SimpleDec simpleDec, int level) {
     if (simpleDec.typ != null)
       simpleDec.typ.accept(this, level);
-    if (lookup(simpleDec.name) != null) {
-      printError(
-        String.format("Error in line %d, column %d at `%s': Redeclaration error",
-          simpleDec.row, simpleDec.col, simpleDec.name)
-      );
-    }
-    else {
+    boolean error = false;
+      if (lookup(simpleDec.name) != null) {
+        ArrayList<NodeType> node = lookup(simpleDec.name);
+        if (node != null) {
+          for (NodeType n : node) {
+            if(n.level == level){
+              error = true;
+              printError(
+                String.format("Error in line %d, column %d at `%s': Redeclaration error",
+                simpleDec.row, simpleDec.col, simpleDec.name)
+              );
+            }
+          }
+        }
+      
+      }
+    if(error == false){
       indent(level);
       switch(simpleDec.typ.type) {
         case 0:

@@ -1,12 +1,14 @@
 Entering global scope:
     e: int
     arr[5]: int
+    i: int
     Entering function scope for `reduce':
         function reduce: int
         i: int
     Exiting function scope
     Entering function scope for `main':
         function main: void
+        i: int
         j: int
         k: bool
         Entering block scope

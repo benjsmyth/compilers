@@ -49,7 +49,6 @@ class Main {
     // For storing the output
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(baos);
-    PrintStream old = System.out;
     System.setOut(ps);
 
     // Start the parser
@@ -78,9 +77,7 @@ class Main {
         e.printStackTrace();
       }
     }
-    System.out.flush();
-
-    if (GEN_TABLE) {
+    else if (GEN_TABLE) {
       try {
         BufferedWriter writer = new BufferedWriter(new FileWriter(symFile));
         writer.write(baos.toString());
@@ -90,6 +87,5 @@ class Main {
         e.printStackTrace();
       }
     }
-    System.out.flush();
   }
 }

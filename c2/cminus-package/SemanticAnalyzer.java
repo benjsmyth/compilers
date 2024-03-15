@@ -244,7 +244,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(SimpleVar simpleVar, int level) {
-    simpleVar.accept(this, level);
+    //simpleVar.accept(this, level);
     if (lookup(simpleVar.name) == null) {
       System.err.println(
         String.format("Error in line %d, column %d at `%s': Undefined error",
@@ -264,6 +264,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(VarExp varExp, int level) {
     // Not implemented
+    if (varExp.variable != null)
+      varExp.variable.accept( this, level );
   }
 
   public void visit(WhileExp whileExp, int level) {

@@ -17,6 +17,7 @@ bool k;
 
 i = 6;
 j = 3;
+m = 8;
 
 while(j < i){
     int y;

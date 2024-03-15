@@ -1,3 +1,6 @@
 Entering global scope:
     a: int
+    Entering function scope for `f':
+        function f: int
+    Exiting function scope
 Exiting global scope

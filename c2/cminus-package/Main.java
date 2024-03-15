@@ -25,6 +25,8 @@ class Main {
     String absFile = String.format("./ast/%s.abs", programName);
     String symFile = String.format("./sym/%s.sym", programName);
 
+    PrintStream old = System.out;
+
     if (GEN_TREE) {
       try {
         File f = new File(absFile);
@@ -87,5 +89,9 @@ class Main {
         e.printStackTrace();
       }
     }
+
+    System.setOut(old);
+
+    System.out.print(baos.toString() + baos2.toString());
   }
 }

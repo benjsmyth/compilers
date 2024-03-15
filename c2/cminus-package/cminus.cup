@@ -145,8 +145,6 @@ var_declaration ::= type_specifier:t ID:name SEMICOLON
            {: RESULT = new ArrayDec(tleft, tright, t, name, Integer.parseInt(n)); :}
 		| type_specifier:t ID:name LBRACKET NUM:n RBRACKET error:e
 	   {: report_error("Missing semicolon at line ", e); :}
-		| type_specifier:t ID:name LBRACKET NUM:n error:e
-	   {: report_error("Missing closing bracket", e); :}
 		| type_specifier:t ID:name LBRACKET error:e
 	   {: report_error("Invalid array access", e); :}
 		| type_specifier:t ID:name error:e

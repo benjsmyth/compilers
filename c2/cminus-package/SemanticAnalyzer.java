@@ -35,25 +35,33 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   // Visitor methods (semantic rules)
   public void visit(ArrayDec arrayDec, int level) {
-    switch(arrayDec.typ.type){
-      case 0:
-        indent(level);
-        System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": bool");
-        break;
-      case 1:
-        indent(level);
-        System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": int");
-        break;
-      case 2:
-        indent(level);
-        System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": void");
-        break;
-      default:
-        System.out.println("Error: No type");
-	break;
+    if (lookup(arrayDec.name) != null) {
+      System.err.println(
+        String.format("Error in line %d, column %d at `%s': Redeclaration error",
+          arrayDec.row, arrayDec.col, arrayDec.name)
+      );
     }
-    NodeType newNode = new NodeType(arrayDec.name, arrayDec, level);
-    insert(arrayDec.name, newNode);
+    else {
+      switch(arrayDec.typ.type){
+        case 0:
+          indent(level);
+          System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": bool");
+          break;
+        case 1:
+          indent(level);
+          System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": int");
+          break;
+        case 2:
+          indent(level);
+          System.out.println(arrayDec.name + "[" + arrayDec.size + "]" + ": void");
+          break;
+        default:
+          System.out.println("Error: No type");
+	  break;
+      }
+      NodeType newNode = new NodeType(arrayDec.name, arrayDec, level);
+      insert(arrayDec.name, newNode);
+    }
   }
 
   public void visit(AssignExp assignExp, int level) {
@@ -75,7 +83,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(DecList decList, int level) {
-    System.out.println("Entering global scope");
+    System.out.println("Entering global scope:");
     level++;
     while(decList != null) {
       if (decList.head != null)
@@ -95,7 +103,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(FunctionDec functionDec, int level) {
     indent(level);
-    System.out.println("Entering function scope for " + functionDec.func);
+    System.out.println(
+      String.format("Entering function scope for `%s':", functionDec.func)
+    );
     int prevLevel = level;
     level++;
     switch(functionDec.result.type) {
@@ -129,7 +139,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(IfExp ifExp, int level) {
     indent(level);
-    System.out.println("Entering block scope");
+    System.out.println("Entering block scope:");
     int prevLevel = level;
     level++;
     if (ifExp.test != null)
@@ -166,14 +176,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
     // Not implemented
   }
 
-
   public void visit(SimpleDec simpleDec, int level) {
     if (simpleDec.typ != null)
       simpleDec.typ.accept(this, level);
-
     if (lookup(simpleDec.name) != null) {
-      System.err.println(String.format("Error: \"%s\" redeclared on line %d, column %d",
-          simpleDec.name, simpleDec.row, simpleDec.col));
+      System.err.println(
+        String.format("Error in line %d, column %d at `%s': Redeclaration error",
+          simpleDec.row, simpleDec.col, simpleDec.name)
+      );
     }
     else {
       indent(level);
@@ -188,7 +198,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           System.out.println(simpleDec.name + ": void");
           break;
         default:
-          System.out.println("Error: No type");
+          System.err.println("Error: No type");
           break;
       }
       NodeType newNode = new NodeType(simpleDec.name, simpleDec, level);
@@ -196,8 +206,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
-
   public void visit(SimpleVar simpleVar, int level) {
+    simpleVar.accept(this, level);
+    if (lookup(simpleVar.name) == null) {
+      System.err.println(
+        String.format("Error in line %d, column %d at `%s': Undefined error",
+          simpleVar.row, simpleVar.col, simpleVar.name)
+      );
+    }
     // Not implemented
   }
 

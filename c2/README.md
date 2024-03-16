@@ -11,7 +11,7 @@ Run `make clean` to destroy the scanner, parser, and analyzer.
 
 ## Execution
 In `cminus_parser`, run `java -classpath /usr/share/java/cup.jar:. Main <filename>.cm <options>`,
-where `filename` is the name of the C- program.
+where `filename` is the name of the C- program. At least one option must be given.
 
 ## Options
 - `-a`: Generate the AST (abstract syntax tree). The AST will be written to `ast/<filename>.abs`.

@@ -14,5 +14,9 @@ DecList
                     VarExp
                         SimpleVar
                             name: b
-                    IntExp
-                        value: 1
+                    OpExp
+                        BoolExp
+                            value: true
+                        Operator: +
+                        BoolExp
+                            value: false

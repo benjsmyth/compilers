@@ -4,5 +4,5 @@ bool b;
 int f(void) { 
     
     
-    b = 1;
+    b = true + false;
 }

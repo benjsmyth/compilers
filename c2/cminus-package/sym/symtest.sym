@@ -5,6 +5,8 @@ Entering global scope:
         function f: int
         assign
             b: bool
-            $1: int
+            operation: +
+                $true: bool
+                $false: bool
     Exiting function scope
 Exiting global scope

@@ -254,7 +254,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(IfExp ifExp, int level) {
-    indent(level);
     System.out.println("Entering block scope:");
     int prevLevel = level;
     level++;
@@ -270,7 +269,41 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(IndexVar indexVar, int level) {
-    // Not implemented
+    ArrayList<NodeType> node;
+    if ((node = lookup(indexVar.name)) == null || !(node.get(0).def instanceof ArrayDec)) {
+      printError(
+          String.format("Error in line %d, column %d at `%s': Undefined array error",
+              indexVar.row + 1, indexVar.col, indexVar.name));
+    } else {
+      indent(level);
+
+      System.out.println("index variable: " + indexVar.name);
+      level++;
+
+      if (indexVar.index != null) {
+        indexVar.index.accept(this, level);
+      }
+
+      int typ;
+
+      if ((typ = sameLevelTypes(level)) == -1) {
+        printError(
+            String.format("Error in line %d, column %d: Invalid type operation error",
+                indexVar.row + 1, indexVar.col));
+      } else if (typ != NameTy.INT) {
+        printError(
+            String.format("Error in line %d, column %d: Invalid array access",
+                indexVar.row + 1, indexVar.col));
+      }
+
+      deleteLevelEntries(level);
+
+      level--;
+
+      NodeType newNode = new NodeType(indexVar.name, null, new NameTy(indexVar.row, indexVar.col, node.get(0).typ.type),
+          level);
+      insert(newNode.name, newNode);
+    }
   }
 
   public void visit(IntExp intExp, int level) {
@@ -375,13 +408,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
       printError(
           String.format("Error in line %d, column %d: Invalid type operation error",
               opExp.row + 1, opExp.col));
-    } else {
-      if (typ == NameTy.BOOL && opExp.op < 5) {
-        printError(
-            String.format("Error in line %d, column %d: Invalid operand error",
-                opExp.row + 1, opExp.col));
-      }
+    } else if (typ == NameTy.BOOL && opExp.op < 5) {
+      printError(
+          String.format("Error in line %d, column %d: Invalid operand error",
+              opExp.row + 1, opExp.col));
     }
+
     deleteLevelEntries(level);
 
     level--;
@@ -474,7 +506,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(VarExp varExp, int level) {
-    // Not implemented
+    // Not needed
     if (varExp.variable != null)
       varExp.variable.accept(this, level);
   }

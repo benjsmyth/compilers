@@ -1,7 +1,7 @@
 DecList
     SimpleDec
         NameTy
-            type: INT
+            type: BOOL
         name: a
     SimpleDec
         NameTy
@@ -17,6 +17,9 @@ DecList
                     OpExp
                         BoolExp
                             value: true
-                        Operator: +
-                        BoolExp
-                            value: false
+                        Operator: ||
+                        VarExp
+                            IndexVar
+                                name: a
+                                IntExp
+                                    value: 1

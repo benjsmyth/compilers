@@ -1,3 +1,8 @@
 
 int a;
-int f(void) { b=1; }
+bool b;
+int f(void) { 
+    
+    
+    c = b;
+}

@@ -1,0 +1,9 @@
+Entering global scope:
+    a: int
+    b: bool
+    Entering function scope for `f':
+        function f: int
+        assign
+            b: bool
+    Exiting function scope
+Exiting global scope

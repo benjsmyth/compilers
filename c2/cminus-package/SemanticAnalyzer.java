@@ -50,7 +50,35 @@ public class SemanticAnalyzer implements AbsynVisitor {
             iterator.remove();
         }
     }
-}
+  }
+
+  public boolean sameLevelTypes(int level) {
+    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+    iterator = table.entrySet().iterator();
+
+    boolean same = true;
+    int typ = -1;
+
+    while (iterator.hasNext()) {
+        Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+        ArrayList<NodeType> nodeList = entry.getValue();
+        for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
+            NodeType node = nodeIter.next();
+            if (node.level == level) {
+               if (typ == -1 || typ == node.typ.type){
+                typ = node.typ.type;
+               }
+               else {
+                same = false;
+               }
+            }
+        }
+        if (nodeList.isEmpty()) {
+            iterator.remove();
+        }
+    }
+    return same;
+  }
 
   public void printHashTable() {
     System.out.println("\nHash Table:");
@@ -106,14 +134,25 @@ public class SemanticAnalyzer implements AbsynVisitor {
           printError("Error: No type");
 	  break;
       }
-      NodeType newNode = new NodeType(arrayDec.name, arrayDec, level);
+      NodeType newNode = new NodeType(arrayDec.name, arrayDec, arrayDec.typ, level);
       insert(arrayDec.name, newNode);
     }
   }
 
   public void visit(AssignExp assignExp, int level) {
+    indent(level);
+    System.out.println("assign");
+    level ++;
     if (assignExp.lhs != null) assignExp.lhs.accept(this, level);
     if (assignExp.rhs != null) assignExp.rhs.accept(this, level);
+    if (!sameLevelTypes(level)){
+      printError(
+        String.format("Error in line %d, column %d: Invalid assignment error",
+        assignExp.row + 1, assignExp.col)
+      );
+    }
+    deleteLevelEntries(level); 
+
   }
 
   public void visit(BoolExp boolExp, int level) {
@@ -190,7 +229,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           System.out.println("Error: No type");
 	  break;
       }
-      NodeType newNode = new NodeType(functionDec.func, functionDec, level);
+      NodeType newNode = new NodeType(functionDec.func, functionDec, functionDec.result, level);
       insert(functionDec.func, newNode);
       if (functionDec.params != null)
           functionDec.params.accept(this, level);
@@ -237,7 +276,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(OpExp opExp, int level) {
-    // Not implemented
+    level ++;
+    if (opExp.left != null){
+      opExp.left.accept( this, level );
+    }
+    
+    if (opExp.right != null){
+      opExp.right.accept( this, level );
+    }
+    deleteLevelEntries(level);
+
   }
 
   public void visit(ReturnExp returnExp, int level) {
@@ -279,20 +327,42 @@ public class SemanticAnalyzer implements AbsynVisitor {
           printError("Error: No type");
           break;
       }
-      NodeType newNode = new NodeType(simpleDec.name, simpleDec, level);
+      NodeType newNode = new NodeType(simpleDec.name, simpleDec, simpleDec.typ, level);
       insert(simpleDec.name, newNode);
     }
   }
 
   public void visit(SimpleVar simpleVar, int level) {
     //simpleVar.accept(this, level);
-    if (lookup(simpleVar.name) == null) {
+    ArrayList<NodeType> node;
+    if ((node = lookup(simpleVar.name)) == null) {
       printError(
         String.format("Error in line %d, column %d at `%s': Undefined variable error",
-          simpleVar.row, simpleVar.col, simpleVar.name)
+          simpleVar.row + 1, simpleVar.col, simpleVar.name)
       );
     }
-    // Not implemented
+    else {
+      NodeType newNode = new NodeType(simpleVar.name, null, node.get(0).typ, level);
+      insert(simpleVar.name, newNode);
+
+      indent(level);
+      switch (newNode.typ.type) {
+        case 0:
+          System.out.println(simpleVar.name + ": bool");
+          break;
+
+        case 1:
+          System.out.println(simpleVar.name + ": int");
+          break;
+
+        case 2:
+          System.out.println(simpleVar.name + ": void");
+          break;
+      
+        default:
+          break;
+      }
+    }
   }
 
   public void visit(VarDecList varDecList, int level) {

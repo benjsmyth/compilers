@@ -5,8 +5,6 @@ Entering global scope:
         function f: int
         assign
             b: bool
-            operation: +
-                1: int
-                2: int
+            $1: int
     Exiting function scope
 Exiting global scope

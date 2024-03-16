@@ -158,7 +158,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(BoolExp boolExp, int level) {
-    // Not implemented
+    indent(level);
+
+    NodeType newNode = new NodeType("$" + Boolean.toString(boolExp.value), null, new NameTy(boolExp.row, boolExp.col, NameTy.BOOL), level);
+    insert(newNode.name, newNode);
+
+    System.out.println(newNode.name + ": " + "bool");
   }
 
   public void visit(CallExp callExp, int level) {
@@ -271,7 +276,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     NodeType newNode = new NodeType("$" + Integer.toString(intExp.value), null, new NameTy(intExp.row, intExp.col, NameTy.INT), level);
     insert(newNode.name, newNode);
 
-    System.out.println(intExp.value + ": " + "int");
+    System.out.println(newNode.name + ": " + "int");
   }
 
   public void visit(NameTy nameTy, int level) {
@@ -279,7 +284,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(NilExp nilExp, int level) {
-    // Not implemented
+    // Not needed
   }
 
   public void visit(OpExp opExp, int level) {

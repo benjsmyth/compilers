@@ -15,4 +15,4 @@ where `filename` is the name of the C- program. At least one option must be give
 
 ## Options
 - `-a`: Generate the AST (abstract syntax tree). The AST will be written to `ast/<filename>.abs`.
-- `-s`: Generate the symbol table. The symbol table will be written to `sym/<filename>.sym`.
+- `-s`: Generate the symbol table. The symbol table output will be written to `sym/<filename>.sym`.

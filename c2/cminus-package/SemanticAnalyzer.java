@@ -310,7 +310,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public void visit(IntExp intExp, int level) {
     indent(level);
 
-    NodeType newNode = new NodeType("$" + Integer.toString(intExp.value), 0,
+    NodeType newNode = new NodeType(Integer.toString(intExp.value), 0,
         new NameTy(intExp.row, intExp.col, NameTy.INT), level);
     insert(newNode.name, newNode);
 

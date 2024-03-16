@@ -1,8 +1,8 @@
 DecList
-    ArrayDec
-        type: BOOL
+    SimpleDec
+        NameTy
+            type: INT
         name: a
-        size: 2
     SimpleDec
         NameTy
             type: BOOL
@@ -13,13 +13,8 @@ DecList
                 AssignExp
                     VarExp
                         SimpleVar
-                            name: b
+                            name: a
                     OpExp
-                        BoolExp
-                            value: true
-                        Operator: ||
-                        VarExp
-                            IndexVar
-                                name: a
-                                BoolExp
-                                    value: true
+                        IntExp
+                            value: 2
+                        Operator: uminus

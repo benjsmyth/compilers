@@ -1,13 +1,11 @@
 Entering global scope:
-    a[2]: bool
+    a: int
     b: bool
     Entering function scope for `f':
         function f: int
         assign
-            b: bool
-            operation: ||
-                $true: bool
-                index variable: a
-                    $true: bool
+            a: int
+            operation: uminus
+                2: int
     Exiting function scope
 Exiting global scope

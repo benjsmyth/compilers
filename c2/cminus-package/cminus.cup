@@ -73,7 +73,7 @@ parser code {:
    
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
 
-terminal PLUS, UMINUS, MINUS, MULT, DIV,
+terminal PLUS, MINUS, MULT, DIV,
          LESS, LESSEQ, GREATER, GREATEREQ, EQUAL, NEQUAL,
          NOT, OR, AND, ASSIGN, SEMICOLON, COMMA,
          LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY;           
@@ -106,7 +106,6 @@ precedence left AND;
 precedence left NOT;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV;
-precedence left UMINUS;
 precedence left IF, ELSE; 
 
 /* ----------------------------Grammar Section-------------------- */
@@ -350,7 +349,7 @@ mulop ::= MULT:m
            {: RESULT = new OpExp(dleft, dright, null, OpExp.DIV, null); :}
 ;
 
-signed_factor ::= UMINUS signed_factor:s
+signed_factor ::= MINUS signed_factor:s
            {: RESULT = new OpExp(sleft, sright, s, OpExp.UMINUS, null); :}
 	        | factor:f
            {: RESULT = f; :}

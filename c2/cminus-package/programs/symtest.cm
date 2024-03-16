@@ -1,8 +1,8 @@
 
-bool a;
+bool a[2];
 bool b;
 int f(void) { 
     
     
-    b = true || a[1];
+    b = true || a[true];
 }

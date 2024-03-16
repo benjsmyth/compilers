@@ -1,8 +1,8 @@
 DecList
-    SimpleDec
-        NameTy
-            type: BOOL
+    ArrayDec
+        type: BOOL
         name: a
+        size: 2
     SimpleDec
         NameTy
             type: BOOL
@@ -21,5 +21,5 @@ DecList
                         VarExp
                             IndexVar
                                 name: a
-                                IntExp
-                                    value: 1
+                                BoolExp
+                                    value: true

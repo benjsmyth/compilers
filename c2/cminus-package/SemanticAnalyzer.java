@@ -137,7 +137,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           printError("Error: No type");
           break;
       }
-      NodeType newNode = new NodeType(arrayDec.name, arrayDec, arrayDec.typ, level);
+      NodeType newNode = new NodeType(arrayDec.name, arrayDec.size, arrayDec.typ, level);
       insert(arrayDec.name, newNode);
     }
   }
@@ -162,7 +162,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public void visit(BoolExp boolExp, int level) {
     indent(level);
 
-    NodeType newNode = new NodeType("$" + Boolean.toString(boolExp.value), null,
+    NodeType newNode = new NodeType("$" + Boolean.toString(boolExp.value), 0,
         new NameTy(boolExp.row, boolExp.col, NameTy.BOOL), level);
     insert(newNode.name, newNode);
 
@@ -239,7 +239,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           System.out.println("Error: No type");
           break;
       }
-      NodeType newNode = new NodeType(functionDec.func, functionDec, functionDec.result, level);
+      NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level);
       insert(functionDec.func, newNode);
       if (functionDec.params != null)
         functionDec.params.accept(this, level);
@@ -270,11 +270,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(IndexVar indexVar, int level) {
     ArrayList<NodeType> node;
-    if ((node = lookup(indexVar.name)) == null || !(node.get(0).def instanceof ArrayDec)) {
+    if ((node = lookup(indexVar.name)) == null || node.get(0).size == 0) {
       printError(
           String.format("Error in line %d, column %d at `%s': Undefined array error",
               indexVar.row + 1, indexVar.col, indexVar.name));
     } else {
+
       indent(level);
 
       System.out.println("index variable: " + indexVar.name);
@@ -300,7 +301,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
       level--;
 
-      NodeType newNode = new NodeType(indexVar.name, null, new NameTy(indexVar.row, indexVar.col, node.get(0).typ.type),
+      NodeType newNode = new NodeType(indexVar.name, 0, new NameTy(indexVar.row, indexVar.col, node.get(0).typ.type),
           level);
       insert(newNode.name, newNode);
     }
@@ -309,7 +310,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public void visit(IntExp intExp, int level) {
     indent(level);
 
-    NodeType newNode = new NodeType("$" + Integer.toString(intExp.value), null,
+    NodeType newNode = new NodeType("$" + Integer.toString(intExp.value), 0,
         new NameTy(intExp.row, intExp.col, NameTy.INT), level);
     insert(newNode.name, newNode);
 
@@ -418,7 +419,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     level--;
 
-    NodeType newNode = new NodeType(Integer.toString(opExp.op), null, new NameTy(opExp.row, opExp.col, typ), level);
+    NodeType newNode = new NodeType(Integer.toString(opExp.op), 0, new NameTy(opExp.row, opExp.col, typ), level);
     insert(newNode.name, newNode);
 
   }
@@ -461,7 +462,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           printError("Error: No type");
           break;
       }
-      NodeType newNode = new NodeType(simpleDec.name, simpleDec, simpleDec.typ, level);
+      NodeType newNode = new NodeType(simpleDec.name, 0, simpleDec.typ, level);
       insert(simpleDec.name, newNode);
     }
   }
@@ -474,7 +475,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           String.format("Error in line %d, column %d at `%s': Undefined variable error",
               simpleVar.row + 1, simpleVar.col, simpleVar.name));
     } else {
-      NodeType newNode = new NodeType(simpleVar.name, null, node.get(0).typ, level);
+      NodeType newNode = new NodeType(simpleVar.name, 0, node.get(0).typ, level);
       insert(simpleVar.name, newNode);
 
       indent(level);

@@ -1,5 +1,5 @@
 Entering global scope:
-    a: bool
+    a[2]: bool
     b: bool
     Entering function scope for `f':
         function f: int
@@ -7,5 +7,7 @@ Entering global scope:
             b: bool
             operation: ||
                 $true: bool
+                index variable: a
+                    $true: bool
     Exiting function scope
 Exiting global scope

@@ -52,7 +52,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
-  public boolean sameLevelTypes(int level) {
+  public int sameLevelTypes(int level) {
     Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
     iterator = table.entrySet().iterator();
 
@@ -77,7 +77,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
             iterator.remove();
         }
     }
-    return same;
+    if (!same)
+      return -1;
+    return typ;
   }
 
   public void printHashTable() {
@@ -145,7 +147,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     level ++;
     if (assignExp.lhs != null) assignExp.lhs.accept(this, level);
     if (assignExp.rhs != null) assignExp.rhs.accept(this, level);
-    if (!sameLevelTypes(level)){
+    if (sameLevelTypes(level) == -1){
       printError(
         String.format("Error in line %d, column %d: Invalid assignment error",
         assignExp.row + 1, assignExp.col)
@@ -264,11 +266,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(IntExp intExp, int level) {
-    // Not implemented
+    indent(level);
+
+    NodeType newNode = new NodeType("$" + Integer.toString(intExp.value), null, new NameTy(intExp.row, intExp.col, NameTy.INT), level);
+    insert(newNode.name, newNode);
+
+    System.out.println(intExp.value + ": " + "int");
   }
 
   public void visit(NameTy nameTy, int level) {
-    // Not implemented
+    // Not needed
   }
 
   public void visit(NilExp nilExp, int level) {
@@ -276,6 +283,74 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(OpExp opExp, int level) {
+
+    indent(level);
+    System.out.print("operation: ");
+    switch (opExp.op){
+
+      case 0:
+        System.out.print("+");
+      break;
+
+      case 1:
+        System.out.print("-");
+      break;
+
+      case 2:
+        System.out.print("uminus");
+      break;
+
+      case 3:
+        System.out.print("*");
+      break;
+
+      case 4:
+        System.out.print("/");
+      break;
+
+      case 5:
+        System.out.print("=");
+      break;
+
+      case 6:
+        System.out.print("!=");
+      break;
+
+      case 7:
+        System.out.print("<");
+      break;
+
+      case 8:
+        System.out.print("<=");
+      break;
+
+      case 9:
+        System.out.print(">");
+      break;
+
+      case 10:
+        System.out.print(">=");
+      break;
+
+      case 11:
+        System.out.print("~");
+      break;
+
+      case 12:
+        System.out.print("&&");
+      break;
+
+      case 13:
+        System.out.print("||");
+      break;
+
+      default:
+      System.out.print("Invalid Operation");
+
+    }
+
+    System.out.println();    
+
     level ++;
     if (opExp.left != null){
       opExp.left.accept( this, level );
@@ -284,7 +359,21 @@ public class SemanticAnalyzer implements AbsynVisitor {
     if (opExp.right != null){
       opExp.right.accept( this, level );
     }
+
+    int typ;
+
+    if ((typ = sameLevelTypes(level)) == -1){
+      printError(
+        String.format("Error in line %d, column %d: Invalid operand type error",
+        opExp.row + 1, opExp.col)
+      );
+    }
     deleteLevelEntries(level);
+
+    level --;
+
+    NodeType newNode = new NodeType(Integer.toString(opExp.op), null, new NameTy(opExp.row, opExp.col, typ), level);
+    insert(newNode.name, newNode);
 
   }
 

@@ -113,10 +113,8 @@ public class ShowTreeVisitor implements AbsynVisitor {
     level ++;
     if (functionDec.params != null)
       functionDec.params.accept( this, level );
-    else {
-      if (functionDec.body != null)
-        functionDec.body.accept( this, level );
-    }
+    if (functionDec.body != null)
+      functionDec.body.accept( this, level );
   }
 
   public void visit( IfExp ifExp, int level ){

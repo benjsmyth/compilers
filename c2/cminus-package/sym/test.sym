@@ -1,0 +1,39 @@
+Entering global scope:
+    e: int
+    arr[5]: int
+    i: int
+    Entering function scope for `reduce':
+        function reduce: int
+        i: int
+    Exiting function scope
+    Entering function scope for `main':
+        function main: void
+        i: int
+        j: int
+        k: bool
+        assign
+            i: int
+            6: int
+        assign
+            j: int
+            3: int
+        assign
+            8: int
+        Entering block scope
+            operation: <
+                j: int
+                i: int
+            y: int
+            assign
+                i: int
+        Exiting block scope
+Entering block scope:
+            operation: <
+                j: int
+                i: int
+            h: int
+            assign
+                i: int
+        Exiting block scope
+    Exiting function scope
+Exiting global scope

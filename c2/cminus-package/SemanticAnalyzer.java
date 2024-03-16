@@ -239,7 +239,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           System.out.println("Error: No type");
           break;
       }
-      NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level);
+      NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level - 1);
       insert(functionDec.func, newNode);
       if (functionDec.params != null)
         functionDec.params.accept(this, level);

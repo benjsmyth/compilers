@@ -10,14 +10,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public PrintStream old;
   public PrintStream tableStream;
 
-  // Constructor
   public SemanticAnalyzer(PrintStream old, PrintStream current) {
     this.table = new HashMap<String, ArrayList<NodeType>>();
     this.old = old;
     this.tableStream = current;
   }
 
-  // Table methods
   public void insert(String key, NodeType node) {
     ArrayList<NodeType> list = table.get(key);
     if (list == null) {
@@ -93,18 +91,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
-  // Indent method
   private void indent(int level) {
     for (int i = 0; i < level * 4; i++)
       System.out.print(" ");
   }
 
-  // Visitor methods (semantic rules)
   public void visit(ArrayDec arrayDec, int level) {
-
     boolean error = false;
     if (lookup(arrayDec.name) != null) {
-
       ArrayList<NodeType> node = lookup(arrayDec.name);
       if (node != null) {
         for (NodeType n : node) {
@@ -116,9 +110,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           }
         }
       }
-
     }
-
     if (error == false) {
       switch (arrayDec.typ.type) {
         case 0:
@@ -144,7 +136,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(AssignExp assignExp, int level) {
     indent(level);
-    System.out.println("assign");
+    System.out.println("Assignment:");
     level++;
     if (assignExp.lhs != null)
       assignExp.lhs.accept(this, level);
@@ -161,7 +153,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(BoolExp boolExp, int level) {
     indent(level);
-
     NodeType newNode = new NodeType("$" + Boolean.toString(boolExp.value), 0,
         new NameTy(boolExp.row, boolExp.col, NameTy.BOOL), level);
     insert(newNode.name, newNode);
@@ -200,12 +191,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(FunctionDec functionDec, int level) {
-
     boolean error = false;
     String type = null;
-
     if (lookup(functionDec.func) != null) {
-
       ArrayList<NodeType> node = lookup(functionDec.func);
       if (node != null) {
         for (NodeType n : node) {
@@ -217,7 +205,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
           }
         }
       }
-
     }
     if (error == false) {
       indent(level);
@@ -227,17 +214,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
       level++;
       indent(level);
       switch (functionDec.result.type) {
-        case 0:
-          //System.out.println("function " + functionDec.func + ": bool");
-          type = "bool";
+        case 0: type = "bool";
           break;
-        case 1:
-          //System.out.println("function " + functionDec.func + ": int");
-          type = "int";
+        case 1: type = "int";
           break;
-        case 2:
-          //System.out.println("function " + functionDec.func + ": void");
-          type = "void";
+        case 2: type = "void";
           break;
         default:
           System.out.println("Error: No type");
@@ -251,7 +232,23 @@ public class SemanticAnalyzer implements AbsynVisitor {
           functionDec.body.accept(this, level);
       deleteLevelEntries(level); // not sure if this should delete the function dec
       indent(prevLevel);
-      System.out.println(String.format("%s: (%s) -> %s", functionDec.func, "params", type));
+      System.out.print(String.format("%s: (", functionDec.func));
+      VarDecList params = functionDec.params;
+      while (params != null) {
+        System.out.print(params.head.toString());
+        // Need to reference parameter type somehow
+        /*VarDec param = params.head;
+        if (param instanceof SimpleDec) System.out.print("simpleDec");
+        if (param instanceof BoolExp) // Parameter is BOOL
+          System.out.print("bool");
+        else if (param instanceof IntExp) // Parameter is INT
+          System.out.print("int");
+        else if (param instanceof NilExp)  // Parameter is VOID
+          System.out.print("void");*/
+        if (params.tail != null) System.out.print(", ");
+        params = params.tail;
+      }
+      System.out.println(") -> " + type);
     }
   }
 

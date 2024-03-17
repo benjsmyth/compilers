@@ -1,0 +1,8 @@
+/* Main not at EOF */
+
+void main(void) {
+  return;
+}
+void notmain(void) {
+  return;
+}

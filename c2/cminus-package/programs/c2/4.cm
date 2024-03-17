@@ -1,0 +1,8 @@
+/* Undefined and redefined variables */
+
+void main(void) {
+  int a;
+  int a;  /* Redefined */
+  b = 1;  /* Undefined */
+  return;
+}

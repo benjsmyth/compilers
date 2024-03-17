@@ -1,0 +1,6 @@
+int main(void) {
+  int a;
+  a = true; /* Bad assignment */
+  f(); /* Undefined */
+  return; /* Incompatible */
+}

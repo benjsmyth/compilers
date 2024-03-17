@@ -1,0 +1,110 @@
+DecList
+    SimpleDec
+        NameTy
+            type: INT
+        name: e
+    ArrayDec
+        type: INT
+        name: arr
+        size: 5
+    SimpleDec
+        NameTy
+            type: INT
+        name: i
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: i
+        CompoundExp
+            ExpList
+                ReturnExp
+                    IntExp
+                        value: 1
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: i
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: j
+                SimpleDec
+                    NameTy
+                        type: BOOL
+                    name: k
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: i
+                    IntExp
+                        value: 6
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: j
+                    IntExp
+                        value: 3
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: m
+                    IntExp
+                        value: 8
+                WhileExp
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: j
+                        Operator: <
+                        VarExp
+                            SimpleVar
+                                name: i
+                    CompoundExp
+                        VarDecList
+                            SimpleDec
+                                NameTy
+                                    type: INT
+                                name: y
+                        ExpList
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: i
+                                CallExp
+                                    function name: reduce
+                                    ExpList
+                                        VarExp
+                                            SimpleVar
+                                                name: i
+                IfExp:
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: j
+                        Operator: <
+                        VarExp
+                            SimpleVar
+                                name: i
+                    CompoundExp
+                        VarDecList
+                            SimpleDec
+                                NameTy
+                                    type: INT
+                                name: h
+                        ExpList
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: i
+                                CallExp
+                                    function name: reduce
+                                    ExpList
+                                        VarExp
+                                            SimpleVar
+                                                name: i

@@ -542,13 +542,21 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(WhileExp whileExp, int level) {
     indent(level);
-    System.out.println("Entering block scope:");
+    System.out.println("Entering conditional block scope:");
     int prevLevel = level;
     level++;
-    if (whileExp.test != null)
-      whileExp.test.accept(this, level);
-    if (whileExp.body != null)
-      whileExp.body.accept(this, level);
+    if (whileExp.test != null) {
+      if (whileExp.test instanceof BoolExp || whileExp.test instanceof IntExp) {
+        whileExp.test.accept(this, level);
+        if (whileExp.body != null)
+          whileExp.body.accept(this, level);
+      }
+      else {
+        System.err.println(String.format("Error in line %d, column %d at `while': Conditional is not boolean",
+          whileExp.row, whileExp.col)
+        );
+      }
+    }
     deleteLevelEntries(level);
     indent(prevLevel);
     System.out.println("Exiting block scope");

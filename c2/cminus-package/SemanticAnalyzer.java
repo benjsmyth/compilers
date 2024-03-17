@@ -220,9 +220,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
       indent(level);
       System.out.println(
           String.format("Entering function scope `%s':", functionDec.func));
-      int prevLevel = level;
-      level++;
-      indent(level);
       switch (functionDec.result.type) {
         case 0: type = "bool";
           break;
@@ -236,25 +233,25 @@ public class SemanticAnalyzer implements AbsynVisitor {
       }
       NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level, true);
       insert(functionDec.func, newNode);
+      level++;
       if (functionDec.params != null)
         functionDec.params.accept(this, level);
       if (functionDec.body != null)
-          functionDec.body.accept(this, level);
-      deleteLevelEntries(level); // not sure if this should delete the function dec
-      indent(prevLevel);
+        functionDec.body.accept(this, level);
+      deleteLevelEntries(level);
+      level--;
+      indent(level);
       System.out.print(String.format("%s: (", functionDec.func));
       VarDecList params = functionDec.params;
       while (params != null) {
-        System.out.print(params.head.toString());
-        // Need to reference parameter type somehow
-        /*VarDec param = params.head;
-        if (param instanceof SimpleDec) System.out.print("simpleDec");
-        if (param instanceof BoolExp) // Parameter is BOOL
+        SimpleDec param = (SimpleDec)params.head;
+        System.out.print(param.name + ": ");
+        if (param.typ.type == 0) // Parameter is BOOL
           System.out.print("bool");
-        else if (param instanceof IntExp) // Parameter is INT
+        else if (param.typ.type == 1) // Parameter is INT
           System.out.print("int");
-        else if (param instanceof NilExp)  // Parameter is VOID
-          System.out.print("void");*/
+        else if (param.typ.type == 2)  // Parameter is VOID
+          System.out.print("void");
         if (params.tail != null) System.out.print(", ");
         params = params.tail;
       }
@@ -443,9 +440,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(ReturnExp returnExp, int level) {
+    indent(level);
     this.table.forEach((key, list) -> {  // Iterate table
       for (NodeType node : list) {  // Iterate list
-        if (node.level == level && node.isFunc) {  // Most recent prototype
+        if (node.level == level-1 && node.isFunc) {  // Most recent prototype
           System.out.print("return: ");
           if (returnExp.exp instanceof BoolExp) {  // return is BOOL
             System.out.println("bool");
@@ -486,7 +484,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
           }
         }
       }
-
     }
     if (error == false) {
       indent(level);
@@ -518,21 +515,17 @@ public class SemanticAnalyzer implements AbsynVisitor {
     } else {
       NodeType newNode = new NodeType(simpleVar.name, 0, node.get(0).typ, level);
       insert(simpleVar.name, newNode);
-
       indent(level);
       switch (newNode.typ.type) {
         case 0:
           System.out.println(simpleVar.name + ": bool");
           break;
-
         case 1:
           System.out.println(simpleVar.name + ": int");
           break;
-
         case 2:
           System.out.println(simpleVar.name + ": void");
           break;
-
         default:
           break;
       }

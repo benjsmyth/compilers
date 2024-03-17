@@ -158,7 +158,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(CallExp callExp, int level) {
-    // Not implemented
+    // Type checking here
   }
 
   public void visit(CompoundExp compoundExp, int level) {
@@ -169,13 +169,26 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(DecList decList, int level) {
+    boolean hasMain = false;
     System.out.println("Entering global scope:");
     level++;
     while (decList != null) {
       if (decList.head != null)
         decList.head.accept(this, level);
+      if (decList.head instanceof FunctionDec) {
+        FunctionDec functionDec = (FunctionDec)decList.head;
+        if (functionDec.func.equals("main")) {
+          hasMain = true;
+          if (decList.tail != null)
+            System.err.println(String.format("Error in line %d, column %d: Function `main' must be last definition",
+              decList.head.row, decList.head.col)
+            );
+        }
+      }
       decList = decList.tail;
     }
+    if (!hasMain)
+      System.err.println("Error at EOF: Function `main' must be defined");
     System.out.println("Exiting global scope");
   }
 

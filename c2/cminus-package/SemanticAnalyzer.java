@@ -158,7 +158,18 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(CallExp callExp, int level) {
-    // Type checking here
+    if (lookup(callExp.func) != null) {
+      ExpList args = callExp.args;
+      while (args != null) {
+        // Idea: Match arg type with function.params in table
+        args = args.tail;
+      }
+    }
+    else {
+      System.err.println(String.format("Error in line %d, column %d at `%s': Undefined function call",
+        callExp.row, callExp.col, callExp.func)
+      );
+    }
   }
 
   public void visit(CompoundExp compoundExp, int level) {

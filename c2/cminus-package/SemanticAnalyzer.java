@@ -111,7 +111,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           if (n.level == level) {
             error = true;
             printError(
-                String.format("Error in line %d, column %d at `%s': Redeclaration error",
+                String.format("Error in line %d, column %d at `%s': Redeclaration",
                     arrayDec.row, arrayDec.col, arrayDec.name));
           }
         }
@@ -152,7 +152,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       assignExp.rhs.accept(this, level);
     if (sameLevelTypes(level) == -1) {
       printError(
-          String.format("Error in line %d, column %d: Invalid assignment error",
+          String.format("Error in line %d, column %d: Invalid assignment",
               assignExp.row + 1, assignExp.col));
     }
     deleteLevelEntries(level);
@@ -202,6 +202,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public void visit(FunctionDec functionDec, int level) {
 
     boolean error = false;
+    String type = null;
 
     if (lookup(functionDec.func) != null) {
 
@@ -211,7 +212,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           if (n.level == level) {
             error = true;
             printError(
-                String.format("Error in line %d, column %d at `%s': Redeclaration error",
+                String.format("Error in line %d, column %d at `%s': Redeclaration",
                     functionDec.row, functionDec.col, functionDec.func));
           }
         }
@@ -221,25 +222,28 @@ public class SemanticAnalyzer implements AbsynVisitor {
     if (error == false) {
       indent(level);
       System.out.println(
-          String.format("Entering function scope for `%s':", functionDec.func));
+          String.format("Entering function scope `%s':", functionDec.func));
       int prevLevel = level;
       level++;
       indent(level);
       switch (functionDec.result.type) {
         case 0:
-          System.out.println("function " + functionDec.func + ": bool");
+          //System.out.println("function " + functionDec.func + ": bool");
+          type = "bool";
           break;
         case 1:
-          System.out.println("function " + functionDec.func + ": int");
+          //System.out.println("function " + functionDec.func + ": int");
+          type = "int";
           break;
         case 2:
-          System.out.println("function " + functionDec.func + ": void");
+          //System.out.println("function " + functionDec.func + ": void");
+          type = "void";
           break;
         default:
           System.out.println("Error: No type");
           break;
       }
-      NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level);
+      NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level, true);
       insert(functionDec.func, newNode);
       if (functionDec.params != null)
         functionDec.params.accept(this, level);
@@ -249,7 +253,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       }
       deleteLevelEntries(level); // not sure if this should delete the function dec
       indent(prevLevel);
-      System.out.println("Exiting function scope");
+      System.out.println(String.format("%s: (%s) -> %s", functionDec.func, "params", type));
     }
   }
 
@@ -272,7 +276,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     ArrayList<NodeType> node;
     if ((node = lookup(indexVar.name)) == null || node.get(0).size == 0) {
       printError(
-          String.format("Error in line %d, column %d at `%s': Undefined array error",
+          String.format("Error in line %d, column %d at `%s': Undefined array",
               indexVar.row + 1, indexVar.col, indexVar.name));
     } else {
 
@@ -289,7 +293,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
       if ((typ = sameLevelTypes(level)) == -1) {
         printError(
-            String.format("Error in line %d, column %d: Invalid type operation error",
+            String.format("Error in line %d, column %d: Invalid type operation",
                 indexVar.row + 1, indexVar.col));
       } else if (typ != NameTy.INT) {
         printError(
@@ -407,11 +411,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     if ((typ = sameLevelTypes(level)) == -1) {
       printError(
-          String.format("Error in line %d, column %d: Invalid type operation error",
+          String.format("Error in line %d, column %d: Invalid type operation",
               opExp.row + 1, opExp.col));
     } else if (typ == NameTy.BOOL && opExp.op < 5) {
       printError(
-          String.format("Error in line %d, column %d: Invalid operand error",
+          String.format("Error in line %d, column %d: Invalid operand",
               opExp.row + 1, opExp.col));
     }
 
@@ -425,7 +429,31 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(ReturnExp returnExp, int level) {
-    // Not implemented
+    this.table.forEach((key, list) -> {  // Iterate table
+      for (NodeType node : list) {  // Iterate list
+        if (node.level == level && node.isFunc) {  // Most recent prototype
+          System.out.print("return: ");
+          if (returnExp.exp instanceof BoolExp) {  // return is BOOL
+            System.out.println("bool");
+            if (node.typ.type != 0)  // Function was not BOOL
+              printError(String.format("Error in line %d, column %d at `return': Incompatible return type",
+                returnExp.row + 1, returnExp.col));
+          }
+          else if (returnExp.exp instanceof IntExp) {  // return is INT
+            System.out.println("int");
+            if (node.typ.type != 1)  // Function was not INT
+              printError(String.format("Error in line %d, column %d at `return': Incompatible return type",
+                returnExp.row + 1, returnExp.col));
+          }
+          else if (returnExp.exp instanceof NilExp) {  // return is VOID
+            System.out.println("void");
+            if (node.typ.type != 2)  // Function was not VOID
+              printError(String.format("Error in line %d, column %d at `return': Incompatible return type",
+                returnExp.row + 1, returnExp.col));
+          }
+        }
+      }
+    });
   }
 
   public void visit(SimpleDec simpleDec, int level) {
@@ -439,7 +467,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
           if (n.level == level) {
             error = true;
             printError(
-                String.format("Error in line %d, column %d at `%s': Redeclaration error",
+                String.format("Error in line %d, column %d at `%s': Redefined variable",
                     simpleDec.row, simpleDec.col, simpleDec.name));
           }
         }
@@ -468,7 +496,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(SimpleVar simpleVar, int level) {
-    // simpleVar.accept(this, level);
     ArrayList<NodeType> node;
     if ((node = lookup(simpleVar.name)) == null) {
       printError(
@@ -514,7 +541,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(WhileExp whileExp, int level) {
     indent(level);
-    System.out.println("Entering block scope");
+    System.out.println("Entering block scope:");
     int prevLevel = level;
     level++;
     if (whileExp.test != null)

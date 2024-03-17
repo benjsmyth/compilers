@@ -36,7 +36,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public void deleteLevelEntries(int level) { // for deleting a level from the hashmap
     Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
     iterator = table.entrySet().iterator();
-
     while (iterator.hasNext()) {
       Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
       ArrayList<NodeType> nodeList = entry.getValue();
@@ -55,10 +54,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public int sameLevelTypes(int level) {
     Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
     iterator = table.entrySet().iterator();
-
     boolean same = true;
     int typ = -1;
-
     while (iterator.hasNext()) {
       Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
       ArrayList<NodeType> nodeList = entry.getValue();
@@ -253,18 +250,27 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(IfExp ifExp, int level) {
-    System.out.println("Entering block scope:");
+    System.out.println("Entering conditional block scope:");
     int prevLevel = level;
     level++;
-    if (ifExp.test != null)
-      ifExp.test.accept(this, level);
-    if (ifExp.thenpart != null)
-      ifExp.thenpart.accept(this, level);
-    if (ifExp.elsepart != null)
-      ifExp.elsepart.accept(this, level);
+    if (ifExp.test != null) {
+      if (ifExp.test instanceof BoolExp || ifExp.test instanceof IntExp) {
+        ifExp.test.accept(this, level);
+        if (ifExp.thenpart != null)
+          ifExp.thenpart.accept(this, level);
+        if (ifExp.elsepart != null)
+          ifExp.elsepart.accept(this, level);
+      }
+      else {
+        System.err.println(
+          String.format("Error in line %d, column %d at `if': Expression is not boolean",
+            ifExp.row, ifExp.col)
+        );
+      }
+    }
     deleteLevelEntries(level);
     indent(prevLevel);
-    System.out.println("Exiting block scope");
+    System.out.println("Exiting conditional block scope");
   }
 
   public void visit(IndexVar indexVar, int level) {

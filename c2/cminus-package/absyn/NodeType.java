@@ -5,12 +5,22 @@ public class NodeType {
     public int size;
     public int level;
     public NameTy typ;
+    public boolean isFunc;
 
     public NodeType(String name, int size, NameTy typ, int level) {
         this.name = name;
         this.size = size;
         this.typ = typ;
         this.level = level;
+        this.isFunc = false;
+    }
+
+    public NodeType(String name, int size, NameTy typ, int level, boolean isFunc) {
+        this.name = name;
+        this.size = size;
+        this.typ = typ;
+        this.level = level;
+        this.isFunc = isFunc;
     }
 
     public String toString() {

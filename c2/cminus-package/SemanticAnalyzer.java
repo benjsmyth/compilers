@@ -247,10 +247,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
       insert(functionDec.func, newNode);
       if (functionDec.params != null)
         functionDec.params.accept(this, level);
-      else {
-        if (functionDec.body != null)
+      if (functionDec.body != null)
           functionDec.body.accept(this, level);
-      }
       deleteLevelEntries(level); // not sure if this should delete the function dec
       indent(prevLevel);
       System.out.println(String.format("%s: (%s) -> %s", functionDec.func, "params", type));

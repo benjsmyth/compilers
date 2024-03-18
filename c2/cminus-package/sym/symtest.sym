@@ -3,11 +3,17 @@ Entering global scope:
     b: bool
     Entering function scope `foo':
     foo: (i: int) -> int
+    Entering function scope `foo':
+        j: int
+        Return:
+            1: int
+    foo: (j: int) -> int
     Entering function scope `main':
         i: int
+        j: int
         Return:
-            operation: >
-                1: int
-                2: int
+            operation: <
+                i: int
+                j: int
     main: (i: int) -> bool
 Exiting global scope

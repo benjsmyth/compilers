@@ -256,7 +256,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (functionDec.func.equals("main")) {
           hasMain = true;
           if (decList.tail != null)
-            System.err.println(String.format("Error in line %d, column %d: Function `main' must be last definition",
+            printError(String.format("Error in line %d, column %d: Function `main' must be last definition",
                 decList.head.row, decList.head.col));
         }
       }
@@ -288,6 +288,35 @@ public class SemanticAnalyzer implements AbsynVisitor {
               if (proto.body instanceof NilExp) {
 
                 if (functionDec.result.type == proto.result.type) {
+
+                  VarDecList func = functionDec.params;
+                  VarDecList prot = proto.params;
+
+                  SimpleDec funcVal = null;
+                  SimpleDec protVal = null;
+
+                  while (func != null && prot != null) {
+                    if (func.head != null && prot.head != null) {
+
+                      funcVal = (SimpleDec) func.head;
+                      protVal = (SimpleDec) prot.head;
+
+                      if (!(funcVal.name.equals(protVal.name) && funcVal.typ.type == protVal.typ.type)) {
+                        printError(
+                            String.format(
+                                "Error in line %d, column %d at `%s': Function parameters do not match prototype",
+                                functionDec.row + 1, functionDec.col, functionDec.func));
+                      }
+                    } else {
+                      printError(
+                          String.format(
+                              "Error in line %d, column %d at `%s': Function parameters do not match prototype",
+                              functionDec.row + 1, functionDec.col, functionDec.func));
+                    }
+                    func = func.tail;
+                    prot = prot.tail;
+                  }
+
                 } else {
                   error = true;
                   printError(
@@ -565,6 +594,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       returnExp.exp.accept(this, level);
 
     typ = sameLevelTypes(level);
+    deleteLevelEntries(level);
 
     level--;
     NodeType newNode = new NodeType("return", Constants.RETURN, new NameTy(returnExp.row, returnExp.col, typ), null,

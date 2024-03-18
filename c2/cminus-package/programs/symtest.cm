@@ -4,13 +4,13 @@ bool b;
 
 int foo (int i);
 
-bool foo(int i){
-    return true;
+int foo(int j){
+    return 1;
 }
 
 bool main(int i) { 
+    int j;
     
     
-    
-    return 1 > 2;
+    return i < j;
 }

@@ -2,38 +2,26 @@ Entering global scope:
     e: int
     arr[5]: int
     i: int
-    Entering function scope for `reduce':
-        function reduce: int
+    Entering function scope `reduce':
         i: int
-    Exiting function scope
-    Entering function scope for `main':
-        function main: void
+        Return:
+            1: int
+    reduce: (i: int) -> int
+    Entering function scope `main':
         i: int
         j: int
         k: bool
-        assign
+        Assignment:
             i: int
             6: int
-        assign
+        Assignment:
             j: int
             3: int
-        assign
+        Assignment:
             8: int
-        Entering block scope
-            operation: <
-                j: int
-                i: int
-            y: int
-            assign
-                i: int
+        Entering conditional block scope:
         Exiting block scope
-Entering block scope:
-            operation: <
-                j: int
-                i: int
-            h: int
-            assign
-                i: int
-        Exiting block scope
-    Exiting function scope
+Entering conditional block scope:
+        Exiting conditional block scope
+    main: () -> void
 Exiting global scope

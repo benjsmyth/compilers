@@ -1,6 +1,7 @@
 Entering global scope:
     a: int
     b: bool
+    foo: (i: int) -> int
     Entering function scope `main':
         i: int
         Assignment:

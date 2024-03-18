@@ -1,6 +1,9 @@
 
 int a;
 bool b;
+
+int foo (int i);
+
 int main(int i) { 
     
     

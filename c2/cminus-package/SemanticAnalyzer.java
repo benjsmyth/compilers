@@ -88,7 +88,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         NodeType node = nodeIter.next();
         if (node.level == level) {
           if (node.size == Constants.RETURN) {
-            if (node.typ.type == type) {
+            if (node.typ.type != type) {
               String looking = "";
               switch (type) {
                 case 0:
@@ -125,7 +125,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
               }
               printError(
                   String.format("Error in line %d, column %d: Invalid return value; Looking for '%s', got '%s'.",
-                      node.typ.row + 1, node.typ.col, looking, got));        
+                      node.typ.row + 1, node.typ.col, looking, got));
             }
             return true;
           }
@@ -257,7 +257,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       decList = decList.tail;
     }
     if (!hasMain)
-      System.err.println("Error at EOF: Function `main' must be defined");
+      printError("Error at EOF: Function `main' must be defined");
     System.out.println("Exiting global scope");
   }
 
@@ -286,9 +286,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
       }
     }
     if (error == false) {
-      indent(level);
-      System.out.println(
-          String.format("Entering function scope `%s':", functionDec.func));
       switch (functionDec.result.type) {
         case 0:
           type = "bool";
@@ -303,22 +300,27 @@ public class SemanticAnalyzer implements AbsynVisitor {
           System.out.println("Error: No type");
           break;
       }
-      NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level);
-      insert(functionDec.func, newNode);
-      level++;
-      if (functionDec.params != null)
-        functionDec.params.accept(this, level);
-      if (functionDec.body != null)
-        functionDec.body.accept(this, level);
+      if (!(functionDec.body instanceof NilExp)) {
+        indent(level);
+        System.out.println(
+            String.format("Entering function scope `%s':", functionDec.func));
+        NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level);
+        insert(functionDec.func, newNode);
+        level++;
+        if (functionDec.params != null)
+          functionDec.params.accept(this, level);
+        if (functionDec.body != null)
+          functionDec.body.accept(this, level);
 
-      if (!checkReturnEntry(level, functionDec.result.type)) {
-        printError(
-            String.format("Error in line %d, column %d: No return value",
-                functionDec.row + 1, functionDec.col));
+        if (!checkReturnEntry(level, functionDec.result.type)) {
+          printError(
+              String.format("Error in line %d, column %d: No return value",
+                  functionDec.row + 1, functionDec.col));
+        }
+
+        deleteLevelEntries(level);
+        level--;
       }
-
-      deleteLevelEntries(level);
-      level--;
       indent(level);
       System.out.print(String.format("%s: (", functionDec.func));
       VarDecList params = functionDec.params;
@@ -337,6 +339,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       }
       System.out.println(") -> " + type);
     }
+
   }
 
   public void visit(IfExp ifExp, int level) {

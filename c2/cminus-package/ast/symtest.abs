@@ -13,6 +13,13 @@ DecList
                 NameTy
                     type: INT
                 name: i
+        NilExp
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: i
         CompoundExp
             ExpList
                 AssignExp

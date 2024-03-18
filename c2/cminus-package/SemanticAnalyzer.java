@@ -78,6 +78,30 @@ public class SemanticAnalyzer implements AbsynVisitor {
     return typ;
   }
 
+  public String checkCallParam(int level, int type) {
+    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+    iterator = table.entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+      ArrayList<NodeType> nodeList = entry.getValue();
+      for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
+        NodeType node = nodeIter.next();
+        if (node.level == level) {
+          if (node.typ.type == type)
+            return "correct";
+          else {
+            return node.name;
+          }
+        }
+      }
+      if (nodeList.isEmpty()) {
+        iterator.remove();
+      }
+    }
+
+    return "err";
+  }
+
   public boolean checkReturnEntry(int level, int type) {
     Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
     iterator = table.entrySet().iterator();
@@ -225,12 +249,51 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(CallExp callExp, int level) {
-    if (lookup(callExp.func) != null) {
+    ArrayList<NodeType> func;
+    if ((func = lookup(callExp.func)) != null && func.get(0).def instanceof FunctionDec) {
+      NodeType node = func.get(0);
+      VarDecList params = ((FunctionDec) node.def).params;
+
+      indent(level);
+      System.out.println(
+          String.format("Call to function '%s':", node.name));
+
       ExpList args = callExp.args;
+      String errStr = "";
+      level++;
       while (args != null) {
-        // Idea: Match arg type with function.params in table
+
+        if (args.head != null) {
+
+          if (params == null) {
+            printError(
+                String.format("Error in line %d, column %d: Invalid call to function '%s'",
+                    callExp.row + 1, callExp.col, node.name));
+            deleteLevelEntries(level);
+            break;
+          }
+
+          args.head.accept(this, level);
+          if (!(errStr = checkCallParam(level, ((SimpleDec) params.head).typ.type)).equals("correct")) {
+            printError(
+                String.format("Error in line %d, column %d at '%s': Invalid call to function '%s'",
+                    callExp.row + 1, callExp.col, errStr, node.name));
+            deleteLevelEntries(level);
+            break;
+          }
+
+          deleteLevelEntries(level);
+        }
+
+        params = params.tail;
         args = args.tail;
       }
+
+      level--;
+      NodeType newNode = new NodeType("$" + node.name, 0,
+          new NameTy(callExp.row, callExp.col, node.typ.type), null, level);
+      insert(newNode.name, newNode);
+
     } else {
       System.err.println(String.format("Error in line %d, column %d at `%s': Undefined function call",
           callExp.row, callExp.col, callExp.func));
@@ -295,8 +358,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
                   SimpleDec funcVal = null;
                   SimpleDec protVal = null;
 
-                  while (func != null && prot != null) {
-                    if (func.head != null && prot.head != null) {
+                  while (func != null) {
+                    if (func.head != null) {
+
+                      if (prot == null) {
+                        printError(
+                            String.format(
+                                "Error in line %d, column %d at `%s': Function parameters do not match prototype",
+                                functionDec.row + 1, functionDec.col, functionDec.func));
+                        break;
+                      }
 
                       funcVal = (SimpleDec) func.head;
                       protVal = (SimpleDec) prot.head;
@@ -356,12 +427,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
           System.out.println("Error: No type");
           break;
       }
-      indent(level);
-      System.out.println(
-          String.format("Entering function scope `%s':", functionDec.func));
       NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, functionDec, level);
       insert(functionDec.func, newNode);
       if (!(functionDec.body instanceof NilExp)) {
+        indent(level);
+        System.out.println(
+            String.format("Entering function scope `%s':", functionDec.func));
         level++;
         if (functionDec.params != null)
           functionDec.params.accept(this, level);
@@ -377,8 +448,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         deleteLevelEntries(level);
         level--;
+
+        indent(level);
+        System.out.println(
+            String.format("Exiting function scope `%s':", functionDec.func));
+        indent(level);
+      } else {
+        indent(level);
+        System.out.print(
+            String.format("Function Prototype - "));
       }
-      indent(level);
       System.out.print(String.format("%s: (", functionDec.func));
       VarDecList params = functionDec.params;
       while (params != null) {

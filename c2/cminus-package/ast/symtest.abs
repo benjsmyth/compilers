@@ -1,12 +1,4 @@
 DecList
-    SimpleDec
-        NameTy
-            type: INT
-        name: a
-    SimpleDec
-        NameTy
-            type: BOOL
-        name: b
     FunctionDec
         VarDecList
             SimpleDec
@@ -19,31 +11,30 @@ DecList
             SimpleDec
                 NameTy
                     type: INT
+                name: i
+            SimpleDec
+                NameTy
+                    type: INT
                 name: j
         CompoundExp
             ExpList
                 ReturnExp
+                    VarExp
+                        SimpleVar
+                            name: i
+    FunctionDec
+        CompoundExp
+            ExpList
+                CallExp
+                    function name: foo
+                    ExpList
+                        CallExp
+                            function name: foo
+                            ExpList
+                                IntExp
+                                    value: 1
+                        IntExp
+                            value: 1
+                ReturnExp
                     IntExp
                         value: 1
-    FunctionDec
-        VarDecList
-            SimpleDec
-                NameTy
-                    type: INT
-                name: i
-        CompoundExp
-            VarDecList
-                SimpleDec
-                    NameTy
-                        type: INT
-                    name: j
-            ExpList
-                ReturnExp
-                    OpExp
-                        VarExp
-                            SimpleVar
-                                name: i
-                        Operator: <
-                        VarExp
-                            SimpleVar
-                                name: j

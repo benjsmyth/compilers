@@ -1,19 +1,18 @@
 Entering global scope:
-    a: int
-    b: bool
+    Function Prototype - foo: (i: int) -> int
     Entering function scope `foo':
-    foo: (i: int) -> int
-    Entering function scope `foo':
-        j: int
-        Return:
-            1: int
-    foo: (j: int) -> int
-    Entering function scope `main':
         i: int
         j: int
         Return:
-            operation: <
-                i: int
-                j: int
-    main: (i: int) -> bool
+            i: int
+    Exiting function scope `foo':
+    foo: (i: int, j: int) -> int
+    Entering function scope `main':
+        Call to function 'foo':
+            Call to function 'foo':
+                1: int
+        Return:
+            1: int
+    Exiting function scope `main':
+    main: () -> int
 Exiting global scope

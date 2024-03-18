@@ -8,6 +8,11 @@ DecList
             type: BOOL
         name: b
     FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: i
         CompoundExp
             ExpList
                 AssignExp

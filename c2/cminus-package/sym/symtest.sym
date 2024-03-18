@@ -2,11 +2,12 @@ Entering global scope:
     a: int
     b: bool
     Entering function scope `main':
+        i: int
         Assignment:
             a: int
             operation: uminus
                 2: int
         Return:
             true: bool
-    main: () -> int
+    main: (i: int) -> int
 Exiting global scope

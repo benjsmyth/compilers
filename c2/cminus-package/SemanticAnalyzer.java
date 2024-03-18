@@ -87,12 +87,46 @@ public class SemanticAnalyzer implements AbsynVisitor {
       for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
         NodeType node = nodeIter.next();
         if (node.level == level) {
-          if (node.size == Constants.RETURN && node.typ.type == type) {
-            return true;
-          } else {
-            printError(
-                String.format("Error in line %d, column %d: Invalid return value",
-                    node.typ.row + 1, node.typ.col));
+          if (node.size == Constants.RETURN) {
+            if (node.typ.type == type) {
+              String looking = "";
+              switch (type) {
+                case 0:
+                  looking = "bool";
+                  break;
+
+                case 1:
+                  looking = "int";
+                  break;
+
+                case 2:
+                  looking = "void";
+                  break;
+
+                default:
+                  break;
+              }
+              String got = "";
+              switch (node.typ.type) {
+                case 0:
+                  got = "bool";
+                  break;
+
+                case 1:
+                  got = "int";
+                  break;
+
+                case 2:
+                  got = "void";
+                  break;
+
+                default:
+                  break;
+              }
+              printError(
+                  String.format("Error in line %d, column %d: Invalid return value; Looking for '%s', got '%s'.",
+                      node.typ.row + 1, node.typ.col, looking, got));        
+            }
             return true;
           }
         }
@@ -280,7 +314,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       if (!checkReturnEntry(level, functionDec.result.type)) {
         printError(
             String.format("Error in line %d, column %d: No return value",
-            functionDec.row + 1, functionDec.col));
+                functionDec.row + 1, functionDec.col));
       }
 
       deleteLevelEntries(level);
@@ -491,8 +525,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     level++;
 
     System.out.println(
-      "Return:"
-    );
+        "Return:");
 
     if (returnExp.exp != null)
       returnExp.exp.accept(this, level);

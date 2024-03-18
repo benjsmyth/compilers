@@ -1,40 +1,40 @@
 DecList
     FunctionDec
-        VarDecList
-            SimpleDec
-                NameTy
-                    type: INT
-                name: i
-        NilExp
-    FunctionDec
-        VarDecList
-            SimpleDec
-                NameTy
-                    type: INT
-                name: i
-            SimpleDec
-                NameTy
-                    type: INT
-                name: j
         CompoundExp
             ExpList
                 ReturnExp
+                    BoolExp
+                        value: true
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: i
+            ExpList
+                AssignExp
                     VarExp
                         SimpleVar
                             name: i
-    FunctionDec
-        CompoundExp
-            ExpList
-                CallExp
-                    function name: foo
-                    ExpList
-                        CallExp
-                            function name: foo
-                            ExpList
-                                IntExp
-                                    value: 1
-                        IntExp
-                            value: 1
+                    IntExp
+                        value: 0
+                WhileExp
+                    CallExp
+                        function name: foo
+                    CompoundExp
+                        ExpList
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: i
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: i
+                                    Operator: +
+                                    IntExp
+                                        value: 1
                 ReturnExp
                     IntExp
                         value: 1

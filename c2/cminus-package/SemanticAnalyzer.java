@@ -78,6 +78,27 @@ public class SemanticAnalyzer implements AbsynVisitor {
     return typ;
   }
 
+  public boolean checkConditionType(int level) {
+    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+    iterator = table.entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+      ArrayList<NodeType> nodeList = entry.getValue();
+      for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
+        NodeType node = nodeIter.next();
+        if (node.level == level) {
+          if (node.typ.type == NameTy.VOID) {
+            return false;
+          }
+        }
+      }
+      if (nodeList.isEmpty()) {
+        iterator.remove();
+      }
+    }
+    return true;
+  }
+
   public String checkCallParam(int level, int type) {
     Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
     iterator = table.entrySet().iterator();
@@ -479,24 +500,28 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(IfExp ifExp, int level) {
+    indent(level);
     System.out.println("Entering conditional block scope:");
-    int prevLevel = level;
-    level++;
     if (ifExp.test != null) {
-      if (ifExp.test instanceof BoolExp || ifExp.test instanceof IntExp) {
-        ifExp.test.accept(this, level);
-        if (ifExp.thenpart != null)
-          ifExp.thenpart.accept(this, level);
-        if (ifExp.elsepart != null)
-          ifExp.elsepart.accept(this, level);
-      } else {
+      level++;
+      ifExp.test.accept(this, level);
+      if (!checkConditionType(level)) {
         printError(
-            String.format("Error in line %d, column %d at `if': Expression is not boolean",
-                ifExp.row, ifExp.col));
+            String.format("Error in line %d, column %d: Invalid condition type; Must be 'int' or 'bool' but got 'void'",
+                ifExp.row + 1, ifExp.col));
       }
+      level++;
+      if (ifExp.thenpart != null)
+        ifExp.thenpart.accept(this, level);
+      if (ifExp.elsepart != null)
+        ifExp.elsepart.accept(this, level);
+
+      deleteLevelEntries(level);
+      level--;
+      deleteLevelEntries(level);
+      level--;
     }
-    deleteLevelEntries(level);
-    indent(prevLevel);
+    indent(level);
     System.out.println("Exiting conditional block scope");
   }
 
@@ -793,21 +818,25 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public void visit(WhileExp whileExp, int level) {
     indent(level);
     System.out.println("Entering conditional block scope:");
-    int prevLevel = level;
-    level++;
     if (whileExp.test != null) {
-      if (whileExp.test instanceof BoolExp || whileExp.test instanceof IntExp) {
-        whileExp.test.accept(this, level);
-        if (whileExp.body != null)
-          whileExp.body.accept(this, level);
-      } else {
-        System.err.println(String.format("Error in line %d, column %d at `while': Conditional is not boolean",
-            whileExp.row, whileExp.col));
+      level++;
+      whileExp.test.accept(this, level);
+      if (!checkConditionType(level)) {
+        printError(
+            String.format("Error in line %d, column %d: Invalid condition type; Must be 'int' or 'bool' but got 'void'",
+                whileExp.row + 1, whileExp.col));
       }
+      level++;
+      if (whileExp.body != null)
+        whileExp.body.accept(this, level);
+
+      deleteLevelEntries(level);
+      level--;
+      deleteLevelEntries(level);
+      level--;
     }
-    deleteLevelEntries(level);
-    indent(prevLevel);
-    System.out.println("Exiting block scope");
+    indent(level);
+    System.out.println("Exiting conditional block scope");
   }
 
   public void printError(String err) {

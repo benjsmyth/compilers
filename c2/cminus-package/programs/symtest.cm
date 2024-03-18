@@ -1,14 +1,17 @@
 
-
-int foo (int i);
-
-int foo (int i, int j){
-    return i;
+bool foo(void){
+    return true;
 }
 
 int main(void) { 
     
-    foo(foo(1), 1);
+    int i;
+
+    i = 0;
+
+    while (foo()){
+        i = i + 1;
+    }
     
     return 1;
 }

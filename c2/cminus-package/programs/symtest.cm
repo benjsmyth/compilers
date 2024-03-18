@@ -1,8 +1,9 @@
 
 int a;
 bool b;
-int f(void) { 
+int main(void) { 
     
     
     a = -2;
+    return true;
 }

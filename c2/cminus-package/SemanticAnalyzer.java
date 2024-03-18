@@ -78,6 +78,33 @@ public class SemanticAnalyzer implements AbsynVisitor {
     return typ;
   }
 
+  public boolean checkReturnEntry(int level, int type) {
+    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+    iterator = table.entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+      ArrayList<NodeType> nodeList = entry.getValue();
+      for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
+        NodeType node = nodeIter.next();
+        if (node.level == level) {
+          if (node.size == Constants.RETURN && node.typ.type == type) {
+            return true;
+          } else {
+            printError(
+                String.format("Error in line %d, column %d: Invalid return value",
+                    node.typ.row + 1, node.typ.col));
+            return true;
+          }
+        }
+      }
+      if (nodeList.isEmpty()) {
+        iterator.remove();
+      }
+    }
+
+    return false;
+  }
+
   public void printHashTable() {
     System.out.println("\nHash Table:");
     Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
@@ -150,7 +177,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(BoolExp boolExp, int level) {
     indent(level);
-    NodeType newNode = new NodeType("$" + Boolean.toString(boolExp.value), 0,
+    NodeType newNode = new NodeType(Boolean.toString(boolExp.value), 0,
         new NameTy(boolExp.row, boolExp.col, NameTy.BOOL), level);
     insert(newNode.name, newNode);
 
@@ -164,11 +191,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
         // Idea: Match arg type with function.params in table
         args = args.tail;
       }
-    }
-    else {
+    } else {
       System.err.println(String.format("Error in line %d, column %d at `%s': Undefined function call",
-        callExp.row, callExp.col, callExp.func)
-      );
+          callExp.row, callExp.col, callExp.func));
     }
   }
 
@@ -187,13 +212,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
       if (decList.head != null)
         decList.head.accept(this, level);
       if (decList.head instanceof FunctionDec) {
-        FunctionDec functionDec = (FunctionDec)decList.head;
+        FunctionDec functionDec = (FunctionDec) decList.head;
         if (functionDec.func.equals("main")) {
           hasMain = true;
           if (decList.tail != null)
             System.err.println(String.format("Error in line %d, column %d: Function `main' must be last definition",
-              decList.head.row, decList.head.col)
-            );
+                decList.head.row, decList.head.col));
         }
       }
       decList = decList.tail;
@@ -232,38 +256,49 @@ public class SemanticAnalyzer implements AbsynVisitor {
       System.out.println(
           String.format("Entering function scope `%s':", functionDec.func));
       switch (functionDec.result.type) {
-        case 0: type = "bool";
+        case 0:
+          type = "bool";
           break;
-        case 1: type = "int";
+        case 1:
+          type = "int";
           break;
-        case 2: type = "void";
+        case 2:
+          type = "void";
           break;
         default:
           System.out.println("Error: No type");
           break;
       }
-      NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level, true);
+      NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, level);
       insert(functionDec.func, newNode);
       level++;
       if (functionDec.params != null)
         functionDec.params.accept(this, level);
       if (functionDec.body != null)
         functionDec.body.accept(this, level);
+
+      if (!checkReturnEntry(level, functionDec.result.type)) {
+        printError(
+            String.format("Error in line %d, column %d: No return value",
+            functionDec.row + 1, functionDec.col));
+      }
+
       deleteLevelEntries(level);
       level--;
       indent(level);
       System.out.print(String.format("%s: (", functionDec.func));
       VarDecList params = functionDec.params;
       while (params != null) {
-        SimpleDec param = (SimpleDec)params.head;
+        SimpleDec param = (SimpleDec) params.head;
         System.out.print(param.name + ": ");
         if (param.typ.type == 0) // Parameter is BOOL
           System.out.print("bool");
         else if (param.typ.type == 1) // Parameter is INT
           System.out.print("int");
-        else if (param.typ.type == 2)  // Parameter is VOID
+        else if (param.typ.type == 2) // Parameter is VOID
           System.out.print("void");
-        if (params.tail != null) System.out.print(", ");
+        if (params.tail != null)
+          System.out.print(", ");
         params = params.tail;
       }
       System.out.println(") -> " + type);
@@ -281,12 +316,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
           ifExp.thenpart.accept(this, level);
         if (ifExp.elsepart != null)
           ifExp.elsepart.accept(this, level);
-      }
-      else {
-        System.err.println(
-          String.format("Error in line %d, column %d at `if': Expression is not boolean",
-            ifExp.row, ifExp.col)
-        );
+      } else {
+        printError(
+            String.format("Error in line %d, column %d at `if': Expression is not boolean",
+                ifExp.row, ifExp.col));
       }
     }
     deleteLevelEntries(level);
@@ -451,32 +484,55 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void visit(ReturnExp returnExp, int level) {
+
+    int typ = -1;
+
     indent(level);
-    this.table.forEach((key, list) -> {  // Iterate table
-      for (NodeType node : list) {  // Iterate list
-        if (node.level == level-1 && node.isFunc) {  // Most recent prototype
-          System.out.print("return: ");
-          if (returnExp.exp instanceof BoolExp) {  // return is BOOL
-            System.out.println("bool");
-            if (node.typ.type != 0)  // Function was not BOOL
-              printError(String.format("Error in line %d, column %d at `return': Incompatible return type",
-                returnExp.row + 1, returnExp.col));
-          }
-          else if (returnExp.exp instanceof IntExp) {  // return is INT
-            System.out.println("int");
-            if (node.typ.type != 1)  // Function was not INT
-              printError(String.format("Error in line %d, column %d at `return': Incompatible return type",
-                returnExp.row + 1, returnExp.col));
-          }
-          else if (returnExp.exp instanceof NilExp) {  // return is VOID
-            System.out.println("void");
-            if (node.typ.type != 2)  // Function was not VOID
-              printError(String.format("Error in line %d, column %d at `return': Incompatible return type",
-                returnExp.row + 1, returnExp.col));
-          }
-        }
-      }
-    });
+    level++;
+
+    System.out.println(
+      "Return:"
+    );
+
+    if (returnExp.exp != null)
+      returnExp.exp.accept(this, level);
+
+    typ = sameLevelTypes(level);
+
+    level--;
+    NodeType newNode = new NodeType("return", Constants.RETURN, new NameTy(returnExp.row, returnExp.col, typ), level);
+    insert(newNode.name, newNode);
+
+    /*
+     * this.table.forEach((key, list) -> { // Iterate table
+     * for (NodeType node : list) { // Iterate list
+     * if (node.level == level-1 && node.isFunc) { // Most recent prototype
+     * System.out.print("return: ");
+     * if (returnExp.exp instanceof BoolExp) { // return is BOOL
+     * System.out.println("bool");
+     * if (node.typ.type != 0) // Function was not BOOL
+     * printError(String.
+     * format("Error in line %d, column %d at `return': Incompatible return type",
+     * returnExp.row + 1, returnExp.col));
+     * }
+     * else if (returnExp.exp instanceof IntExp) { // return is INT
+     * System.out.println("int");
+     * if (node.typ.type != 1) // Function was not INT
+     * printError(String.
+     * format("Error in line %d, column %d at `return': Incompatible return type",
+     * returnExp.row + 1, returnExp.col));
+     * }
+     * else if (returnExp.exp instanceof NilExp) { // return is VOID
+     * System.out.println("void");
+     * if (node.typ.type != 2) // Function was not VOID
+     * printError(String.
+     * format("Error in line %d, column %d at `return': Incompatible return type",
+     * returnExp.row + 1, returnExp.col));
+     * }
+     * }
+     * }
+     * });
+     */
   }
 
   public void visit(SimpleDec simpleDec, int level) {
@@ -567,11 +623,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
         whileExp.test.accept(this, level);
         if (whileExp.body != null)
           whileExp.body.accept(this, level);
-      }
-      else {
+      } else {
         System.err.println(String.format("Error in line %d, column %d at `while': Conditional is not boolean",
-          whileExp.row, whileExp.col)
-        );
+            whileExp.row, whileExp.col));
       }
     }
     deleteLevelEntries(level);

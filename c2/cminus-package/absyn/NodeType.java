@@ -14,15 +14,7 @@ public class NodeType {
         this.level = level;
         this.isFunc = false;
     }
-
-    public NodeType(String name, int size, NameTy typ, int level, boolean isFunc) {
-        this.name = name;
-        this.size = size;
-        this.typ = typ;
-        this.level = level;
-        this.isFunc = isFunc;
-    }
-
+    
     public String toString() {
         return "NodeType{" +
                 "name='" + name + '\'' + ", size=" + size + ", level=" + level + '}';

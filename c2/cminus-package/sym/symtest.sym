@@ -9,6 +9,8 @@ Entering global scope:
             operation: uminus
                 2: int
         Return:
-            true: bool
+            operation: *
+                1: int
+                2: int
     main: (i: int) -> int
 Exiting global scope

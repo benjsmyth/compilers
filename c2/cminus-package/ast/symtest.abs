@@ -31,5 +31,9 @@ DecList
                             value: 2
                         Operator: uminus
                 ReturnExp
-                    BoolExp
-                        value: true
+                    OpExp
+                        IntExp
+                            value: 1
+                        Operator: *
+                        IntExp
+                            value: 2

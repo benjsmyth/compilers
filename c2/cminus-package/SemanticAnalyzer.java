@@ -123,9 +123,15 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 default:
                   break;
               }
-              printError(
-                  String.format("Error in line %d, column %d: Invalid return value; Looking for '%s', got '%s'.",
-                      node.typ.row + 1, node.typ.col, looking, got));
+              if (type == NameTy.VOID) {
+                printError(
+                    String.format("Error in line %d, column %d: Return not expected for 'void'",
+                        node.typ.row + 1, node.typ.col));
+              } else {
+                printError(
+                    String.format("Error in line %d, column %d: Invalid return value; Looking for '%s', got '%s'.",
+                        node.typ.row + 1, node.typ.col, looking, got));
+              }
             }
             return true;
           }
@@ -312,7 +318,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (functionDec.body != null)
           functionDec.body.accept(this, level);
 
-        if (!checkReturnEntry(level, functionDec.result.type)) {
+        if (!checkReturnEntry(level, functionDec.result.type)
+            && functionDec.result.type != NameTy.VOID) {
           printError(
               String.format("Error in line %d, column %d: No return value",
                   functionDec.row + 1, functionDec.col));

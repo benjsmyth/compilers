@@ -283,11 +283,30 @@ public class SemanticAnalyzer implements AbsynVisitor {
       if (node != null) {
         for (NodeType n : node) {
           if (n.level == level) {
-            if (!(n.def instanceof FunctionDec)) {
+            if (n.def instanceof FunctionDec) {
+              FunctionDec proto = (FunctionDec) n.def;
+              if (proto.body instanceof NilExp) {
+
+                if (functionDec.result.type == proto.result.type) {
+                } else {
+                  error = true;
+                  printError(
+                      String.format(
+                          "Error in line %d, column %d at `%s': Return value does not match function prototype",
+                          functionDec.row + 1, functionDec.col, functionDec.func));
+                }
+
+              } else {
+                error = true;
+                printError(
+                    String.format("Error in line %d, column %d at `%s': Redeclaration",
+                        functionDec.row + 1, functionDec.col, functionDec.func));
+              }
+            } else {
               error = true;
               printError(
                   String.format("Error in line %d, column %d at `%s': Redeclaration",
-                      functionDec.row, functionDec.col, functionDec.func));
+                      functionDec.row + 1, functionDec.col, functionDec.func));
             }
           }
         }
@@ -308,12 +327,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
           System.out.println("Error: No type");
           break;
       }
+      indent(level);
+      System.out.println(
+          String.format("Entering function scope `%s':", functionDec.func));
+      NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, functionDec, level);
+      insert(functionDec.func, newNode);
       if (!(functionDec.body instanceof NilExp)) {
-        indent(level);
-        System.out.println(
-            String.format("Entering function scope `%s':", functionDec.func));
-        NodeType newNode = new NodeType(functionDec.func, 0, functionDec.result, functionDec, level);
-        insert(functionDec.func, newNode);
         level++;
         if (functionDec.params != null)
           functionDec.params.accept(this, level);
@@ -519,7 +538,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       printError(
           String.format("Error in line %d, column %d: Invalid operand",
               opExp.row + 1, opExp.col));
-    } else if (opExp.op >= 5){
+    } else if (opExp.op >= 5) {
       typ = NameTy.BOOL;
     }
 

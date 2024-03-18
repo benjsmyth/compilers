@@ -1,13 +1,10 @@
 Entering global scope:
     a: int
     b: bool
+    Entering function scope `foo':
     foo: (i: int) -> int
     Entering function scope `main':
         i: int
-        Assignment:
-            a: int
-            operation: uminus
-                2: int
         Return:
             operation: >
                 1: int

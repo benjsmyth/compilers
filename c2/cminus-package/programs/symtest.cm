@@ -4,9 +4,13 @@ bool b;
 
 int foo (int i);
 
+bool foo(int i){
+    return true;
+}
+
 bool main(int i) { 
     
     
-    a = -2;
+    
     return 1 > 2;
 }

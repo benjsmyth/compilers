@@ -22,14 +22,17 @@ DecList
                 name: i
         CompoundExp
             ExpList
-                AssignExp
-                    VarExp
-                        SimpleVar
-                            name: a
-                    OpExp
-                        IntExp
-                            value: 2
-                        Operator: uminus
+                ReturnExp
+                    BoolExp
+                        value: true
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: i
+        CompoundExp
+            ExpList
                 ReturnExp
                     OpExp
                         IntExp

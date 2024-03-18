@@ -34,6 +34,6 @@ DecList
                     OpExp
                         IntExp
                             value: 1
-                        Operator: *
+                        Operator: >
                         IntExp
                             value: 2

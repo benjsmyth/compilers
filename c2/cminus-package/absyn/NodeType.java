@@ -2,14 +2,16 @@ package absyn;
 
 public class NodeType {
     public String name;
-    public int size;
+    public Dec def;
+    public int id;
     public int level;
     public NameTy typ;
     public boolean isFunc;
 
-    public NodeType(String name, int size, NameTy typ, int level) {
+    public NodeType(String name, int id, NameTy typ, Dec def, int level) {
         this.name = name;
-        this.size = size;
+        this.def = def;
+        this.id = id;
         this.typ = typ;
         this.level = level;
         this.isFunc = false;
@@ -17,6 +19,6 @@ public class NodeType {
     
     public String toString() {
         return "NodeType{" +
-                "name='" + name + '\'' + ", size=" + size + ", level=" + level + '}';
+                "name='" + name + '\'' + ", id=" + id + ", level=" + level + '}';
     }
 }

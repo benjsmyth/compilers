@@ -4,9 +4,9 @@ bool b;
 
 int foo (int i);
 
-int main(int i) { 
+bool main(int i) { 
     
     
     a = -2;
-    return 1 * 2;
+    return 1 > 2;
 }

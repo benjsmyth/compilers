@@ -16,7 +16,7 @@ Entering global scope:
             Assignment:
                 j: int
                 3: int
-            Entering conditional block scope:
+            Entering WHILE conditional block scope:
                 operation: <
                     j: int
                     i: int
@@ -24,7 +24,7 @@ Entering global scope:
                             i: int
                             Call to function 'reduce':
                                 i: int
-            Exiting conditional block scope
+            Exiting WHILE conditional block scope
     Exiting function scope `main':
     main: () -> void
 Exiting global scope

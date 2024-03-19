@@ -71,7 +71,7 @@ class Main {
 
       System.setOut(ps2);
 
-      if (result != null) {
+      if (result != null && p.valid) {
         AbsynVisitor visitor = new SemanticAnalyzer(old, ps2);
         result.accept(visitor, 0);
       }

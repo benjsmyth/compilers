@@ -1,24 +1,58 @@
 DecList
     FunctionDec
         CompoundExp
-            VarDecList
-                ArrayDec
+            ExpList
+                ReturnExp
+                    IntExp
+                        value: 1
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
                     type: INT
-                    name: a
-                    size: 10
+                name: fff
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: x
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: y
             ExpList
                 AssignExp
                     VarExp
-                        IndexVar
-                            name: a
-                            BoolExp
-                                value: true
-                    IntExp
-                        value: 1
-                ReturnExp
-                    NilExp
+                        SimpleVar
+                            name: x
+                    OpExp
+                        OpExp
+                            VarExp
+                                SimpleVar
+                                    name: x
+                            Operator: *
+                            IntExp
+                                value: 2
+                        Operator: +
+                        IntExp
+                            value: 1
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: y
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: x
+                        Operator: +
+                        CallExp
+                            function name: foo
     FunctionDec
         CompoundExp
             ExpList
-                ReturnExp
-                    NilExp
+                CallExp
+                    function name: fun
+                    ExpList
+                        IntExp
+                            value: 1

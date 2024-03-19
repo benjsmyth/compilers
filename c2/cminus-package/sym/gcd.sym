@@ -8,6 +8,8 @@ Entering global scope:
                 0: int
                 Return:
                     u: int
+        Exiting IF conditional block scope
+        Entering ELSE conditional block scope
                 Return:
                     Call to function 'gcd':
                         v: int
@@ -18,7 +20,7 @@ Entering global scope:
                                     u: int
                                     v: int
                                 v: int
-        Exiting IF conditional block scope
+        Exiting ELSE conditional block scope
     Exiting function scope `gcd':
     gcd: (u: int, v: int) -> int
     Entering function scope `main':

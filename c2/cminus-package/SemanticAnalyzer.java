@@ -84,8 +84,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (node.level == level && node.id == Constants.COMPOUND) {
           if (!node.canReturn) {
             return false;
-          }
-          else{
+          } else {
             check = true;
           }
         }
@@ -208,69 +207,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     return "err";
-  }
-
-  public boolean checkReturnEntry(int level, int type) {
-    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
-    iterator = table.entrySet().iterator();
-    while (iterator.hasNext()) {
-      Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
-      ArrayList<NodeType> nodeList = entry.getValue();
-      for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
-        NodeType node = nodeIter.next();
-        if (node.level == level) {
-          if (node.id == Constants.RETURN) {
-            if (node.typ.type != type) {
-              String looking = "";
-              switch (type) {
-                case 0:
-                  looking = "bool";
-                  break;
-
-                case 1:
-                  looking = "int";
-                  break;
-
-                case 2:
-                  looking = "void";
-                  break;
-
-                default:
-                  break;
-              }
-              String got = "";
-              switch (node.typ.type) {
-                case 0:
-                  got = "bool";
-                  break;
-
-                case 1:
-                  got = "int";
-                  break;
-
-                case 2:
-                  got = "void";
-                  break;
-
-                default:
-                  break;
-              }
-
-              printError(
-                  String.format("Error in line %d, column %d: Invalid return value; Looking for '%s', got '%s'.",
-                      node.typ.row + 1, node.typ.col, looking, got));
-
-            }
-            return true;
-          }
-        }
-      }
-      if (nodeList.isEmpty()) {
-        iterator.remove();
-      }
-    }
-
-    return false;
   }
 
   public void printHashTable() {
@@ -601,6 +537,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
         System.out.println(
             String.format("Entering function scope `%s':", functionDec.func));
         level++;
+
+        NodeType returnNode = new NodeType("$returnval", 0, functionDec.result, functionDec, level);
+        insert(returnNode.name, returnNode);
+
         if (functionDec.params != null)
           functionDec.params.accept(this, level);
 
@@ -610,15 +550,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
         canReturn = checkCanReturnFinal(level);
 
         if (!canReturn) {
-          if (!checkReturnEntry(level, functionDec.result.type)
-              && functionDec.result.type != NameTy.VOID) {
-            if (!canReturn)
-              printError(
-                  String.format("Error in line %d, column %d: No return value",
-                      functionDec.row + 1, functionDec.col));
+          if (functionDec.result.type != NameTy.VOID) {
+            printError(
+                String.format("Error in line %d, column %d: No return value",
+                    functionDec.row + 1, functionDec.col));
           }
-        } else
-          checkReturnEntry(level, functionDec.result.type);
+        }
 
         deleteLevelEntries(level);
         level--;
@@ -682,12 +619,20 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 ifExp.row + 1, ifExp.col));
       }
       level++;
-      if (ifExp.thenpart != null)
+      if (ifExp.thenpart != null) {
         ifExp.thenpart.accept(this, level);
+      }
       canReturnThen = checkCanReturn(level);
+      indent(level - 2);
+      System.out.println("Exiting IF conditional block scope");
       deleteLevelEntries(level);
-      if (ifExp.elsepart != null)
+      if (ifExp.elsepart != null) {
+        indent(level - 2);
+        System.out.println("Entering ELSE conditional block scope");
         ifExp.elsepart.accept(this, level);
+        indent(level - 2);
+        System.out.println("Exiting ELSE conditional block scope");
+      }
 
       canReturnElse = checkCanReturn(level);
       deleteLevelEntries(level);
@@ -695,8 +640,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
       deleteLevelEntries(level);
       level--;
     }
-    indent(level);
-    System.out.println("Exiting IF conditional block scope");
 
     NodeType newNode = new NodeType("if", Constants.COMPOUND, new NameTy(ifExp.row, ifExp.col, -1),
         null,
@@ -882,14 +825,91 @@ public class SemanticAnalyzer implements AbsynVisitor {
     typ = sameLevelTypes(level);
     deleteLevelEntries(level);
 
+    ArrayList<NodeType> returnCheck;
+
+
     level--;
     if (typ.size() == 2) {
+      if ((returnCheck = lookup("$returnval")) != null){
+        
+          if (returnCheck.get(0).typ.type != Integer.parseInt(typ.get(1))) {
+            String looking = "";
+            switch (returnCheck.get(0).typ.type) {
+              case 0:
+                looking = "bool";
+                break;
+
+              case 1:
+                looking = "int";
+                break;
+
+              case 2:
+                looking = "void";
+                break;
+
+              default:
+                break;
+            }
+            String got = "";
+            switch (Integer.parseInt(typ.get(1))) {
+              case 0:
+                got = "bool";
+                break;
+
+              case 1:
+                got = "int";
+                break;
+
+              case 2:
+                got = "void";
+                break;
+
+              default:
+                break;
+            }
+
+            printError(
+                String.format("Error in line %d, column %d: Invalid return value; Looking for '%s', got '%s'.",
+                    returnExp.row + 1, returnExp.col, looking, got));
+
+          }
+        
+      }
       NodeType newNode = new NodeType("return", Constants.RETURN,
           new NameTy(returnExp.row, returnExp.col, Integer.parseInt(typ.get(1))), null,
           level);
       newNode.canReturn = true;
       insert(newNode.name, newNode);
     } else {
+      if ((returnCheck = lookup("$returnval")) != null){
+        
+        if (returnCheck.get(0).typ.type != 2) {
+          String looking = "";
+          switch (returnCheck.get(0).typ.type) {
+            case 0:
+              looking = "bool";
+              break;
+
+            case 1:
+              looking = "int";
+              break;
+
+            case 2:
+              looking = "void";
+              break;
+
+            default:
+              break;
+          }
+          String got = "void";
+
+          printError(
+              String.format("Error in line %d, column %d: Invalid return value; Looking for '%s', got '%s'.",
+                  returnExp.row + 1, returnExp.col, looking, got));
+
+        }
+      
+    }
       NodeType newNode = new NodeType("return", Constants.RETURN,
           new NameTy(returnExp.row, returnExp.col, 2), null,
           level);

@@ -5,23 +5,20 @@ DecList
                 SimpleDec
                     NameTy
                         type: INT
-                    name: a
-                SimpleDec
-                    NameTy
-                        type: INT
-                    name: a
+                    name: x
             ExpList
                 AssignExp
                     VarExp
                         SimpleVar
-                            name: b
+                            name: x
                     IntExp
-                        value: 1
-                AssignExp
+                        value: 2
+                ReturnExp
                     VarExp
                         SimpleVar
-                            name: a
-                    BoolExp
-                        value: true
-                ReturnExp
-                    NilExp
+                            name: x
+    FunctionDec
+        CompoundExp
+            ExpList
+                CallExp
+                    function name: funtwo

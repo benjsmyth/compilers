@@ -9,9 +9,11 @@ Entering global scope:
             true: bool
                 Return:
                     true: bool
-                Return:
-                    false: bool
         Exiting IF conditional block scope
+        Entering ELSE conditional block scope
+                Return:
+                    true: bool
+        Exiting ELSE conditional block scope
     Exiting function scope `main':
     main: () -> int
 Exiting global scope

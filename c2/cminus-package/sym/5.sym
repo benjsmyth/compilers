@@ -1,10 +1,25 @@
 Entering global scope:
-    Entering function scope `main':
-        a: int
-        Assignment:
-            a: int
-            true: bool
+    Entering function scope `output':
+        x: int
+    Exiting function scope `output':
+    output: (x: int) -> void
+    Entering function scope `foo':
         Return:
+            1: int
+    Exiting function scope `foo':
+    foo: () -> int
+    Entering function scope `main':
+        x: int
+        Entering IF conditional block scope:
+            x: int
+                Call to function 'output':
+                    Call to function 'foo':
+        Exiting IF conditional block scope
+        Entering IF conditional block scope:
+            Call to function 'foo':
+                Call to function 'output':
+                    x: int
+        Exiting IF conditional block scope
     Exiting function scope `main':
-    main: () -> int
+    main: () -> void
 Exiting global scope

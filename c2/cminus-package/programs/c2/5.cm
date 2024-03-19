@@ -12,5 +12,5 @@ int main(void) {
     /* Void inside if condition */
   }
 
-  return; /* Incompatible */
+  return true; /* Incompatible */
 }

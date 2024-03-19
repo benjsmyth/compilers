@@ -1,25 +1,42 @@
 DecList
     FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: x
         CompoundExp
+    FunctionDec
+        CompoundExp
+            ExpList
+                ReturnExp
+                    IntExp
+                        value: 1
     FunctionDec
         CompoundExp
             VarDecList
                 SimpleDec
                     NameTy
                         type: INT
-                    name: a
+                    name: x
             ExpList
-                AssignExp
+                IfExp:
                     VarExp
                         SimpleVar
-                            name: a
-                    BoolExp
-                        value: true
-                CallExp
-                    function name: f
+                            name: x
+                    CallExp
+                        function name: output
+                        ExpList
+                            CallExp
+                                function name: foo
                 IfExp:
                     CallExp
                         function name: foo
-                    CompoundExp
-                ReturnExp
-                    NilExp
+                    CallExp
+                        function name: output
+                        ExpList
+                            VarExp
+                                SimpleVar
+                                    name: x
+                            CallExp
+                                function name: foo

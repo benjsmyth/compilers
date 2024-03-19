@@ -1,10 +1,30 @@
 Entering global scope:
-    Entering function scope `main':
+    Entering function scope `foo':
         Return:
+            1: int
+    Exiting function scope `foo':
+    foo: () -> int
+    Entering function scope `fun':
+        fff: int
+        x: int
+        y: int
+        Assignment:
+            x: int
+            operation: +
+                operation: *
+                    x: int
+                    2: int
+                1: int
+        Assignment:
+            y: int
+            operation: +
+                x: int
+                Call to function 'foo':
+    Exiting function scope `fun':
+    fun: (fff: int) -> int
+    Entering function scope `main':
+        Call to function 'fun':
+            1: int
     Exiting function scope `main':
     main: () -> void
-    Entering function scope `notmain':
-        Return:
-    Exiting function scope `notmain':
-    notmain: () -> void
 Exiting global scope

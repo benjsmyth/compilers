@@ -1,9 +1,15 @@
 Entering global scope:
-    Entering function scope `main':
-        a: int
+    Entering function scope `funtwo':
+        x: int
         Assignment:
-            1: int
+            x: int
+            2: int
         Return:
+            x: int
+    Exiting function scope `funtwo':
+    funtwo: () -> void
+    Entering function scope `main':
+        Call to function 'funtwo':
     Exiting function scope `main':
     main: () -> void
 Exiting global scope

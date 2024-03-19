@@ -19,8 +19,6 @@ DecList
                     ELSE
                     CompoundExp
                         ExpList
-                            CompoundExp
-                                ExpList
-                                    ReturnExp
-                                        BoolExp
-                                            value: false
+                            ReturnExp
+                                BoolExp
+                                    value: true

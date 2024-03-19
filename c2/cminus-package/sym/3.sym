@@ -1,4 +1,8 @@
 Entering global scope:
+    Entering function scope `main':
+        Return:
+    Exiting function scope `main':
+    main: () -> void
     Entering function scope `notmain':
         Return:
     Exiting function scope `notmain':

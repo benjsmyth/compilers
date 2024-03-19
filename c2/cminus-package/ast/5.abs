@@ -1,0 +1,19 @@
+DecList
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: a
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: a
+                    BoolExp
+                        value: true
+                CallExp
+                    function name: f
+                ReturnExp
+                    NilExp

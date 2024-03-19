@@ -1,0 +1,14 @@
+
+int foo (void){
+    return 1;
+}
+
+int fun(int fff){
+    int x; int y;
+    x = x * 2 + 1;
+    y = x + foo();
+}
+
+void main(void){
+    fun(1);
+}

@@ -1,5 +1,8 @@
 Entering global scope:
     Entering function scope `main':
+        a: int
+        Assignment:
+            1: int
         Return:
     Exiting function scope `main':
     main: () -> void

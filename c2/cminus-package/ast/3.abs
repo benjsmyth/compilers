@@ -4,3 +4,8 @@ DecList
             ExpList
                 ReturnExp
                     NilExp
+    FunctionDec
+        CompoundExp
+            ExpList
+                ReturnExp
+                    NilExp

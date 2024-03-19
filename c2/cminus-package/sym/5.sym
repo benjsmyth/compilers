@@ -1,6 +1,10 @@
 Entering global scope:
     Entering function scope `main':
+        a: int
+        Assignment:
+            a: int
+            true: bool
         Return:
     Exiting function scope `main':
-    main: () -> void
+    main: () -> int
 Exiting global scope

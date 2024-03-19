@@ -251,15 +251,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 default:
                   break;
               }
-              if (type == NameTy.VOID) {
-                printError(
-                    String.format("Error in line %d, column %d: Return not expected for 'void'",
-                        node.typ.row + 1, node.typ.col));
-              } else {
-                printError(
-                    String.format("Error in line %d, column %d: Invalid return value; Looking for '%s', got '%s'.",
-                        node.typ.row + 1, node.typ.col, looking, got));
-              }
+
+              printError(
+                  String.format("Error in line %d, column %d: Invalid return value; Looking for '%s', got '%s'.",
+                      node.typ.row + 1, node.typ.col, looking, got));
+
             }
             return true;
           }
@@ -341,7 +337,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     if (typ.size() == 3 && typ.get(2) == "-1") {
       printError(
           String.format("Error in line %d, column %d: Invalid assignment to '%s' from '%s'",
-              assignExp.row + 1, assignExp.col, typ.get(1), typ.get(0)));
+              assignExp.row + 1, assignExp.col, typ.get(0), typ.get(1)));
     }
     deleteLevelEntries(level);
 
@@ -891,7 +887,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       insert(newNode.name, newNode);
     } else {
       NodeType newNode = new NodeType("return", Constants.RETURN,
-          new NameTy(returnExp.row, returnExp.col, 1), null,
+          new NameTy(returnExp.row, returnExp.col, 2), null,
           level);
       newNode.canReturn = true;
       insert(newNode.name, newNode);

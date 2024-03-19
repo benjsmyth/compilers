@@ -1,0 +1,8 @@
+Entering global scope:
+    Entering function scope `hello':
+            Return:
+                1: int
+    Exiting function scope `hello':
+    hello: () -> void
+    Entering function scope `main':
+            

@@ -507,21 +507,51 @@ public class SemanticAnalyzer implements AbsynVisitor {
                         break;
                       }
 
-                      if (func.head instanceof SimpleDec)
+                      if (func.head instanceof SimpleDec && prot.head instanceof SimpleDec){
                         funcVal = (SimpleDec) func.head;
-                      else
-                        funcArr = (ArrayDec) func.head;
-                      if (prot.head instanceof SimpleDec)
                         protVal = (SimpleDec) prot.head;
-                      else
+
+                        if (!(funcVal.name.equals(protVal.name) && funcVal.typ.type == protVal.typ.type)) {
+                          printError(
+                              String.format(
+                                  "Error in line %d, column %d at `%s': Function parameters do not match prototype",
+                                  functionDec.row + 1, functionDec.col, functionDec.func));
+                        }
+                      }
+                      else if (func.head instanceof SimpleDec && prot.head instanceof ArrayDec){
+                        funcVal = (SimpleDec) func.head;
                         protArr = (ArrayDec) prot.head;
 
-                      if (!(funcVal.name.equals(protVal.name) && funcVal.typ.type == protVal.typ.type)) {
-                        printError(
-                            String.format(
-                                "Error in line %d, column %d at `%s': Function parameters do not match prototype",
-                                functionDec.row + 1, functionDec.col, functionDec.func));
+                        if (!(funcVal.name.equals(protArr.name) && funcVal.typ.type == protArr.typ.type)) {
+                          printError(
+                              String.format(
+                                  "Error in line %d, column %d at `%s': Function parameters do not match prototype",
+                                  functionDec.row + 1, functionDec.col, functionDec.func));
+                        }
                       }
+                      else if (func.head instanceof ArrayDec && prot.head instanceof ArrayDec){
+                        funcArr = (ArrayDec) func.head;
+                        protArr = (ArrayDec) prot.head;
+
+                        if (!(funcArr.name.equals(protArr.name) && funcArr.typ.type == protArr.typ.type)) {
+                          printError(
+                              String.format(
+                                  "Error in line %d, column %d at `%s': Function parameters do not match prototype",
+                                  functionDec.row + 1, functionDec.col, functionDec.func));
+                        }
+                      }
+                      else if (func.head instanceof ArrayDec && prot.head instanceof SimpleDec){
+                        funcArr = (ArrayDec) func.head;
+                        protVal = (SimpleDec) prot.head;
+
+                        if (!(funcArr.name.equals(protVal.name) && funcArr.typ.type == protVal.typ.type)) {
+                          printError(
+                              String.format(
+                                  "Error in line %d, column %d at `%s': Function parameters do not match prototype",
+                                  functionDec.row + 1, functionDec.col, functionDec.func));
+                        }
+                      }
+
                     } else {
                       printError(
                           String.format(
@@ -580,6 +610,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         level++;
         if (functionDec.params != null)
           functionDec.params.accept(this, level);
+
         if (functionDec.body != null)
           functionDec.body.accept(this, level);
 
@@ -644,7 +675,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     indent(level);
     boolean canReturnThen = false;
     boolean canReturnElse = false;
-    System.out.println("Entering conditional block scope:");
+    System.out.println("Entering IF conditional block scope:");
     if (ifExp.test != null) {
       level++;
       ifExp.test.accept(this, level);
@@ -668,7 +699,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       level--;
     }
     indent(level);
-    System.out.println("Exiting conditional block scope");
+    System.out.println("Exiting IF conditional block scope");
 
     NodeType newNode = new NodeType("if", Constants.COMPOUND, new NameTy(ifExp.row, ifExp.col, -1),
         null,
@@ -980,7 +1011,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(WhileExp whileExp, int level) {
     indent(level);
-    System.out.println("Entering conditional block scope:");
+    System.out.println("Entering WHILE conditional block scope:");
     if (whileExp.test != null) {
       level++;
       whileExp.test.accept(this, level);
@@ -999,7 +1030,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       level--;
     }
     indent(level);
-    System.out.println("Exiting conditional block scope");
+    System.out.println("Exiting WHILE conditional block scope");
   }
 
   public void printError(String err) {

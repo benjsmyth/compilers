@@ -1,0 +1,30 @@
+Entering global scope:
+    Entering function scope `reduce':
+        i: int
+            Return:
+                operation: -
+                    i: int
+                    1: int
+    Exiting function scope `reduce':
+    reduce: (i: int) -> int
+    Entering function scope `main':
+            i: int
+            j: int
+            Assignment:
+                i: int
+                6: int
+            Assignment:
+                j: int
+                3: int
+            Entering conditional block scope:
+                operation: <
+                    j: int
+                    i: int
+                        Assignment:
+                            i: int
+                            Call to function 'reduce':
+                                i: int
+            Exiting conditional block scope
+    Exiting function scope `main':
+    main: () -> void
+Exiting global scope

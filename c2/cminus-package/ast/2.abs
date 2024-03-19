@@ -1,0 +1,31 @@
+instead expected token classes are [MINUS, MULT, DIV, LESS, LESSEQ, GREATER, GREATEREQ, EQUAL, NEQUAL, OR, AND, ASSIGN, SEMICOLON, LPAREN, LBRACKET]
+instead expected token classes are [PLUS, MINUS, MULT, DIV, LESS, LESSEQ, GREATER, GREATEREQ, EQUAL, NEQUAL, OR, AND, ASSIGN, SEMICOLON, LPAREN, LBRACKET]
+DecList
+    FunctionDec
+        CompoundExp
+            ExpList
+                ReturnExp
+                    IntExp
+                        value: 1
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    name: x
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: fac
+                SimpleDec
+                    NameTy
+                        type: BOOL
+                    name: test
+                SimpleDec
+                    name: x
+            ExpList
+                CallExp
+                    function name: output
+                    ExpList
+                        VarExp
+                            SimpleVar
+                                name: fac

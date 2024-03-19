@@ -51,6 +51,48 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
+  public boolean checkCanReturn(int level) {
+    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+    iterator = table.entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+      ArrayList<NodeType> nodeList = entry.getValue();
+      for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
+        NodeType node = nodeIter.next();
+        if (node.level == level) {
+          if (node.canReturn) {
+            return true;
+          }
+        }
+      }
+      if (nodeList.isEmpty()) {
+        iterator.remove();
+      }
+    }
+    return false;
+  }
+
+  public boolean checkCanReturnFinal(int level) {
+    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+    iterator = table.entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+      ArrayList<NodeType> nodeList = entry.getValue();
+      for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
+        NodeType node = nodeIter.next();
+        if (node.level == level && node.id == Constants.COMPOUND) {
+          if (!node.canReturn) {
+            return false;
+          }
+        }
+      }
+      if (nodeList.isEmpty()) {
+        iterator.remove();
+      }
+    }
+    return true;
+  }
+
   public ArrayList<String> sameLevelTypes(int level) {
     Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
     iterator = table.entrySet().iterator();
@@ -280,6 +322,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
           break;
       }
       NodeType newNode = new NodeType(arrayDec.name, arrayDec.size, arrayDec.typ, arrayDec, level);
+      if (newNode.id == 0)
+        newNode.id = 1;
       insert(arrayDec.name, newNode);
     }
   }
@@ -324,6 +368,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
       ExpList args = callExp.args;
       String errStr = "";
+      int paramType = -1;
       level++;
       while (args != null) {
 
@@ -337,16 +382,31 @@ public class SemanticAnalyzer implements AbsynVisitor {
             break;
           }
 
-          args.head.accept(this, level);
-          if (!(errStr = checkCallParam(level, ((SimpleDec) params.head).typ.type)).equals("correct")) {
-            printError(
-                String.format("Error in line %d, column %d at '%s': Invalid call to function '%s'",
-                    callExp.row + 1, callExp.col, errStr, node.name));
-            deleteLevelEntries(level);
-            break;
-          }
+          if (params.head instanceof SimpleDec) {
 
-          deleteLevelEntries(level);
+            args.head.accept(this, level);
+            if (!(errStr = checkCallParam(level, ((SimpleDec) params.head).typ.type)).equals("correct")) {
+              printError(
+                  String.format("Error in line %d, column %d at '%s': Invalid call to function '%s'",
+                      callExp.row + 1, callExp.col, errStr, node.name));
+              deleteLevelEntries(level);
+              break;
+            }
+
+            deleteLevelEntries(level);
+          } else {
+
+            args.head.accept(this, level);
+            if (!(errStr = checkCallParam(level, ((ArrayDec) params.head).typ.type)).equals("correct")) {
+              printError(
+                  String.format("Error in line %d, column %d at '%s': Invalid call to function '%s'",
+                      callExp.row + 1, callExp.col, errStr, node.name));
+              deleteLevelEntries(level);
+              break;
+            }
+
+            deleteLevelEntries(level);
+          }
         }
 
         params = params.tail;
@@ -360,15 +420,26 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     } else {
       System.err.println(String.format("Error in line %d, column %d at `%s': Undefined function call",
-          callExp.row, callExp.col, callExp.func));
+          callExp.row + 1, callExp.col, callExp.func));
     }
   }
 
   public void visit(CompoundExp compoundExp, int level) {
+
+    boolean canReturn = false;
+    level++;
     if (compoundExp.decs != null)
       compoundExp.decs.accept(this, level);
     if (compoundExp.exps != null)
       compoundExp.exps.accept(this, level);
+
+    canReturn = checkCanReturn(level);
+    deleteLevelEntries(level);
+    level--;
+    NodeType newNode = new NodeType("$" + "compound", Constants.COMPOUND,
+        new NameTy(compoundExp.row, compoundExp.col, -1), null, level);
+    newNode.canReturn = canReturn;
+    insert(newNode.name, newNode);
   }
 
   public void visit(DecList decList, int level) {
@@ -404,6 +475,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(FunctionDec functionDec, int level) {
     boolean error = false;
+    boolean canReturn = false;
     String type = null;
     if (lookup(functionDec.func) != null) {
       ArrayList<NodeType> node = lookup(functionDec.func);
@@ -420,7 +492,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
                   VarDecList prot = proto.params;
 
                   SimpleDec funcVal = null;
+                  ArrayDec funcArr = null;
                   SimpleDec protVal = null;
+                  ArrayDec protArr = null;
 
                   while (func != null) {
                     if (func.head != null) {
@@ -433,8 +507,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
                         break;
                       }
 
-                      funcVal = (SimpleDec) func.head;
-                      protVal = (SimpleDec) prot.head;
+                      if (func.head instanceof SimpleDec)
+                        funcVal = (SimpleDec) func.head;
+                      else
+                        funcArr = (ArrayDec) func.head;
+                      if (prot.head instanceof SimpleDec)
+                        protVal = (SimpleDec) prot.head;
+                      else
+                        protArr = (ArrayDec) prot.head;
 
                       if (!(funcVal.name.equals(protVal.name) && funcVal.typ.type == protVal.typ.type)) {
                         printError(
@@ -503,8 +583,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (functionDec.body != null)
           functionDec.body.accept(this, level);
 
+        canReturn = checkCanReturnFinal(level);
+
         if (!checkReturnEntry(level, functionDec.result.type)
-            && functionDec.result.type != NameTy.VOID) {
+            && functionDec.result.type != NameTy.VOID && !canReturn) {
           printError(
               String.format("Error in line %d, column %d: No return value",
                   functionDec.row + 1, functionDec.col));
@@ -524,18 +606,34 @@ public class SemanticAnalyzer implements AbsynVisitor {
       }
       System.out.print(String.format("%s: (", functionDec.func));
       VarDecList params = functionDec.params;
+      SimpleDec paramSimp;
+      ArrayDec paramArr;
       while (params != null) {
-        SimpleDec param = (SimpleDec) params.head;
-        System.out.print(param.name + ": ");
-        if (param.typ.type == 0) // Parameter is BOOL
-          System.out.print("bool");
-        else if (param.typ.type == 1) // Parameter is INT
-          System.out.print("int");
-        else if (param.typ.type == 2) // Parameter is VOID
-          System.out.print("void");
-        if (params.tail != null)
-          System.out.print(", ");
+        if (params.head instanceof SimpleDec) {
+          paramSimp = (SimpleDec) params.head;
+          System.out.print(paramSimp.name + ": ");
+          if (paramSimp.typ.type == 0) // Parameter is BOOL
+            System.out.print("bool");
+          else if (paramSimp.typ.type == 1) // Parameter is INT
+            System.out.print("int");
+          else if (paramSimp.typ.type == 2) // Parameter is VOID
+            System.out.print("void");
+          if (params.tail != null)
+            System.out.print(", ");
+        } else {
+          paramArr = (ArrayDec) params.head;
+          System.out.print(paramArr.name + ": ");
+          if (paramArr.typ.type == 0) // Parameter is BOOL
+            System.out.print("bool");
+          else if (paramArr.typ.type == 1) // Parameter is INT
+            System.out.print("int");
+          else if (paramArr.typ.type == 2) // Parameter is VOID
+            System.out.print("void");
+          if (params.tail != null)
+            System.out.print(", ");
+        }
         params = params.tail;
+
       }
       System.out.println(") -> " + type);
     }
@@ -544,6 +642,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   public void visit(IfExp ifExp, int level) {
     indent(level);
+    boolean canReturnThen = false;
+    boolean canReturnElse = false;
     System.out.println("Entering conditional block scope:");
     if (ifExp.test != null) {
       level++;
@@ -556,9 +656,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
       level++;
       if (ifExp.thenpart != null)
         ifExp.thenpart.accept(this, level);
+      canReturnThen = checkCanReturn(level);
+      deleteLevelEntries(level);
       if (ifExp.elsepart != null)
         ifExp.elsepart.accept(this, level);
 
+      canReturnElse = checkCanReturn(level);
       deleteLevelEntries(level);
       level--;
       deleteLevelEntries(level);
@@ -566,6 +669,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
     indent(level);
     System.out.println("Exiting conditional block scope");
+
+    NodeType newNode = new NodeType("if", Constants.COMPOUND, new NameTy(ifExp.row, ifExp.col, -1),
+        null,
+        level);
+    newNode.canReturn = canReturnThen && canReturnElse;
+    insert(newNode.name, newNode);
   }
 
   public void visit(IndexVar indexVar, int level) {
@@ -591,7 +700,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         printError(
             String.format("Error in line %d, column %d: Invalid array access",
                 indexVar.row + 1, indexVar.col));
-      } else if (typ >= ((ArrayDec) node.get(0).def).size || typ < 0) {
+      } else if (typ < 0) {
         printError(
             String.format("Error in line %d, column %d: Index out of bounds",
                 indexVar.row + 1, indexVar.col));
@@ -704,26 +813,27 @@ public class SemanticAnalyzer implements AbsynVisitor {
       opExp.right.accept(this, level);
     }
 
-    ArrayList<String> typ;
-
-    if ((typ = sameLevelTypes(level)).get(2) == "-1") {
-      printError(
-          String.format("Error in line %d, column %d: Invalid type operation between '%s' and '%s'",
-              opExp.row + 1, opExp.col, typ.get(0), typ.get(1)));
-    } else if (typ.get(0).equals("bool") && opExp.op < 5) {
-      printError(
-          String.format("Error in line %d, column %d: Invalid operand on 'bool'",
-              opExp.row + 1, opExp.col));
-    } else if (opExp.op >= 5) {
-      typ.set(3, Integer.toString(NameTy.BOOL));
+    ArrayList<String> typ = sameLevelTypes(level);
+    int set = NameTy.INT;
+    if (typ.size() == 3) {
+      if (typ.get(2) == "-1") {
+        printError(
+            String.format("Error in line %d, column %d: Invalid type operation between '%s' and '%s'",
+                opExp.row + 1, opExp.col, typ.get(0), typ.get(1)));
+      } else if (typ.get(0).equals("bool") && opExp.op < 5) {
+        printError(
+            String.format("Error in line %d, column %d: Invalid operand on 'bool'",
+                opExp.row + 1, opExp.col));
+      } else if (opExp.op >= 5) {
+        set = NameTy.BOOL;
+      }
     }
-
     deleteLevelEntries(level);
 
     level--;
 
     NodeType newNode = new NodeType(Integer.toString(opExp.op), 0,
-        new NameTy(opExp.row, opExp.col, Integer.parseInt(typ.get(2))), null, level);
+        new NameTy(opExp.row, opExp.col, set), null, level);
     insert(newNode.name, newNode);
 
   }
@@ -749,6 +859,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
       NodeType newNode = new NodeType("return", Constants.RETURN,
           new NameTy(returnExp.row, returnExp.col, Integer.parseInt(typ.get(1))), null,
           level);
+      newNode.canReturn = true;
+      insert(newNode.name, newNode);
+    } else {
+      NodeType newNode = new NodeType("return", Constants.RETURN,
+          new NameTy(returnExp.row, returnExp.col, 1), null,
+          level);
+      newNode.canReturn = true;
       insert(newNode.name, newNode);
     }
     /*

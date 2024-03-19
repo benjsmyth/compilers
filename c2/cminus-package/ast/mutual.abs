@@ -1,0 +1,126 @@
+DecList
+    SimpleDec
+        NameTy
+            type: INT
+        name: x
+    SimpleDec
+        NameTy
+            type: INT
+        name: y
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: n
+        NilExp
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: n
+        CompoundExp
+            ExpList
+                CallExp
+                    function name: g
+                    ExpList
+                        VarExp
+                            SimpleVar
+                                name: n
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: y
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: y
+                        Operator: -
+                        IntExp
+                            value: 1
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: m
+        CompoundExp
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: m
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: m
+                        Operator: -
+                        IntExp
+                            value: 1
+                IfExp:
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: m
+                        Operator: >
+                        IntExp
+                            value: 0
+                    CompoundExp
+                        ExpList
+                            CallExp
+                                function name: f
+                                ExpList
+                                    VarExp
+                                        SimpleVar
+                                            name: m
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: y
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: y
+                                    Operator: -
+                                    IntExp
+                                        value: 1
+                            CallExp
+                                function name: g
+                                ExpList
+                                    VarExp
+                                        SimpleVar
+                                            name: m
+    FunctionDec
+        CompoundExp
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: x
+                    CallExp
+                        function name: input
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: y
+                    CallExp
+                        function name: input
+                CallExp
+                    function name: g
+                    ExpList
+                        VarExp
+                            SimpleVar
+                                name: x
+                CallExp
+                    function name: output
+                    ExpList
+                        VarExp
+                            SimpleVar
+                                name: x
+                CallExp
+                    function name: output
+                    ExpList
+                        VarExp
+                            SimpleVar
+                                name: y

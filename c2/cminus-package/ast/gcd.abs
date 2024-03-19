@@ -1,0 +1,72 @@
+DecList
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: u
+            SimpleDec
+                NameTy
+                    type: INT
+                name: v
+        CompoundExp
+            ExpList
+                IfExp:
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: v
+                        Operator: =
+                        IntExp
+                            value: 0
+                    ReturnExp
+                        VarExp
+                            SimpleVar
+                                name: u
+                    ELSE
+                    ReturnExp
+                        CallExp
+                            function name: gcd
+                            ExpList
+                                VarExp
+                                    SimpleVar
+                                        name: v
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: u
+                                    Operator: -
+                                    OpExp
+                                        OpExp
+                                            VarExp
+                                                SimpleVar
+                                                    name: u
+                                            Operator: /
+                                            VarExp
+                                                SimpleVar
+                                                    name: v
+                                        Operator: *
+                                        VarExp
+                                            SimpleVar
+                                                name: v
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: x
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: y
+            ExpList
+                CallExp
+                    function name: gcd
+                    ExpList
+                        VarExp
+                            SimpleVar
+                                name: x
+                        VarExp
+                            SimpleVar
+                                name: y

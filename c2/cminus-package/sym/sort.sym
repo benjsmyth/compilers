@@ -1,0 +1,130 @@
+Entering global scope:
+    x[10]: int
+    Entering function scope `minloc':
+        a[0]: int
+        low: int
+        high: int
+            i: int
+            x: int
+            k: int
+            Assignment:
+                k: int
+                low: int
+            Assignment:
+                x: int
+                index variable: a
+                    low: int
+            Assignment:
+                i: int
+                operation: +
+                    low: int
+                    1: int
+            Entering conditional block scope:
+                operation: <
+                    i: int
+                    high: int
+                        Entering conditional block scope:
+                            operation: <
+                                index variable: a
+                                    i: int
+                                x: int
+                                    Assignment:
+                                        x: int
+                                        index variable: a
+                                            i: int
+                                    Assignment:
+                                        k: int
+                                        i: int
+                        Exiting conditional block scope
+                        Assignment:
+                            i: int
+                            operation: +
+                                i: int
+                                1: int
+            Exiting conditional block scope
+            Return:
+                k: int
+    Exiting function scope `minloc':
+    minloc: (a: int, low: int, high: int) -> int
+    Entering function scope `sort':
+        a[0]: int
+        low: int
+        high: int
+            i: int
+            k: int
+            Assignment:
+                i: int
+                low: int
+            Entering conditional block scope:
+                operation: <
+                    i: int
+                    operation: -
+                        high: int
+                        1: int
+                        t: int
+                        Assignment:
+                            k: int
+                            Call to function 'minloc':
+                                a: int
+                                i: int
+                                high: int
+                        Assignment:
+                            t: int
+                            index variable: a
+                                k: int
+                        Assignment:
+                            index variable: a
+                                k: int
+                            index variable: a
+                                i: int
+                        Assignment:
+                            index variable: a
+                                i: int
+                            t: int
+                        Assignment:
+                            i: int
+                            operation: +
+                                i: int
+                                1: int
+            Exiting conditional block scope
+    Exiting function scope `sort':
+    sort: (a: int, low: int, high: int) -> void
+    Entering function scope `main':
+            i: int
+            Assignment:
+                i: int
+                0: int
+            Entering conditional block scope:
+                operation: <
+                    i: int
+                    10: int
+                        Assignment:
+                            index variable: x
+                                i: int
+                            1: int
+                        Assignment:
+                            i: int
+                            operation: +
+                                i: int
+                                1: int
+            Exiting conditional block scope
+            Call to function 'sort':
+                x: int
+                0: int
+                10: int
+            Assignment:
+                i: int
+                0: int
+            Entering conditional block scope:
+                operation: <
+                    i: int
+                    10: int
+                        Assignment:
+                            i: int
+                            operation: +
+                                i: int
+                                1: int
+            Exiting conditional block scope
+    Exiting function scope `main':
+    main: () -> void
+Exiting global scope

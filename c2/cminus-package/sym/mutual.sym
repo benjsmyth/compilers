@@ -1,0 +1,48 @@
+Entering global scope:
+    x: int
+    y: int
+    Function Prototype - g: (n: int) -> void
+    Entering function scope `f':
+        n: int
+            Call to function 'g':
+                n: int
+            Assignment:
+                y: int
+                operation: -
+                    y: int
+                    1: int
+    Exiting function scope `f':
+    f: (n: int) -> void
+    Entering function scope `g':
+        m: int
+            Assignment:
+                m: int
+                operation: -
+                    m: int
+                    1: int
+            Entering conditional block scope:
+                operation: >
+                    m: int
+                    0: int
+                        Call to function 'f':
+                            m: int
+                        Assignment:
+                            y: int
+                            operation: -
+                                y: int
+                                1: int
+                        Call to function 'g':
+                            m: int
+            Exiting conditional block scope
+    Exiting function scope `g':
+    g: (m: int) -> void
+    Entering function scope `main':
+            Assignment:
+                x: int
+            Assignment:
+                y: int
+            Call to function 'g':
+                x: int
+    Exiting function scope `main':
+    main: () -> int
+Exiting global scope

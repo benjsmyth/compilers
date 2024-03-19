@@ -1,0 +1,32 @@
+Entering global scope:
+    Entering function scope `gcd':
+        u: int
+        v: int
+            Entering conditional block scope:
+                operation: =
+                    v: int
+                    0: int
+                    Return:
+                        u: int
+                    Return:
+                        Call to function 'gcd':
+                            v: int
+                            operation: -
+                                u: int
+                                operation: *
+                                    operation: /
+                                        u: int
+                                        v: int
+                                    v: int
+            Exiting conditional block scope
+    Exiting function scope `gcd':
+    gcd: (u: int, v: int) -> int
+    Entering function scope `main':
+            x: int
+            y: int
+            Call to function 'gcd':
+                x: int
+                y: int
+    Exiting function scope `main':
+    main: () -> void
+Exiting global scope

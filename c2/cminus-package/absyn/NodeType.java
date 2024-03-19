@@ -6,7 +6,7 @@ public class NodeType {
     public int id;
     public int level;
     public NameTy typ;
-    public boolean isFunc;
+    public boolean canReturn;
 
     public NodeType(String name, int id, NameTy typ, Dec def, int level) {
         this.name = name;
@@ -14,7 +14,7 @@ public class NodeType {
         this.id = id;
         this.typ = typ;
         this.level = level;
-        this.isFunc = false;
+        this.canReturn = false;
     }
     
     public String toString() {

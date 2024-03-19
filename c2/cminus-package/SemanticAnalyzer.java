@@ -368,7 +368,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
       ExpList args = callExp.args;
       String errStr = "";
-      int paramType = -1;
       level++;
       while (args != null) {
 
@@ -427,15 +426,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public void visit(CompoundExp compoundExp, int level) {
 
     boolean canReturn = false;
-    level++;
     if (compoundExp.decs != null)
       compoundExp.decs.accept(this, level);
     if (compoundExp.exps != null)
       compoundExp.exps.accept(this, level);
 
-    canReturn = checkCanReturn(level);
-    deleteLevelEntries(level);
-    level--;
+    canReturn = checkCanReturnFinal(level);
     NodeType newNode = new NodeType("$" + "compound", Constants.COMPOUND,
         new NameTy(compoundExp.row, compoundExp.col, -1), null, level);
     newNode.canReturn = canReturn;
@@ -507,7 +503,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
                         break;
                       }
 
-                      if (func.head instanceof SimpleDec && prot.head instanceof SimpleDec){
+                      if (func.head instanceof SimpleDec && prot.head instanceof SimpleDec) {
                         funcVal = (SimpleDec) func.head;
                         protVal = (SimpleDec) prot.head;
 
@@ -517,8 +513,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
                                   "Error in line %d, column %d at `%s': Function parameters do not match prototype",
                                   functionDec.row + 1, functionDec.col, functionDec.func));
                         }
-                      }
-                      else if (func.head instanceof SimpleDec && prot.head instanceof ArrayDec){
+                      } else if (func.head instanceof SimpleDec && prot.head instanceof ArrayDec) {
                         funcVal = (SimpleDec) func.head;
                         protArr = (ArrayDec) prot.head;
 
@@ -528,8 +523,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
                                   "Error in line %d, column %d at `%s': Function parameters do not match prototype",
                                   functionDec.row + 1, functionDec.col, functionDec.func));
                         }
-                      }
-                      else if (func.head instanceof ArrayDec && prot.head instanceof ArrayDec){
+                      } else if (func.head instanceof ArrayDec && prot.head instanceof ArrayDec) {
                         funcArr = (ArrayDec) func.head;
                         protArr = (ArrayDec) prot.head;
 
@@ -539,8 +533,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
                                   "Error in line %d, column %d at `%s': Function parameters do not match prototype",
                                   functionDec.row + 1, functionDec.col, functionDec.func));
                         }
-                      }
-                      else if (func.head instanceof ArrayDec && prot.head instanceof SimpleDec){
+                      } else if (func.head instanceof ArrayDec && prot.head instanceof SimpleDec) {
                         funcArr = (ArrayDec) func.head;
                         protVal = (SimpleDec) prot.head;
 
@@ -616,12 +609,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         canReturn = checkCanReturnFinal(level);
 
-        if (!checkReturnEntry(level, functionDec.result.type)
-            && functionDec.result.type != NameTy.VOID && !canReturn) {
-          printError(
-              String.format("Error in line %d, column %d: No return value",
-                  functionDec.row + 1, functionDec.col));
-        }
+        if (!canReturn) {
+          if (!checkReturnEntry(level, functionDec.result.type)
+              && functionDec.result.type != NameTy.VOID) {
+            if (!canReturn)
+              printError(
+                  String.format("Error in line %d, column %d: No return value",
+                      functionDec.row + 1, functionDec.col));
+          }
+        } else
+          checkReturnEntry(level, functionDec.result.type);
 
         deleteLevelEntries(level);
         level--;

@@ -1,36 +1,36 @@
 Entering global scope:
     Entering function scope `main':
+        x: int
+        fac: int
+        test: bool
+        Assignment:
             x: int
+        Assignment:
             fac: int
+            1: int
+        Assignment:
             test: bool
-            Assignment:
+            operation: >
                 x: int
-            Assignment:
-                fac: int
                 1: int
-            Assignment:
-                test: bool
-                operation: >
+        Entering WHILE conditional block scope:
+            test: bool
+                Assignment:
+                    fac: int
+                    operation: *
+                        fac: int
+                        x: int
+                Assignment:
                     x: int
-                    1: int
-            Entering conditional block scope:
-                test: bool
-                        Assignment:
-                            fac: int
-                            operation: *
-                                fac: int
-                                x: int
-                        Assignment:
-                            x: int
-                            operation: -
-                                x: int
-                                1: int
-                        Assignment:
-                            test: bool
-                            operation: >
-                                x: int
-                                1: int
-            Exiting conditional block scope
+                    operation: -
+                        x: int
+                        1: int
+                Assignment:
+                    test: bool
+                    operation: >
+                        x: int
+                        1: int
+        Exiting WHILE conditional block scope
     Exiting function scope `main':
     main: () -> void
 Exiting global scope

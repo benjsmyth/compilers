@@ -7,50 +7,7 @@ DecList
                         value: true
     FunctionDec
         CompoundExp
-            VarDecList
-                SimpleDec
-                    NameTy
-                        type: INT
-                    name: i
-                ArrayDec
-                    type: INT
-                    name: j
-                    size: 10
             ExpList
-                AssignExp
-                    VarExp
-                        SimpleVar
-                            name: i
-                    IntExp
-                        value: 0
-                WhileExp
-                    CallExp
-                        function name: foo
-                    CompoundExp
-                        ExpList
-                            AssignExp
-                                VarExp
-                                    SimpleVar
-                                        name: i
-                                OpExp
-                                    VarExp
-                                        SimpleVar
-                                            name: i
-                                    Operator: +
-                                    IntExp
-                                        value: 1
-                AssignExp
-                    VarExp
-                        IndexVar
-                            name: j
-                            CallExp
-                                function name: foo
-                                ExpList
-                                    VarExp
-                                        SimpleVar
-                                            name: i
-                    IntExp
-                        value: 1
                 ReturnExp
-                    IntExp
-                        value: 1
+                    BoolExp
+                        value: true

@@ -5,25 +5,8 @@ Entering global scope:
     Exiting function scope `foo':
     foo: () -> bool
     Entering function scope `main':
-        i: int
-        j[10]: int
-        Assignment:
-            i: int
-            0: int
-        Entering conditional block scope:
-            Call to function 'foo':
-                Assignment:
-                    i: int
-                    operation: +
-                        i: int
-                        1: int
-        Exiting conditional block scope
-        Assignment:
-            index variable: j
-                Call to function 'foo':
-            1: int
         Return:
-            1: int
+            true: bool
     Exiting function scope `main':
     main: () -> int
 Exiting global scope

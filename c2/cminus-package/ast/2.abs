@@ -3,4 +3,19 @@ DecList
         CompoundExp
             ExpList
                 ReturnExp
-                    NilExp
+                    IntExp
+                        value: 1
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: x
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: x
+                    CallExp
+                        function name: foo

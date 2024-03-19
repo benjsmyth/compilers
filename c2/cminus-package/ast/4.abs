@@ -17,5 +17,11 @@ DecList
                             name: b
                     IntExp
                         value: 1
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: a
+                    BoolExp
+                        value: true
                 ReturnExp
                     NilExp

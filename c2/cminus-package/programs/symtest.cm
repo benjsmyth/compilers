@@ -5,5 +5,11 @@ bool foo(void){
 
 int main(void) { 
     
-    return true;
+    if (true){
+        return true;
+    }
+    else{
+        {return false;}
+
+    }
 }

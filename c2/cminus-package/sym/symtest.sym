@@ -5,8 +5,13 @@ Entering global scope:
     Exiting function scope `foo':
     foo: () -> bool
     Entering function scope `main':
-        Return:
+        Entering IF conditional block scope:
             true: bool
+                Return:
+                    true: bool
+                Return:
+                    false: bool
+        Exiting IF conditional block scope
     Exiting function scope `main':
     main: () -> int
 Exiting global scope

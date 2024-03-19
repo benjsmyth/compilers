@@ -75,6 +75,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public boolean checkCanReturnFinal(int level) {
     Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
     iterator = table.entrySet().iterator();
+    boolean check = false;
     while (iterator.hasNext()) {
       Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
       ArrayList<NodeType> nodeList = entry.getValue();
@@ -84,13 +85,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
           if (!node.canReturn) {
             return false;
           }
+          else{
+            check = true;
+          }
         }
       }
       if (nodeList.isEmpty()) {
         iterator.remove();
       }
     }
-    return true;
+    return check;
   }
 
   public ArrayList<String> sameLevelTypes(int level) {
@@ -427,7 +431,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     if (compoundExp.exps != null)
       compoundExp.exps.accept(this, level);
 
-    canReturn = checkCanReturnFinal(level);
+    canReturn = checkCanReturnFinal(level) || checkCanReturn(level);
     NodeType newNode = new NodeType("$" + "compound", Constants.COMPOUND,
         new NameTy(compoundExp.row, compoundExp.col, -1), null, level);
     newNode.canReturn = canReturn;
@@ -966,7 +970,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     ArrayList<NodeType> node;
     if ((node = lookup(simpleVar.name)) == null) {
       printError(
-          String.format("Error in line %d, column %d at `%s': Undefined variable error",
+          String.format("Error in line %d, column %d at `%s': Undefined variable",
               simpleVar.row + 1, simpleVar.col, simpleVar.name));
     } else {
       NodeType newNode = new NodeType(simpleVar.name, 0, node.get(0).typ, null, level);

@@ -8,6 +8,19 @@ DecList
     FunctionDec
         CompoundExp
             ExpList
-                ReturnExp
+                IfExp:
                     BoolExp
                         value: true
+                    CompoundExp
+                        ExpList
+                            ReturnExp
+                                BoolExp
+                                    value: true
+                    ELSE
+                    CompoundExp
+                        ExpList
+                            CompoundExp
+                                ExpList
+                                    ReturnExp
+                                        BoolExp
+                                            value: false

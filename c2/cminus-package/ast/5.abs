@@ -1,6 +1,8 @@
 DecList
     FunctionDec
         CompoundExp
+    FunctionDec
+        CompoundExp
             VarDecList
                 SimpleDec
                     NameTy
@@ -15,5 +17,9 @@ DecList
                         value: true
                 CallExp
                     function name: f
+                IfExp:
+                    CallExp
+                        function name: foo
+                    CompoundExp
                 ReturnExp
                     NilExp

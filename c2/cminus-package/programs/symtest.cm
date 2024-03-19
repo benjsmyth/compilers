@@ -6,12 +6,15 @@ bool foo(void){
 int main(void) { 
     
     int i;
+    int j[10];
 
     i = 0;
 
     while (foo()){
         i = i + 1;
     }
+
+    j[foo(i)] = 1;
     
     return 1;
 }

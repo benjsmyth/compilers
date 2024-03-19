@@ -51,31 +51,72 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
-  public int sameLevelTypes(int level) {
+  public ArrayList<String> sameLevelTypes(int level) {
     Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
     iterator = table.entrySet().iterator();
     boolean same = true;
-    int typ = -1;
+    String hold = "";
+    int store = -1;
+    ArrayList<String> typ = new ArrayList<String>();
     while (iterator.hasNext()) {
       Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
       ArrayList<NodeType> nodeList = entry.getValue();
       for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
         NodeType node = nodeIter.next();
         if (node.level == level) {
-          if (typ == -1 || typ == node.typ.type) {
-            typ = node.typ.type;
-          } else {
+          switch (node.typ.type) {
+            case NameTy.BOOL:
+              hold = "bool";
+              break;
+
+            case NameTy.INT:
+              hold = "int";
+              break;
+
+            case NameTy.VOID:
+              hold = "void";
+              break;
+
+            default:
+              break;
+          }
+          if (!(typ.size() == 0 || typ.get(0).equals(hold))) {
             same = false;
           }
+          typ.add(hold);
+          store = node.typ.type;
         }
       }
       if (nodeList.isEmpty()) {
         iterator.remove();
       }
     }
-    if (!same)
-      return -1;
+    if (!same) {
+      typ.add("-1");
+    } else {
+      typ.add(Integer.toString(store));
+    }
     return typ;
+  }
+
+  public int indexInBounds(int level) {
+    Iterator<HashMap.Entry<String, ArrayList<NodeType>>> iterator;
+    iterator = table.entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, ArrayList<NodeType>> entry = iterator.next();
+      ArrayList<NodeType> nodeList = entry.getValue();
+      for (Iterator<NodeType> nodeIter = nodeList.iterator(); nodeIter.hasNext();) {
+        NodeType node = nodeIter.next();
+        if (node.level == level) {
+          if (node.typ.type == NameTy.INT)
+            return node.typ.type;
+        }
+      }
+      if (nodeList.isEmpty()) {
+        iterator.remove();
+      }
+    }
+    return -1;
   }
 
   public boolean checkConditionType(int level) {
@@ -251,10 +292,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
       assignExp.lhs.accept(this, level);
     if (assignExp.rhs != null)
       assignExp.rhs.accept(this, level);
-    if (sameLevelTypes(level) == -1) {
+
+    ArrayList<String> typ = sameLevelTypes(level);
+    if (typ.size() == 3 && typ.get(2) == "-1") {
       printError(
-          String.format("Error in line %d, column %d: Invalid assignment",
-              assignExp.row + 1, assignExp.col));
+          String.format("Error in line %d, column %d: Invalid assignment to '%s' from '%s'",
+              assignExp.row + 1, assignExp.col, typ.get(1), typ.get(0)));
     }
     deleteLevelEntries(level);
 
@@ -544,13 +587,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
       int typ;
 
-      if ((typ = sameLevelTypes(level)) == -1) {
-        printError(
-            String.format("Error in line %d, column %d: Invalid type operation",
-                indexVar.row + 1, indexVar.col));
-      } else if (typ != NameTy.INT) {
+      if ((typ = indexInBounds(level)) == -1) {
         printError(
             String.format("Error in line %d, column %d: Invalid array access",
+                indexVar.row + 1, indexVar.col));
+      } else if (typ >= ((ArrayDec) node.get(0).def).size || typ < 0) {
+        printError(
+            String.format("Error in line %d, column %d: Index out of bounds",
                 indexVar.row + 1, indexVar.col));
       }
 
@@ -661,32 +704,33 @@ public class SemanticAnalyzer implements AbsynVisitor {
       opExp.right.accept(this, level);
     }
 
-    int typ;
+    ArrayList<String> typ;
 
-    if ((typ = sameLevelTypes(level)) == -1) {
+    if ((typ = sameLevelTypes(level)).get(2) == "-1") {
       printError(
-          String.format("Error in line %d, column %d: Invalid type operation",
-              opExp.row + 1, opExp.col));
-    } else if (typ == NameTy.BOOL && opExp.op < 5) {
+          String.format("Error in line %d, column %d: Invalid type operation between '%s' and '%s'",
+              opExp.row + 1, opExp.col, typ.get(0), typ.get(1)));
+    } else if (typ.get(0).equals("bool") && opExp.op < 5) {
       printError(
-          String.format("Error in line %d, column %d: Invalid operand",
+          String.format("Error in line %d, column %d: Invalid operand on 'bool'",
               opExp.row + 1, opExp.col));
     } else if (opExp.op >= 5) {
-      typ = NameTy.BOOL;
+      typ.set(3, Integer.toString(NameTy.BOOL));
     }
 
     deleteLevelEntries(level);
 
     level--;
 
-    NodeType newNode = new NodeType(Integer.toString(opExp.op), 0, new NameTy(opExp.row, opExp.col, typ), null, level);
+    NodeType newNode = new NodeType(Integer.toString(opExp.op), 0,
+        new NameTy(opExp.row, opExp.col, Integer.parseInt(typ.get(2))), null, level);
     insert(newNode.name, newNode);
 
   }
 
   public void visit(ReturnExp returnExp, int level) {
 
-    int typ = -1;
+    ArrayList<String> typ;
 
     indent(level);
     level++;
@@ -701,10 +745,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
     deleteLevelEntries(level);
 
     level--;
-    NodeType newNode = new NodeType("return", Constants.RETURN, new NameTy(returnExp.row, returnExp.col, typ), null,
-        level);
-    insert(newNode.name, newNode);
-
+    if (typ.size() == 2) {
+      NodeType newNode = new NodeType("return", Constants.RETURN,
+          new NameTy(returnExp.row, returnExp.col, Integer.parseInt(typ.get(1))), null,
+          level);
+      insert(newNode.name, newNode);
+    }
     /*
      * this.table.forEach((key, list) -> { // Iterate table
      * for (NodeType node : list) { // Iterate list

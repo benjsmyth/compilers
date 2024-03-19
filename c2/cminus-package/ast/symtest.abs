@@ -12,6 +12,10 @@ DecList
                     NameTy
                         type: INT
                     name: i
+                ArrayDec
+                    type: INT
+                    name: j
+                    size: 10
             ExpList
                 AssignExp
                     VarExp
@@ -35,6 +39,18 @@ DecList
                                     Operator: +
                                     IntExp
                                         value: 1
+                AssignExp
+                    VarExp
+                        IndexVar
+                            name: j
+                            CallExp
+                                function name: foo
+                                ExpList
+                                    VarExp
+                                        SimpleVar
+                                            name: i
+                    IntExp
+                        value: 1
                 ReturnExp
                     IntExp
                         value: 1

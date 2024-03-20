@@ -1,0 +1,10 @@
+
+void funtwo(void){
+    int x;
+    x = 2;
+    return x;
+}
+
+void main(void){
+    funtwo();
+}

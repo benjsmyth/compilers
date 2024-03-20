@@ -1,0 +1,21 @@
+/* Missing semi colon error 
+    - self-explanatory
+*/
+
+void main(void) {
+  int x; 
+  int fac
+  bool test;
+
+  x = input();
+  fac = 1;
+  while (x > 1) {
+    fac = fac * x;
+    x = x - 1;
+  } 
+
+  output(fac);
+}
+
+int x
+int y;

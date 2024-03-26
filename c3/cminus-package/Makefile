@@ -21,7 +21,7 @@ parser.java: cminus.cup
 	$(CUP) cminus.cup
 
 clean:
-	rm -f parser.java Lexer.java sym.java *.class ast/*.abs sym/*.sym tm/*.tm absyn/*.class *~
+	rm -f parser.java Lexer.java sym.java *.class ast/*.abs sym/*.sym code/*.tm absyn/*.class *~
 
 cast:
 	rm ast/*.abs
@@ -29,5 +29,5 @@ cast:
 csym:
 	rm sym/*.sym
 
-ctm:
-	rm tm/*.tm
+ccode:
+	rm code/*.tm

@@ -85,7 +85,7 @@ class Main {
       if (result != null) {
         /* Parse */
         AbsynVisitor visitor = new ShowTreeVisitor();
-        result.accept(visitor, 0);
+        result.accept(visitor, 0, false);
         /* Write parse */
         BufferedWriter writer = new BufferedWriter(new FileWriter(astFile));
         writer.write(baos.toString());
@@ -96,7 +96,7 @@ class Main {
       System.setOut(ps2);
       if (result != null && p.valid) {
         AbsynVisitor visitor = new SemanticAnalyzer(old, ps2);
-        result.accept(visitor, 0);
+        result.accept(visitor, 0, false);
       }
 
       /* Generate only if analyzed */

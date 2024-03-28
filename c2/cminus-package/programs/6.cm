@@ -1,0 +1,21 @@
+/* Invalid Function Call
+   Invalid assignment to function call
+*/
+
+
+bool foo(int k, int a){
+    return true;
+}
+
+int number(void){
+    return true;
+}
+
+
+int main(void) { 
+    
+    int u;
+    u = foo(1, true);
+    
+    return 1;
+}

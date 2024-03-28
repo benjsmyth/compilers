@@ -31,7 +31,7 @@ public class OpExp extends Exp {
         this.op = op;
     }
 
-  public void accept( AbsynVisitor visitor, int level ) {
-    visitor.visit( this, level );
+  public void accept( AbsynVisitor visitor, int level, boolean flag ) {
+    visitor.visit( this, level, flag );
   }
 }

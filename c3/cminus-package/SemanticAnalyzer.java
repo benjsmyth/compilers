@@ -224,7 +224,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       System.out.print(" ");
   }
 
-  public void visit(ArrayDec arrayDec, int level) {
+  public void visit(ArrayDec arrayDec, int level, boolean flag) {
     boolean error = false;
     if (lookup(arrayDec.name) != null) {
       ArrayList<NodeType> node = lookup(arrayDec.name);
@@ -264,14 +264,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
-  public void visit(AssignExp assignExp, int level) {
+  public void visit(AssignExp assignExp, int level, boolean flag) {
     indent(level);
     System.out.println("Assignment:");
     level++;
     if (assignExp.lhs != null)
-      assignExp.lhs.accept(this, level);
+      assignExp.lhs.accept(this, level, flag);
     if (assignExp.rhs != null)
-      assignExp.rhs.accept(this, level);
+      assignExp.rhs.accept(this, level, flag);
 
     ArrayList<String> typ = sameLevelTypes(level);
     if (typ.size() == 3 && typ.get(2) == "-1") {
@@ -283,7 +283,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   }
 
-  public void visit(BoolExp boolExp, int level) {
+  public void visit(BoolExp boolExp, int level, boolean flag) {
     indent(level);
     NodeType newNode = new NodeType(Boolean.toString(boolExp.value), 0,
         new NameTy(boolExp.row, boolExp.col, NameTy.BOOL), null, level);
@@ -292,7 +292,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     System.out.println(newNode.name + ": " + "bool");
   }
 
-  public void visit(CallExp callExp, int level) {
+  public void visit(CallExp callExp, int level, boolean flag) {
     ArrayList<NodeType> func;
     if ((func = lookup(callExp.func)) != null && func.get(0).def instanceof FunctionDec) {
       NodeType node = func.get(0);
@@ -319,7 +319,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
           if (params.head instanceof SimpleDec) {
 
-            args.head.accept(this, level);
+            args.head.accept(this, level, flag);
             if (!(errStr = checkCallParam(level, ((SimpleDec) params.head).typ.type)).equals("correct")) {
               printError(
                   String.format("Error in line %d, column %d at '%s': Invalid call to function '%s'",
@@ -331,7 +331,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
             deleteLevelEntries(level);
           } else {
 
-            args.head.accept(this, level);
+            args.head.accept(this, level, flag);
             if (!(errStr = checkCallParam(level, ((ArrayDec) params.head).typ.type)).equals("correct")) {
               printError(
                   String.format("Error in line %d, column %d at '%s': Invalid call to function '%s'",
@@ -359,13 +359,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
-  public void visit(CompoundExp compoundExp, int level) {
+  public void visit(CompoundExp compoundExp, int level, boolean flag) {
 
     boolean canReturn = false;
     if (compoundExp.decs != null)
-      compoundExp.decs.accept(this, level);
+      compoundExp.decs.accept(this, level, flag);
     if (compoundExp.exps != null)
-      compoundExp.exps.accept(this, level);
+      compoundExp.exps.accept(this, level, flag);
 
     canReturn = checkCanReturnFinal(level) || checkCanReturn(level);
     NodeType newNode = new NodeType("$" + "compound", Constants.COMPOUND,
@@ -374,13 +374,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
     insert(newNode.name, newNode);
   }
 
-  public void visit(DecList decList, int level) {
+  public void visit(DecList decList, int level, boolean flag) {
     boolean hasMain = false;
     System.out.println("Entering global scope:");
     level++;
     while (decList != null) {
       if (decList.head != null)
-        decList.head.accept(this, level);
+        decList.head.accept(this, level, flag);
       if (decList.head instanceof FunctionDec) {
         FunctionDec functionDec = (FunctionDec) decList.head;
         if (functionDec.func.equals("main")) {
@@ -397,15 +397,15 @@ public class SemanticAnalyzer implements AbsynVisitor {
     System.out.println("Exiting global scope");
   }
 
-  public void visit(ExpList expList, int level) {
+  public void visit(ExpList expList, int level, boolean flag) {
     while (expList != null) {
       if (expList.head != null)
-        expList.head.accept(this, level);
+        expList.head.accept(this, level, flag);
       expList = expList.tail;
     }
   }
 
-  public void visit(FunctionDec functionDec, int level) {
+  public void visit(FunctionDec functionDec, int level, boolean flag) {
     boolean error = false;
     boolean canReturn = false;
     String type = null;
@@ -542,10 +542,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
         insert(returnNode.name, returnNode);
 
         if (functionDec.params != null)
-          functionDec.params.accept(this, level);
+          functionDec.params.accept(this, level, flag);
 
         if (functionDec.body != null)
-          functionDec.body.accept(this, level);
+          functionDec.body.accept(this, level, flag);
 
         canReturn = checkCanReturnFinal(level);
 
@@ -605,14 +605,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   }
 
-  public void visit(IfExp ifExp, int level) {
+  public void visit(IfExp ifExp, int level, boolean flag) {
     indent(level);
     boolean canReturnThen = false;
     boolean canReturnElse = false;
     System.out.println("Entering IF conditional block scope:");
     if (ifExp.test != null) {
       level++;
-      ifExp.test.accept(this, level);
+      ifExp.test.accept(this, level, flag);
       if (!checkConditionType(level)) {
         printError(
             String.format("Error in line %d, column %d: Invalid condition type; Must be 'int' or 'bool' but got 'void'",
@@ -620,7 +620,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       }
       level++;
       if (ifExp.thenpart != null) {
-        ifExp.thenpart.accept(this, level);
+        ifExp.thenpart.accept(this, level, flag);
       }
       canReturnThen = checkCanReturn(level);
       indent(level - 2);
@@ -629,7 +629,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       if (ifExp.elsepart != null) {
         indent(level - 2);
         System.out.println("Entering ELSE conditional block scope");
-        ifExp.elsepart.accept(this, level);
+        ifExp.elsepart.accept(this, level, flag);
         indent(level - 2);
         System.out.println("Exiting ELSE conditional block scope");
       }
@@ -648,7 +648,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     insert(newNode.name, newNode);
   }
 
-  public void visit(IndexVar indexVar, int level) {
+  public void visit(IndexVar indexVar, int level, boolean flag) {
     ArrayList<NodeType> node;
     if ((node = lookup(indexVar.name)) == null || node.get(0).id == 0) {
       printError(
@@ -662,7 +662,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       level++;
 
       if (indexVar.index != null) {
-        indexVar.index.accept(this, level);
+        indexVar.index.accept(this, level, flag);
       }
 
       int typ;
@@ -688,7 +688,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
-  public void visit(IntExp intExp, int level) {
+  public void visit(IntExp intExp, int level, boolean flag) {
     indent(level);
 
     NodeType newNode = new NodeType(Integer.toString(intExp.value), 0,
@@ -698,15 +698,15 @@ public class SemanticAnalyzer implements AbsynVisitor {
     System.out.println(newNode.name + ": " + "int");
   }
 
-  public void visit(NameTy nameTy, int level) {
+  public void visit(NameTy nameTy, int level, boolean flag) {
     // Not needed
   }
 
-  public void visit(NilExp nilExp, int level) {
+  public void visit(NilExp nilExp, int level, boolean flag) {
     // Not needed
   }
 
-  public void visit(OpExp opExp, int level) {
+  public void visit(OpExp opExp, int level, boolean flag) {
 
     indent(level);
     System.out.print("operation: ");
@@ -777,11 +777,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     level++;
     if (opExp.left != null) {
-      opExp.left.accept(this, level);
+      opExp.left.accept(this, level, flag);
     }
 
     if (opExp.right != null) {
-      opExp.right.accept(this, level);
+      opExp.right.accept(this, level, flag);
     }
 
     ArrayList<String> typ = sameLevelTypes(level);
@@ -809,7 +809,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
   }
 
-  public void visit(ReturnExp returnExp, int level) {
+  public void visit(ReturnExp returnExp, int level, boolean flag) {
 
     ArrayList<String> typ;
 
@@ -820,7 +820,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         "Return:");
 
     if (returnExp.exp != null)
-      returnExp.exp.accept(this, level);
+      returnExp.exp.accept(this, level, flag);
 
     typ = sameLevelTypes(level);
     deleteLevelEntries(level);
@@ -948,9 +948,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
      */
   }
 
-  public void visit(SimpleDec simpleDec, int level) {
+  public void visit(SimpleDec simpleDec, int level, boolean flag) {
     if (simpleDec.typ != null)
-      simpleDec.typ.accept(this, level);
+      simpleDec.typ.accept(this, level, flag);
     boolean error = false;
     if (lookup(simpleDec.name) != null) {
       ArrayList<NodeType> node = lookup(simpleDec.name);
@@ -986,7 +986,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
-  public void visit(SimpleVar simpleVar, int level) {
+  public void visit(SimpleVar simpleVar, int level, boolean flag) {
     ArrayList<NodeType> node;
     if ((node = lookup(simpleVar.name)) == null) {
       printError(
@@ -1012,26 +1012,26 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
   }
 
-  public void visit(VarDecList varDecList, int level) {
+  public void visit(VarDecList varDecList, int level, boolean flag) {
     while (varDecList != null) {
       if (varDecList.head != null)
-        varDecList.head.accept(this, level);
+        varDecList.head.accept(this, level, flag);
       varDecList = varDecList.tail;
     }
   }
 
-  public void visit(VarExp varExp, int level) {
+  public void visit(VarExp varExp, int level, boolean flag) {
     // Not needed
     if (varExp.variable != null)
-      varExp.variable.accept(this, level);
+      varExp.variable.accept(this, level, flag);
   }
 
-  public void visit(WhileExp whileExp, int level) {
+  public void visit(WhileExp whileExp, int level, boolean flag) {
     indent(level);
     System.out.println("Entering WHILE conditional block scope:");
     if (whileExp.test != null) {
       level++;
-      whileExp.test.accept(this, level);
+      whileExp.test.accept(this, level, flag);
       if (!checkConditionType(level)) {
         printError(
             String.format("Error in line %d, column %d: Invalid condition type; Must be 'int' or 'bool' but got 'void'",
@@ -1039,7 +1039,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       }
       level++;
       if (whileExp.body != null)
-        whileExp.body.accept(this, level);
+        whileExp.body.accept(this, level, flag);
 
       deleteLevelEntries(level);
       level--;

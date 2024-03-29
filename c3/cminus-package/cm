@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Usage
+if [ "$#" -eq 1 ]; then
+  echo "Usage: ./cm <program>.cm -a | -s | -c"
+  exit 1
+fi
+
+# Program
+program="$1"
+shift
+
+# Execution
+java -cp /usr/share/java/cup.jar:. Main "$program" "$@"

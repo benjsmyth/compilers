@@ -1,12 +1,61 @@
 import absyn.*;
 
 public class CodeGenerator implements AbsynVisitor {
-  final static int SPACES = 4;
 
-  private void indent(int level) {
-    for(int i = 0; i < level * SPACES; i++) System.out.print( " " );
+  /* Utility methods */
+  private void emitCode(String code) {
+    // Not sure what this does. Propagate to parent tree somehow?
+  }
+  private void emitError(String message, int row, int col) {
+    System.err.println(String.format("Error: %s at row %d, column %d",
+      message, row, col)
+    );
+  }
+  private String newTemp(int n) {
+    return String.format("t%d", n);
   }
 
+  /* Code generation methods */
+  private void genCode(Exp tree) {
+    if (tree != null) {
+      String code;
+      if (tree instanceof OpExp) {
+        String op;
+        genCode(tree.left);
+        genCode(tree.right);
+        tree.temp = newTemp(1);
+        switch(tree.op) {
+          case  0: op = "+" ; break;
+          case  1: op = "-" ; break;
+          case  2: op = "-" ; break;
+          case  3: op = "*" ; break;
+          case  4: op = "/" ; break;
+          case  5: op = "=" ; break;
+          case  6: op = "!="; break;
+          case  7: op = "<" ; break;
+          case  8: op = "<="; break;
+          case  9: op = ">" ; break;
+          case 10: op = ">="; break;
+          case 11: op = "~" ; break;
+          case 12: op = "&&"; break;
+          case 13: op = "||"; break;
+        }
+        code = String.format("%s = %s %s %s", tree.temp,
+          tree.left.temp, op, tree.right.temp);
+        emitCode(code);
+      } else if (tree instanceof AssignExp) {
+        genCode(tree.rhs);
+        tree.temp = tree.lhs.temp;
+        code = String.format("%s = %s", tree.lhs.temp, tree.rhs.temp);
+        emitCode(code);
+      } else if (tree instanceof SimpleVar) {/* Do nothing */}
+        else if (tree instanceof IntExp) {/* Do nothing */}
+        else emitError("Could not generate expression");
+      }
+    }
+  }
+
+  /* Visitor methods */
   public void visit(ArrayDec arrayDec, int level) {
     indent(level);
     System.out.println("Generating code for ArrayDec:");
@@ -161,61 +210,12 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(OpExp opExp, int level) {
-    indent(level);
-    System.out.println("Generating code for OpExp:");
     level++;
+    String code = "";
     if (opExp.left != null)
       opExp.left.accept(this, level);
     if (opExp.op != -1) {
       indent(level);
-      // System.out.print("Operator: ");
-      switch (opExp.op){
-        case 0:
-          // System.out.print("+");
-          break;
-        case 1:
-          // System.out.print("-");
-          break;
-        case 2:
-          // System.out.print("uminus");
-          break;
-        case 3:
-          // System.out.print("*");
-          break;
-        case 4:
-          // System.out.print("/");
-          break;
-        case 5:
-          // System.out.print("=");
-          break;
-        case 6:
-          // System.out.print("!=");
-          break;
-        case 7:
-          // System.out.print("<");
-          break;
-        case 8:
-          // System.out.print("<=");
-          break;
-        case 9:
-          // System.out.print(">");
-          break;
-        case 10:
-          // System.out.print(">=");
-          break;
-        case 11:
-          // System.out.print("~");
-          break;
-        case 12:
-          // System.out.print("&&");
-          break;
-        case 13:
-          // System.out.print("||");
-          break;
-        default:
-          // System.out.print("Invalid Operation");
-          break;
-      }
     }
     System.out.println();
     if (opExp.right != null)

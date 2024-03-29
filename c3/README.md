@@ -10,7 +10,7 @@ In `cminus_parser`, run `make` to compile the scanner/parser, semantic analyzer,
 Run `make clean` to destroy the scanner/parser, semantic analyzer, and code generator.
 
 ## Execution
-In `cminus_parser`, run `./cm <filename>.cm <options>`.  Please ensure that the script is executable (run `chmod +x cm`).
+In `cminus_parser`, run `./cm <filename>.cm <options>` (please ensure that the script is executable by running `chmod +x cm`).
 Alternatively, run `java -classpath /usr/share/java/cup.jar:. Main <filename>.cm <options>`.
 At least one option must be given.
 

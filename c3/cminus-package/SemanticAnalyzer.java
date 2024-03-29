@@ -9,7 +9,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public HashMap<String, ArrayList<NodeType>> table;
   public PrintStream old;
   public PrintStream tableStream;
-  public boolean valid;
+  public static boolean valid;
 
   public SemanticAnalyzer(PrintStream old, PrintStream current) {
     this.table = new HashMap<String, ArrayList<NodeType>>();
@@ -357,7 +357,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
       insert(newNode.name, newNode);
 
     } else {
-      System.err.println(String.format("Error in line %d, column %d at `%s': Undefined function call",
+      printError(String.format("Error in line %d, column %d at `%s': Undefined function call",
           callExp.row + 1, callExp.col, callExp.func));
     }
   }
@@ -1054,7 +1054,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void printError(String err) {
-    this.valid = false;
+    SemanticAnalyzer.valid = false;
     System.setOut(this.old);
     System.err.println(err);
     System.setOut(this.tableStream);

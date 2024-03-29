@@ -100,7 +100,7 @@ class Main {
 
         /* Generate only if analyzed */
        System.setOut(ps3);
-       if (result != null && s.valid) {  // How do we check that analysis worked?
+       if (result != null && SemanticAnalyzer.valid) {  // How do we check that analysis worked?
          AbsynVisitor codeGenerator = new CodeGenerator();
          result.accept(codeGenerator, 0, true);
        }

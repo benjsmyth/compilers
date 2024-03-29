@@ -9,11 +9,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
   public HashMap<String, ArrayList<NodeType>> table;
   public PrintStream old;
   public PrintStream tableStream;
+  public boolean valid;
 
   public SemanticAnalyzer(PrintStream old, PrintStream current) {
     this.table = new HashMap<String, ArrayList<NodeType>>();
     this.old = old;
     this.tableStream = current;
+    this.valid = true;
+
   }
 
   public void insert(String key, NodeType node) {
@@ -1051,6 +1054,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
   }
 
   public void printError(String err) {
+    this.valid = false;
     System.setOut(this.old);
     System.err.println(err);
     System.setOut(this.tableStream);

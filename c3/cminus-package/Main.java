@@ -95,16 +95,16 @@ class Main {
       /* Analyze only if parsed */
       System.setOut(ps2);
       if (result != null && p.valid) {
-        AbsynVisitor visitor = new SemanticAnalyzer(old, ps2);
-        result.accept(visitor, 0, false);
-      }
+        AbsynVisitor s = new SemanticAnalyzer(old, ps2);
+        result.accept(s, 0, false);
 
-      /* Generate only if analyzed */
-      // System.setOut(ps3);
-      // if (result != null && s.valid) {  // How do we check that analysis worked?
-      //   AbsynVisitor codeGenerator = new CodeGenerator();
-      //   result.accept(codeGenerator, 0);
-      // }
+        /* Generate only if analyzed */
+       System.setOut(ps3);
+       if (result != null && s.valid) {  // How do we check that analysis worked?
+         AbsynVisitor codeGenerator = new CodeGenerator();
+         result.accept(codeGenerator, 0, true);
+       }
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }

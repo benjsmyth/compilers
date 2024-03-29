@@ -20,11 +20,12 @@ public class CodeGenerator implements AbsynVisitor {
     if (tree != null) {
       String code;
       if (tree instanceof OpExp) {
+        OpExp opTree = (OpExp)tree;
         String op;
-        genCode(tree.left);
-        genCode(tree.right);
-        tree.temp = newTemp(1);
-        switch(tree.op) {
+        genCode(opTree.left);
+        genCode(opTree.right);
+        opTree.temp = newTemp(1);
+        switch(opTree.op) {
           case  0: op = "+" ; break;
           case  1: op = "-" ; break;
           case  2: op = "-" ; break;
@@ -39,28 +40,29 @@ public class CodeGenerator implements AbsynVisitor {
           case 11: op = "~" ; break;
           case 12: op = "&&"; break;
           case 13: op = "||"; break;
+          default: op = "ERROR";
         }
-        code = String.format("%s = %s %s %s", tree.temp,
-          tree.left.temp, op, tree.right.temp);
+        code = String.format("%s = %s %s %s", opTree.temp,
+        opTree.left.temp, op, opTree.right.temp);
         emitCode(code);
       } else if (tree instanceof AssignExp) {
-        genCode(tree.rhs);
-        tree.temp = tree.lhs.temp;
-        code = String.format("%s = %s", tree.lhs.temp, tree.rhs.temp);
+        AssignExp assignTree = (AssignExp)tree;
+        genCode(assignTree.rhs);
+        assignTree.temp = assignTree.lhs.temp;
+        code = String.format("%s = %s", assignTree.lhs.temp, assignTree.rhs.temp);
         emitCode(code);
-      } else if (tree instanceof SimpleVar) {/* Do nothing */}
+      } 
         else if (tree instanceof IntExp) {/* Do nothing */}
-        else emitError("Could not generate expression");
-      }
+        else emitError("Could not generate expression", 0, 0);
+      
     }
   }
 
   /* Visitor methods */
-  public void visit(ArrayDec arrayDec, int level) {
-    indent(level);
+  public void visit(ArrayDec arrayDec, int level, boolean flag) {
+
     System.out.println("Generating code for ArrayDec:");
     level++;
-    indent(level);
     switch (arrayDec.typ.type){
       case 0:
         // System.out.println("type: BOOL");
@@ -75,119 +77,119 @@ public class CodeGenerator implements AbsynVisitor {
         // System.err.println("Error: Invalid Typing");
         break;
     }
-    indent(level);
+    
     // System.out.println("name: " + arrayDec.name);
-    indent(level);
+    
     // System.out.println("size: " + arrayDec.size);
   }
   
-  public void visit(AssignExp assignExp, int level) {
-    indent(level);
+  public void visit(AssignExp assignExp, int level, boolean flag) {
+    
     System.out.println("Generating code for AssignExp:");
     level++;
     if (assignExp.lhs != null)
-      assignExp.lhs.accept(this, level);
+      assignExp.lhs.accept(this, level, flag);
     if (assignExp.rhs != null)
-      assignExp.rhs.accept(this, level);
+      assignExp.rhs.accept(this, level, flag);
   }
 
-  public void visit(BoolExp boolExp, int level) {
-    indent(level);
+  public void visit(BoolExp boolExp, int level, boolean flag) {
+    
     System.out.println("Generating code for BoolExp:");
     level++;
-    indent(level);
+    
     System.out.println("value: " + boolExp.value);
   }
 
-  public void visit(CallExp callExp, int level) {
-    indent(level);
+  public void visit(CallExp callExp, int level, boolean flag) {
+    
     System.out.println("Generating code for CallExp:");
     level++;
-    indent(level);
+    
     // System.out.println("function name: " + callExp.func);
     if (callExp.args != null)
-      callExp.args.accept(this, level);
+      callExp.args.accept(this, level, flag);
   }
 
-  public void visit(CompoundExp compoundExp, int level) {
-    indent(level);
+  public void visit(CompoundExp compoundExp, int level, boolean flag) {
+    
     System.out.println("Generating code for CompoundExp:");
     level++;
     if (compoundExp.decs != null)
-      compoundExp.decs.accept(this, level);
+      compoundExp.decs.accept(this, level, flag);
     if (compoundExp.exps != null)
-      compoundExp.exps.accept(this, level);
+      compoundExp.exps.accept(this, level, flag);
   }
 
-  public void visit(DecList decList, int level) {
+  public void visit(DecList decList, int level, boolean flag) {
     System.out.println("Generating code for DecList:");
     level++;
     while(decList != null) {
       if (decList.head != null)
-        decList.head.accept(this, level);
+        decList.head.accept(this, level, flag);
       decList = decList.tail;
     } 
   }
 
-  public void visit(ExpList expList, int level) {
-    indent(level);
+  public void visit(ExpList expList, int level, boolean flag) {
+    
     System.out.println("Generating code for ExpList:");
     level++;
     while(expList != null) {
       if (expList.head != null)
-        expList.head.accept(this, level);
+        expList.head.accept(this, level, flag);
       expList = expList.tail;
     } 
   }
   
 
-  public void visit(FunctionDec functionDec, int level) {
-    indent(level);
+  public void visit(FunctionDec functionDec, int level, boolean flag) {
+    
     System.out.println("Generating code for FunctionDec:");
     level++;
     if (functionDec.params != null)
-      functionDec.params.accept(this, level);
+      functionDec.params.accept(this, level, flag);
     if (functionDec.body != null)
-      functionDec.body.accept(this, level);
+      functionDec.body.accept(this, level, flag);
   }
 
-  public void visit(IfExp ifExp, int level) {
-    indent(level);
+  public void visit(IfExp ifExp, int level, boolean flag) {
+    
     System.out.println("Generating code for IfExp:");
     level++;
     if (ifExp.test != null)
-      ifExp.test.accept(this, level);
+      ifExp.test.accept(this, level, flag);
     if (ifExp.thenpart != null)
-      ifExp.thenpart.accept(this, level);
+      ifExp.thenpart.accept(this, level, flag);
     if (ifExp.elsepart != null) {
-       indent(level);
+       
        System.out.println("ELSE");
-       ifExp.elsepart.accept(this, level);
+       ifExp.elsepart.accept(this, level, flag);
     }
   }
 
-  public void visit(IndexVar indexVar, int level) {
-    indent(level);
+  public void visit(IndexVar indexVar, int level, boolean flag) {
+    
     System.out.println("Generating code for IndexVar:");
     level++;
-    indent(level);
+    
     System.out.println("name: " + indexVar.name);
-    indexVar.index.accept(this, level);
+    indexVar.index.accept(this, level, flag);
   }
 
-  public void visit(IntExp intExp, int level) {
-    indent(level);
+  public void visit(IntExp intExp, int level, boolean flag) {
+    
     System.out.println("Generating code for IntExp:");
     level++;
-    indent(level);
+    
     System.out.println("value: " + intExp.value);
   }
 
-  public void visit(NameTy nameTy, int level) {
-    indent(level);
+  public void visit(NameTy nameTy, int level, boolean flag) {
+    
     System.out.println("Generating code for NameTy:");
     level++;
-    indent(level);
+    
     switch(nameTy.type) {
       case 0:
         // System.out.println("type: BOOL");
@@ -204,76 +206,76 @@ public class CodeGenerator implements AbsynVisitor {
     }
   }
 
-  public void visit(NilExp nilExp, int level) {
-    indent(level);
+  public void visit(NilExp nilExp, int level, boolean flag) {
+    
     System.out.println("Generating code for NilExp:");
   }
 
-  public void visit(OpExp opExp, int level) {
+  public void visit(OpExp opExp, int level, boolean flag) {
     level++;
     String code = "";
     if (opExp.left != null)
-      opExp.left.accept(this, level);
+      opExp.left.accept(this, level, flag);
     if (opExp.op != -1) {
-      indent(level);
+      
     }
     System.out.println();
     if (opExp.right != null)
-      opExp.right.accept(this, level);
+      opExp.right.accept(this, level, flag);
   }
 
-  public void visit(ReturnExp returnExp, int level) {
-    indent(level);
+  public void visit(ReturnExp returnExp, int level, boolean flag) {
+    
     System.out.println("Generating code for ReturnExp:");
     level++;
     if (returnExp != null)
-      returnExp.exp.accept(this, level);
+      returnExp.exp.accept(this, level, flag);
   }
 
-  public void visit(SimpleDec simpleDec, int level) {
-    indent(level);
+  public void visit(SimpleDec simpleDec, int level, boolean flag) {
+    
     System.out.println("Generating code for SimpleDec:");
     level++;
     if (simpleDec.typ != null)
-      simpleDec.typ.accept(this, level);
-    indent(level);
+      simpleDec.typ.accept(this, level, flag);
+    
     // System.out.println("name: " + simpleDec.name);
   }
 
-  public void visit(SimpleVar simpleVar, int level) {
-    indent(level);
+  public void visit(SimpleVar simpleVar, int level, boolean flag) {
+    
     System.out.println("Generating code for SimpleVar:");
     level++;
-    indent(level);
+    
     // System.out.println("name: " + simpleVar.name);
   }
 
-  public void visit(VarDecList varDecList, int level) {
-    indent(level);
+  public void visit(VarDecList varDecList, int level, boolean flag) {
+    
     System.out.println("Generating code for VarDecList:");
     level++;
     while(varDecList != null) {
       if (varDecList.head != null)
-        varDecList.head.accept(this, level);
+        varDecList.head.accept(this, level, flag);
       varDecList = varDecList.tail;
     } 
   }
 
-  public void visit(VarExp varExp, int level) {
-    indent(level);
+  public void visit(VarExp varExp, int level, boolean flag) {
+    
     System.out.println("Generating code for VarExp:");
     level++;
     if (varExp.variable != null)
-      varExp.variable.accept(this, level);
+      varExp.variable.accept(this, level, flag);
   }
 
-  public void visit(WhileExp whileExp, int level) {
-    indent(level);
+  public void visit(WhileExp whileExp, int level, boolean flag) {
+    
     System.out.println("Generating code for WhileExp:");
     level++;
     if (whileExp.test != null)
-      whileExp.test.accept(this, level);
+      whileExp.test.accept(this, level, flag);
     if (whileExp.body != null)
-      whileExp.body.accept(this, level);
+      whileExp.body.accept(this, level, flag);
   }
 }

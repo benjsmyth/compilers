@@ -1,6 +1,7 @@
 package absyn;
 
 public interface AbsynVisitor {
+  public boolean valid = true;
 
   public void visit( ArrayDec exp, int level, boolean flag );
 

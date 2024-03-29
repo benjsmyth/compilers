@@ -6,13 +6,13 @@ Scanner/parser, semantic analyzer, and code generator.
 Ben Smyth, Nathan McGuire, Eli Daniels
 
 ## Compilation
-In `cminus_parser`, run `make` to compile the scanner/parser, semantic analyzer, and code generator.
-Run `make clean` to destroy the scanner/parser, semantic analyzer, and code generator.
+- In `cminus_parser`, run `make` to compile the scanner/parser, semantic analyzer, and code generator.
+- Run `make clean` to destroy the scanner/parser, semantic analyzer, and code generator.
 
 ## Execution
-In `cminus_parser`, run `./cm <filename>.cm <options>`. If this does not work, please ensure that the script is executable (run `chmod +x cm`) and try again.
-Alternatively, run `java -classpath /usr/share/java/cup.jar:. Main <filename>.cm <options>`.
-At least one option must be given.
+- In `cminus_parser`, run `./cm <filename>.cm <options>`. If this does not work, please ensure that the script is executable (run `chmod +x cm`) and try again.
+- Alternatively, run `java -classpath /usr/share/java/cup.jar:. Main <filename>.cm <options>`.
+- At least one option must be given.
 
 ## Options
 - `-a`: Generate the AST (abstract syntax tree). The AST will be written to `ast/<filename>.abs`.

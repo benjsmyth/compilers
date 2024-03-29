@@ -19,7 +19,6 @@ public class OpExp extends Exp {
   public Exp left;
   public Exp right;
   public int op;
-  public String temp;
 
   public OpExp(int row, int col, Exp left, int op, Exp right) {
     this.row = row;

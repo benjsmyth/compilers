@@ -31,3 +31,4 @@ csym:
 
 ccode:
 	rm code/*.tm
+

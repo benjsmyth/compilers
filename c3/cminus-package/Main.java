@@ -95,14 +95,14 @@ class Main {
       /* Analyze only if parsed */
       System.setOut(ps2);
       if (result != null && p.valid) {
-        AbsynVisitor s = new SemanticAnalyzer(old, ps2);
-        result.accept(s, 0, false);
+        AbsynVisitor analyzer = new SemanticAnalyzer(old, ps2);
+        result.accept(analyzer, 0, false);
 
         /* Generate only if analyzed */
        System.setOut(ps3);
-       if (result != null && SemanticAnalyzer.valid) {  // How do we check that analysis worked?
-         AbsynVisitor codeGenerator = new CodeGenerator();
-         result.accept(codeGenerator, 0, true);
+       if (result != null && SemanticAnalyzer.valid) {
+         AbsynVisitor generator = new CodeGenerator(old, ps3);
+         result.accept(generator, 0, true);
        }
       }
     } catch (Exception e) {

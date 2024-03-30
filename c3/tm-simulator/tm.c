@@ -27,7 +27,6 @@
 #define   WORDSIZE  20
 
 /******* type  *******/
-
 typedef enum {
    opclRR,     /* reg operands r,s,t */
    opclRM,     /* reg r, mem d+s */

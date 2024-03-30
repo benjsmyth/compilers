@@ -95,14 +95,15 @@ class Main {
       /* Analyze only if parsed */
       System.setOut(ps2);
       if (result != null && p.valid) {
-        AbsynVisitor analyzer = new SemanticAnalyzer(old, ps2);
-        result.accept(analyzer, 0, false);
+        AbsynVisitor semanticAnalyzer = new SemanticAnalyzer(old, ps2);
+        result.accept(semanticAnalyzer, 0, false);
 
         /* Generate only if analyzed */
        System.setOut(ps3);
        if (result != null && SemanticAnalyzer.valid) {
-         AbsynVisitor generator = new CodeGenerator(old, ps3);
-         result.accept(generator, 0, true);
+         CodeGenerator codeGenerator = new CodeGenerator(old, ps3);
+         codeGenerator.prelude();
+         result.accept( (AbsynVisitor)codeGenerator, 0, true );
        }
       }
     } catch (Exception e) {

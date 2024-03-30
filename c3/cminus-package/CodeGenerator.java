@@ -15,10 +15,9 @@ public class CodeGenerator implements AbsynVisitor {
     this.console = console;
     this.stream = stream;
     this.valid = true;
-    this.prelude();
   }
 
-  private void prelude() {
+  public void prelude() {
     System.out.println(String.format("0: LD %d, 0(%d)",
       this.gp, this.ac));  // Load global pointer with maxaddress
     System.out.println(String.format("1: LDA %d, 0(%d)",
@@ -26,7 +25,6 @@ public class CodeGenerator implements AbsynVisitor {
     System.out.println(String.format("2: ST %d, 0(%d)",
       this.ac, this.ac));  // Clear data address 0
   }
-
   private void finale() {
     //
   }

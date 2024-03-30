@@ -2,7 +2,7 @@ package absyn;
 
 abstract public class Absyn {
   public int row, col;
-  public boolean flag;
+  public boolean isAddress;
 
-  abstract public void accept( AbsynVisitor visitor, int level, boolean flag );
+  abstract public void accept(AbsynVisitor visitor, int value, boolean isAddress);
 }

@@ -6,11 +6,11 @@ public class CodeGenerator implements AbsynVisitor {
   public static PrintStream console, stream;
 
   // Internal addresses
-  public static int emitLoc = 0;  // Emit location
-  public static int frameOffset = 0;  // Difference from fp
+  public static int emitLoc = 0;       // Emit location
+  public static int frameOffset = 0;   // Difference from fp
   public static int globalOffset = 0;  // Difference from gp
-  public static int highEmitLoc = 0;  // High emit location
-  public static int mainEntry = 0;  // Main address
+  public static int highEmitLoc = 0;   // High emit location
+  public static int mainEntry = 0;     // Main address
 
   // Simulator addresses
   private static int ac = 0;  // Data address 0
@@ -45,7 +45,7 @@ public class CodeGenerator implements AbsynVisitor {
     System.out.println( String.format("%3d: %s", this.emitLoc, code) );
   }
   private void emitCode(String code, String comment) {
-    System.out.println( String.format("%3d: %s * %s", this.emitLoc, code, comment) );
+    System.out.println( String.format("%3d: %s  * %s", this.emitLoc, code, comment) );
   }
   private void emitComment(String comment) {
     System.out.println( String.format("* %s", comment) );

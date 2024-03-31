@@ -102,8 +102,6 @@ class Main {
        System.setOut(ps3);
        if (result != null && SemanticAnalyzer.valid) {
          CodeGenerator codeGenerator = new CodeGenerator(old, ps3);
-         codeGenerator.prelude();
-         codeGenerator.io();
          result.accept( (AbsynVisitor)codeGenerator, 0, false );
          codeGenerator.finale();
        }

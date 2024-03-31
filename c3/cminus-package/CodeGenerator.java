@@ -2,155 +2,118 @@ import absyn.*;
 import java.io.PrintStream;
 
 public class CodeGenerator implements AbsynVisitor {
-  int frameOffset, globalOffset, initialFo, mainEntry;
-  PrintStream console, stream;
-  public static boolean valid;
+  public static boolean valid = true;
+  public static PrintStream console, stream;
 
+  // Internal addresses
+  public static int emitLoc = 0;  // Emit location
+  public static int frameOffset = 0;  // Difference from fp
+  public static int globalOffset = 0;  // Difference from gp
+  public static int highEmitLoc = 0;  // High emit location
+  public static int mainEntry = 0;  // Main address
+
+  // Simulator addresses
   private static int ac = 0;  // Data address 0
-  private static int ic = 0;  // Instruction counter
   private static int fp = 5;  // Register 5 (frame pointer)
   private static int gp = 6;  // Register 6 (global pointer)
   private static int pc = 7;  // Register 7 (program counter)
 
-  public int emitLoc = 0;
-  public int highEmitLoc = 0;
-
   public CodeGenerator(PrintStream console, PrintStream stream) {
     this.console = console;
     this.stream = stream;
-    this.valid = true;
-    this.frameOffset = 0;
-    this.globalOffset = 0;
+    this.prelude();
+    this.io();
   }
 
-  // Basic commands
-  private String COMMENT(String comment) {
-    return String.format("* %s", comment);
+  // Emitting shortcuts
+  private void HALT() {
+    this.emitComment("HALT"); this.emitHalt();
   }
-  private String HALT() {
-    return String.format("%d: HALT 0, 0, 0", this.ic);
+  private void JUMP(int d, String comment) {
+    this.LDA(this.pc, d, this.pc, comment);
   }
-  private String JUMP(int d) {
-    return this.LDA(this.pc, d, this.pc);
+  private void LD(int r, int d, int s, String comment) {
+    this.emitRM("LD", r, d, s, comment);
   }
-  private String LD(int r, int d, int s) {
-    return String.format("%d: LD %d, %d(%d)", this.ic, r, d, s);
+  private void LDA(int r, int d, int s, String comment) {
+    this.emitRM("LDA", r, d, s, comment);
   }
-  private String LDA(int r, int d, int s) {
-    return String.format("%d: LDA %d, %d(%d)", this.ic, r, d, s);
+  private void ST(int r, int d, int s, String comment) {
+    this.emitRM("ST", r, d, s, comment);
   }
-  private String ST(int r, int d, int s) {
-    return String.format("%d: ST %d, %d(%d)", this.ic, r, d, s);
-  }
-
-  // Code-emitting routines
   private void emitCode(String code) {
-    System.out.println(code);
-    this.ic++;
+    System.out.println( String.format("%3d: %s", this.emitLoc, code) );
   }
   private void emitCode(String code, String comment) {
-    System.out.println( String.format("%s %s", code, comment) );
-    this.ic++;
+    System.out.println( String.format("%3d: %s * %s", this.emitLoc, code, comment) );
   }
   private void emitComment(String comment) {
-    System.out.println(comment);
+    System.out.println( String.format("* %s", comment) );
   }
-  private void emitError(String message, int row, int col) {
-    System.err.println(String.format("Error: %s at row %d, column %d",
-      message, row, col)
-    );
+  private void emitError(String message, int location) {
+    System.err.println( String.format("Error: %s at emit location %d", message, location) );
   }
-  private void emitRO( String op, int r, int s, int t, String c ) {
-    System.out.println(String.format("%3d: %5s %d, %d, %d", emitLoc, op, r, s, t ));
-    System.out.println(String.format("\t%s\n", c ));
-    ++emitLoc;
-    if( highEmitLoc < emitLoc )
-      highEmitLoc = emitLoc;
-    }
-  private void emitRM( String op, int r, int d, int s, String c ) {
-    System.out.println(String.format("%3d: %5s %d, %d(%d)", emitLoc, op, r, d, s ));
-    System.out.println(String.format("\t%s\n", c ));
-    ++emitLoc;
-    if( highEmitLoc < emitLoc )
-      highEmitLoc = emitLoc;
-    }
-  private void emitRM_Abs( String op, int r, int a, String c ) {
-    System.out.println(String.format("%3d: %5s %d, %d(%d)", emitLoc, op, r, a - (emitLoc + 1), pc ));
-    System.out.println(String.format("\t%s\n", c ));
-    ++emitLoc;
-    if( highEmitLoc < emitLoc )
-      highEmitLoc = emitLoc;
-    }
-  private int emitSkip( int distance ) {
-      int i = emitLoc;
-      emitLoc += distance;
-      if( highEmitLoc < emitLoc )
-        highEmitLoc = emitLoc;
-      return i;
-    }
-  private void emitBackup( int loc ) {
-      if( loc > highEmitLoc )
-        emitComment("BUG in emitBackup");
-      emitLoc = loc;
-   }
-  public void emitRestore() {
-      emitLoc = highEmitLoc;
-    }
-      
+  private void emitHalt() {
+    this.emitCode( String.format("HALT 0, 0, 0") );
+  }
+
+  // Emitting routines
+  private void emitRM(String command, int r, int d, int s, String comment) {
+    String code = String.format("%5s %d, %d(%d)", command, r, d, s);
+    this.emitCode(code, comment);
+    this.emitUpdate();
+  }
+  private void emitRMA(String command, int r, int a, String comment) {
+    String code = String.format("%5s %d, %d(%d)", command, r, a-(this.emitLoc + 1), this.pc);
+    this.emitCode(code, comment);
+    this.emitUpdate();
+  }
+  private void emitRO(String command, int r, int s, int t, String comment) {
+    String code = String.format("%5s %d, %d, %d", command, r, s, t);
+    this.emitCode(code, comment);
+    this.emitUpdate();
+  }
+
+  // Emitting utilities
+  private void emitBackup(int location) {
+    if (location > this.highEmitLoc)
+      this.emitError("Could not backup", location);
+    this.emitLoc = location;
+  }
+  private void emitRestore() {
+    this.emitLoc = this.highEmitLoc;
+  }
+  private int emitSkip(int distance) {
+    int i = this.emitLoc;
+    this.emitLoc += distance;
+    if (this.highEmitLoc < this.emitLoc)
+      this.highEmitLoc = this.emitLoc;
+    return i;
+  }
+  private void emitUpdate() {
+    if (this.highEmitLoc < ++this.emitLoc)
+      this.highEmitLoc = this.emitLoc;
+  }
 
   // Prelude, IO, and finale
   public void prelude() {
-    emitComment(
-      this.COMMENT("PRELUDE")
-    );
-    emitCode(
-      this.LD(this.gp, 0, this.ac),
-      this.COMMENT("Load global pointer with address 1023")
-    );
-    emitCode(
-      this.LDA(this.fp, 0, this.gp),
-      this.COMMENT("Copy global pointer to frame pointer")
-    );
-    emitCode(
-      this.ST(this.ac, 0, this.ac),
-      this.COMMENT("Clear data address 0")
-    );
+    emitComment("PRELUDE");
+    this.LD(this.gp, 0, this.ac, "Load global pointer with address 1023");
+    this.LDA(this.fp, 0, this.gp, "Copy global pointer to frame pointer");
+    this.ST(this.ac, 0, this.ac, "Clear data address 0");
   }
   public void io() {
-    emitComment(
-      this.COMMENT("IO")
-    );
+    emitComment("IO");
     // ...
   }
   public void finale() {
-    emitComment(
-      this.COMMENT("FINALE")
-    );
-    emitCode(
-      this.ST(this.fp, -1, this.fp),
-      this.COMMENT("Push original frame pointer")
-    );
-    emitCode(
-      this.LDA(this.fp, -1, this.fp),
-      this.COMMENT("Push original frame")
-    );
-
-    emitCode(
-      this.LDA(this.ac, 1, this.pc),
-      this.COMMENT("Load data address 0 with return pointer")
-    );
-    emitCode(
-      this.JUMP(this.mainEntry - this.ic),
-      this.COMMENT("Jump to main")
-    );
-    emitCode(
-      this.LD(this.fp, 0, this.fp),
-      this.COMMENT("Pop frame")
-    );
-    emitCode(
-      this.HALT(),
-      this.COMMENT("Halt program")
-    );
+    emitComment("FINALE");
+    this.ST(this.fp, -1, this.fp, "Push original frame pointer");
+    this.LDA(this.fp, -1, this.fp, "Push original frame");
+    this.LDA(this.ac, 1, this.pc, "Load data address 0 with return pointer");
+    this.JUMP(this.mainEntry-this.emitLoc, "Jump to main");
+    this.LD(this.fp, 0, this.fp, "Pop frame");
+    this.HALT();
   }
 
   // Visitor methods
@@ -214,26 +177,18 @@ public class CodeGenerator implements AbsynVisitor {
 
   public void visit(FunctionDec functionDec, int level, boolean isAddr) {
     --this.frameOffset;
-    functionDec.funaddr = this.ic;
-    emitComment(
-      this.COMMENT( String.format("FUNCTION %s", functionDec.func) )
-    );
-    emitCode(
-      this.ST(this.ac, this.frameOffset, this.fp),
-      this.COMMENT("Store return address")
-    );
+
+    functionDec.funaddr = this.emitLoc;
+    this.emitComment( String.format("FUNCTION %s", functionDec.func) );
+    this.ST(this.ac, this.frameOffset, this.fp, "Store return address");
     if ( functionDec.func.equals("main") )
-      this.mainEntry = this.ic;
-    if (functionDec.params != null) {
+      this.mainEntry = this.emitLoc;
+    if (functionDec.params != null)
       functionDec.params.accept(this, level, isAddr);
-    }
-    if (functionDec.body != null) {
+    if (functionDec.body != null)
       functionDec.body.accept(this, level, isAddr);
-    }
-    emitCode(
-      this.LD(this.pc, this.frameOffset, this.fp),
-      this.COMMENT("Return to caller")
-    );
+    this.LD(this.pc, this.frameOffset, this.fp, "Return to caller");
+
     ++this.frameOffset;
   }
 

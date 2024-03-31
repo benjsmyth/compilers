@@ -2,7 +2,7 @@ import absyn.*;
 import java.io.PrintStream;
 
 public class CodeGenerator implements AbsynVisitor {
-  int mainEntry, globalOffset;
+  int frameOffset, globalOffset, initialFo, mainEntry;
   PrintStream console, stream;
   public static boolean valid;
 
@@ -16,94 +16,100 @@ public class CodeGenerator implements AbsynVisitor {
     this.console = console;
     this.stream = stream;
     this.valid = true;
-
-    this.mainEntry = 0;  // This will have to be dynamically set
+    this.frameOffset = 0;
+    this.globalOffset = 0;
   }
 
+  // Basic commands
   private String COMMENT(String comment) {
     return String.format("* %s", comment);
   }
-  private String HALT(int i) {
-    return String.format("%d: HALT 0, 0, 0", i);
+  private String HALT() {
+    return String.format("%d: HALT 0, 0, 0", this.ic);
   }
-  private String JUMP(int i, int d) {
-    return this.LDA(i, this.pc, d, this.pc);
+  private String JUMP(int d) {
+    return this.LDA(this.pc, d, this.pc);
   }
-  private String LD(int i, int r, int d, int s) {
-    return String.format("%d: LD %d, %d(%d)", i, r, d, s);
+  private String LD(int r, int d, int s) {
+    return String.format("%d: LD %d, %d(%d)", this.ic, r, d, s);
   }
-  private String LDA(int i, int r, int d, int s) {
-    return String.format("%d: LDA %d, %d(%d)", i, r, d, s);
+  private String LDA(int r, int d, int s) {
+    return String.format("%d: LDA %d, %d(%d)", this.ic, r, d, s);
   }
-  private String ST(int i, int r, int d, int s) {
-    return String.format("%d: ST %d, %d(%d)", i, r, d, s);
-  }
-
-  public void prelude() {
-    emitCode(
-      this.LD(this.ic++, this.gp, 0, this.ac),
-      this.COMMENT("Load global pointer with address 1023")
-    );
-    emitCode(
-      this.LDA(this.ic++, this.fp, 0, this.gp),
-      this.COMMENT("Copy global pointer to frame pointer")
-   );
-    emitCode(
-      this.ST(this.ic++, this.ac, 0, this.ac),
-      this.COMMENT("Clear data address 0")
-    );
-  }
-  public void io() {
-    emitCode(
-      this.COMMENT("IO routines here")
-    );
-  }
-  public void finale() {
-    emitCode(
-      this.ST(this.ic++, this.fp, -1, this.fp),
-      this.COMMENT("Push original frame pointer")
-    );
-    emitCode(
-      this.LDA(this.ic++, this.fp, -1, this.fp),
-      this.COMMENT("Push original frame")
-    );
-    emitCode(
-      this.LDA(this.ic++, this.ac, 1, this.pc),
-      this.COMMENT("Load data address 0 with return pointer")
-    );
-    emitCode(
-      this.JUMP(this.ic++, this.mainEntry),
-      this.COMMENT("Jump to main")
-    );
-    emitCode(
-      this.LD(this.ic++, this.fp, 0, this.fp),
-      this.COMMENT("Pop frame")
-    );
-    emitCode(
-      this.HALT(this.ic++),
-      this.COMMENT("Halt program")
-    );
-  }
-
-  public void printError(String err) {
-    SemanticAnalyzer.valid = false;
-    System.setOut(this.console);
-    System.err.println(err);
-    System.setOut(this.stream);
+  private String ST(int r, int d, int s) {
+    return String.format("%d: ST %d, %d(%d)", this.ic, r, d, s);
   }
 
   // Code-emitting routines
   private void emitCode(String code) {
     System.out.println(code);
+    this.ic++;
   }
   private void emitCode(String code, String comment) {
-    System.out.println(
-      String.format("%s %s", code, comment)
-    );
+    System.out.println( String.format("%s %s", code, comment) );
+    this.ic++;
+  }
+  private void emitComment(String comment) {
+    System.out.println(comment);
   }
   private void emitError(String message, int row, int col) {
     System.err.println(String.format("Error: %s at row %d, column %d",
       message, row, col)
+    );
+  }
+
+  // Prelude, IO, and finale
+  public void prelude() {
+    emitComment(
+      this.COMMENT("PRELUDE")
+    );
+    emitCode(
+      this.LD(this.gp, 0, this.ac),
+      this.COMMENT("Load global pointer with address 1023")
+    );
+    emitCode(
+      this.LDA(this.fp, 0, this.gp),
+      this.COMMENT("Copy global pointer to frame pointer")
+    );
+    emitCode(
+      this.ST(this.ac, 0, this.ac),
+      this.COMMENT("Clear data address 0")
+    );
+  }
+  public void io() {
+    emitComment(
+      this.COMMENT("IO")
+    );
+    // ...
+  }
+  public void finale() {
+    emitComment(
+      this.COMMENT("FINALE")
+    );
+    emitCode(
+      this.ST(this.fp, -1, this.fp),
+      this.COMMENT("Push original frame pointer")
+    );
+    emitCode(
+      this.LDA(this.fp, -1, this.fp),
+      this.COMMENT("Push original frame")
+    );
+
+    emitCode(
+      this.LDA(this.ac, 1, this.pc),
+      this.COMMENT("Load data address 0 with return pointer")
+    );
+    emitCode(
+      this.JUMP(this.mainEntry - this.ic),
+      this.COMMENT("Jump to main")
+    );
+    emitCode(
+      this.LD(this.fp, 0, this.fp),
+      this.COMMENT("Pop frame")
+    );
+    emitCode(
+      this.HALT(),
+      this.COMMENT("Halt program")
     );
   }
 
@@ -112,20 +118,14 @@ public class CodeGenerator implements AbsynVisitor {
     level++;
     switch (arrayDec.typ.type){
       case 0:
-        // System.out.println("type: BOOL");
         break;
       case 1:
-        // System.out.println("type: INT");
         break;
       case 2:
-        // System.out.println("type: VOID");
         break;
       default:
-        // System.err.println("Error: Invalid Typing");
         break;
     }
-    // System.out.println("name: " + arrayDec.name);
-    // System.out.println("size: " + arrayDec.size);
   }
 
   public void visit(AssignExp assignExp, int level, boolean isAddress) {
@@ -138,12 +138,10 @@ public class CodeGenerator implements AbsynVisitor {
 
   public void visit(BoolExp boolExp, int level, boolean isAddress) {
     level++;
-    System.out.println("value: " + boolExp.value);
   }
 
   public void visit(CallExp callExp, int level, boolean isAddress) {
     level++;
-    // System.out.println("function name: " + callExp.func);
     if (callExp.args != null)
       callExp.args.accept(this, level, isAddress);
   }
@@ -153,7 +151,7 @@ public class CodeGenerator implements AbsynVisitor {
     if (compoundExp.decs != null)
       compoundExp.decs.accept(this, level, isAddress);
     if (compoundExp.exps != null)
-      compoundExp.exps.accept(this, level, isAddress);
+     compoundExp.exps.accept(this, level, isAddress);
   }
 
   public void visit(DecList decList, int level, boolean isAddress) {
@@ -174,12 +172,29 @@ public class CodeGenerator implements AbsynVisitor {
     }
   }
 
-  public void visit(FunctionDec functionDec, int level, boolean isAddress) {
-    level++;
-    if (functionDec.params != null)
-      functionDec.params.accept(this, level, isAddress);
-    if (functionDec.body != null)
-      functionDec.body.accept(this, level, isAddress);
+  public void visit(FunctionDec functionDec, int level, boolean isAddr) {
+    --this.frameOffset;
+    functionDec.funaddr = this.ic;
+    emitComment(
+      this.COMMENT( String.format("FUNCTION %s", functionDec.func) )
+    );
+    emitCode(
+      this.ST(this.ac, this.frameOffset, this.fp),
+      this.COMMENT("Store return address")
+    );
+    if ( functionDec.func.equals("main") )
+      this.mainEntry = this.ic;
+    if (functionDec.params != null) {
+      functionDec.params.accept(this, level, isAddr);
+    }
+    if (functionDec.body != null) {
+      functionDec.body.accept(this, level, isAddr);
+    }
+    emitCode(
+      this.LD(this.pc, this.frameOffset, this.fp),
+      this.COMMENT("Return to caller")
+    );
+    ++this.frameOffset;
   }
 
   public void visit(IfExp ifExp, int level, boolean isAddress) {
@@ -200,6 +215,7 @@ public class CodeGenerator implements AbsynVisitor {
     indexVar.index.accept(this, level, isAddress);
   }
 
+
   public void visit(IntExp intExp, int level, boolean isAddress) {
     level++;
     System.out.println("value: " + intExp.value);
@@ -209,16 +225,12 @@ public class CodeGenerator implements AbsynVisitor {
     level++;
     switch(nameTy.type) {
       case 0:
-        // System.out.println("type: BOOL");
         break;
       case 1:
-        // System.out.println("type: INT");
         break;
       case 2:
-        // System.out.println("type: VOID");
         break;
       default:
-        // System.err.println("Error: Invalid Type");
         break;
     }
   }
@@ -247,12 +259,10 @@ public class CodeGenerator implements AbsynVisitor {
     level++;
     if (simpleDec.typ != null)
       simpleDec.typ.accept(this, level, isAddress);
-    // System.out.println("name: " + simpleDec.name);
   }
 
   public void visit(SimpleVar simpleVar, int level, boolean isAddress) {
     level++;
-    // System.out.println("name: " + simpleVar.name);
   }
 
   public void visit(VarDecList varDecList, int level, boolean isAddress) {
@@ -276,6 +286,13 @@ public class CodeGenerator implements AbsynVisitor {
       whileExp.test.accept(this, level, isAddress);
     if (whileExp.body != null)
       whileExp.body.accept(this, level, isAddress);
+  }
+
+  public void printError(String err) {
+    SemanticAnalyzer.valid = false;
+    System.setOut(this.console);
+    System.err.println(err);
+    System.setOut(this.stream);
   }
 }
 

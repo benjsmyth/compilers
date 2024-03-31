@@ -20,6 +20,9 @@ public class CodeGenerator implements AbsynVisitor {
     this.mainEntry = 0;  // This will have to be dynamically set
   }
 
+  private String COMMENT(String comment) {
+    return String.format("* %s", comment);
+  }
   private String HALT(int i) {
     return String.format("%d: HALT 0, 0, 0", i);
   }
@@ -37,34 +40,48 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void prelude() {
-    emitCode(  // Load global pointer with address 1023
-      this.LD(this.ic++, this.gp, 0, this.ac)
+    emitCode(
+      this.LD(this.ic++, this.gp, 0, this.ac),
+      this.COMMENT("Load global pointer with address 1023")
     );
-    emitCode(  // Copy global pointer to frame pointer
-      this.LDA(this.ic++, this.fp, 0, this.gp)
+    emitCode(
+      this.LDA(this.ic++, this.fp, 0, this.gp),
+      this.COMMENT("Copy global pointer to frame pointer")
+   );
+    emitCode(
+      this.ST(this.ic++, this.ac, 0, this.ac),
+      this.COMMENT("Clear data address 0")
     );
-    emitCode(  // Clear data address 0
-      this.ST(this.ic++, this.ac, 0, this.ac)
+  }
+  public void io() {
+    emitCode(
+      this.COMMENT("IO routines here")
     );
   }
   public void finale() {
-    emitCode(  // Push original frame pointer
-      this.ST(this.ic++, this.fp, -1, this.fp)
+    emitCode(
+      this.ST(this.ic++, this.fp, -1, this.fp),
+      this.COMMENT("Push original frame pointer")
     );
-    emitCode(  // Push frame
-      this.LDA(this.ic++, this.fp, -1, this.fp)
+    emitCode(
+      this.LDA(this.ic++, this.fp, -1, this.fp),
+      this.COMMENT("Push original frame")
     );
-    emitCode(  // Load data address 0 with return pointer
-      this.LDA(this.ic++, this.ac, 1, this.pc)
+    emitCode(
+      this.LDA(this.ic++, this.ac, 1, this.pc),
+      this.COMMENT("Load data address 0 with return pointer")
     );
-    emitCode(  // Jump to main
-      this.JUMP(this.ic++, this.mainEntry)
+    emitCode(
+      this.JUMP(this.ic++, this.mainEntry),
+      this.COMMENT("Jump to main")
     );
-    emitCode(  // Pop frame
-      this.LD(this.ic++, this.fp, 0, this.fp)
+    emitCode(
+      this.LD(this.ic++, this.fp, 0, this.fp),
+      this.COMMENT("Pop frame")
     );
-    emitCode(  // Halt program
-      this.HALT(this.ic++)
+    emitCode(
+      this.HALT(this.ic++),
+      this.COMMENT("Halt program")
     );
   }
 
@@ -75,22 +92,19 @@ public class CodeGenerator implements AbsynVisitor {
     System.setOut(this.stream);
   }
 
-  // Emitting routines
+  // Code-emitting routines
   private void emitCode(String code) {
     System.out.println(code);
+  }
+  private void emitCode(String code, String comment) {
+    System.out.println(
+      String.format("%s %s", code, comment)
+    );
   }
   private void emitError(String message, int row, int col) {
     System.err.println(String.format("Error: %s at row %d, column %d",
       message, row, col)
     );
-  }
-
-  // Visitor wrapper
-  public void visit(Absyn tree) {
-    this.prelude();
-    // Generate I/O routines
-    tree.accept(this, 0, false);
-    this.finale();
   }
 
   // Visitor methods

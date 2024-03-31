@@ -6,8 +6,8 @@ Scanner/parser, semantic analyzer, and code generator.
 Ben Smyth, Nathan McGuire, Eli Daniels
 
 ## Compilation
-In `cminus`, run `make` to compile all the components.
-Run `make clean` to destroy all the components.
+In `cminus`, run `make` to compile all components.
+Run `make clean` to destroy all components.
 
 ## Execution
 In `cminus`, run `./cm <filename>.cm <options>` (please ensure that the script is executable).

@@ -6,27 +6,66 @@ public class CodeGenerator implements AbsynVisitor {
   PrintStream console, stream;
   public static boolean valid;
 
-  private static int ac = 0;
-  private static int fp = 5;
-  private static int gp = 6;
-  private static int pc = 7;
+  private static int ac = 0;  // Data address 0
+  private static int ic = 0;  // Instruction counter
+  private static int fp = 5;  // Register 5 (frame pointer)
+  private static int gp = 6;  // Register 6 (global pointer)
+  private static int pc = 7;  // Register 7 (program counter)
 
   public CodeGenerator(PrintStream console, PrintStream stream) {
     this.console = console;
     this.stream = stream;
     this.valid = true;
+
+    this.mainEntry = 0;  // This will have to be dynamically set
+  }
+
+  private String HALT(int i) {
+    return String.format("%d: HALT 0, 0, 0", i);
+  }
+  private String JUMP(int i, int d) {
+    return this.LDA(i, this.pc, d, this.pc);
+  }
+  private String LD(int i, int r, int d, int s) {
+    return String.format("%d: LD %d, %d(%d)", i, r, d, s);
+  }
+  private String LDA(int i, int r, int d, int s) {
+    return String.format("%d: LDA %d, %d(%d)", i, r, d, s);
+  }
+  private String ST(int i, int r, int d, int s) {
+    return String.format("%d: ST %d, %d(%d)", i, r, d, s);
   }
 
   public void prelude() {
-    System.out.println(String.format("0: LD %d, 0(%d)",
-      this.gp, this.ac));  // Load global pointer with maxaddress
-    System.out.println(String.format("1: LDA %d, 0(%d)",
-      this.fp, this.gp));  // Copy global pointer to frame pointer
-    System.out.println(String.format("2: ST %d, 0(%d)",
-      this.ac, this.ac));  // Clear data address 0
+    emitCode(  // Load global pointer with address 1023
+      this.LD(this.ic++, this.gp, 0, this.ac)
+    );
+    emitCode(  // Copy global pointer to frame pointer
+      this.LDA(this.ic++, this.fp, 0, this.gp)
+    );
+    emitCode(  // Clear data address 0
+      this.ST(this.ic++, this.ac, 0, this.ac)
+    );
   }
-  private void finale() {
-    //
+  public void finale() {
+    emitCode(  // Push original frame pointer
+      this.ST(this.ic++, this.fp, -1, this.fp)
+    );
+    emitCode(  // Push frame
+      this.LDA(this.ic++, this.fp, -1, this.fp)
+    );
+    emitCode(  // Load data address 0 with return pointer
+      this.LDA(this.ic++, this.ac, 1, this.pc)
+    );
+    emitCode(  // Jump to main
+      this.JUMP(this.ic++, this.mainEntry)
+    );
+    emitCode(  // Pop frame
+      this.LD(this.ic++, this.fp, 0, this.fp)
+    );
+    emitCode(  // Halt program
+      this.HALT(this.ic++)
+    );
   }
 
   public void printError(String err) {

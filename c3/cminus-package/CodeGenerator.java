@@ -12,6 +12,9 @@ public class CodeGenerator implements AbsynVisitor {
   private static int gp = 6;  // Register 6 (global pointer)
   private static int pc = 7;  // Register 7 (program counter)
 
+  public int emitLoc = 0;
+  public int highEmitLoc = 0;
+
   public CodeGenerator(PrintStream console, PrintStream stream) {
     this.console = console;
     this.stream = stream;
@@ -57,6 +60,43 @@ public class CodeGenerator implements AbsynVisitor {
       message, row, col)
     );
   }
+  private void emitRO( String op, int r, int s, int t, String c ) {
+    System.out.println(String.format("%3d: %5s %d, %d, %d", emitLoc, op, r, s, t ));
+    System.out.println(String.format("\t%s\n", c ));
+    ++emitLoc;
+    if( highEmitLoc < emitLoc )
+      highEmitLoc = emitLoc;
+    }
+  private void emitRM( String op, int r, int d, int s, String c ) {
+    System.out.println(String.format("%3d: %5s %d, %d(%d)", emitLoc, op, r, d, s ));
+    System.out.println(String.format("\t%s\n", c ));
+    ++emitLoc;
+    if( highEmitLoc < emitLoc )
+      highEmitLoc = emitLoc;
+    }
+  private void emitRM_Abs( String op, int r, int a, String c ) {
+    System.out.println(String.format("%3d: %5s %d, %d(%d)", emitLoc, op, r, a - (emitLoc + 1), pc ));
+    System.out.println(String.format("\t%s\n", c ));
+    ++emitLoc;
+    if( highEmitLoc < emitLoc )
+      highEmitLoc = emitLoc;
+    }
+  private int emitSkip( int distance ) {
+      int i = emitLoc;
+      emitLoc += distance;
+      if( highEmitLoc < emitLoc )
+        highEmitLoc = emitLoc;
+      return i;
+    }
+  private void emitBackup( int loc ) {
+      if( loc > highEmitLoc )
+        emitComment("BUG in emitBackup");
+      emitLoc = loc;
+   }
+  public void emitRestore() {
+      emitLoc = highEmitLoc;
+    }
+      
 
   // Prelude, IO, and finale
   public void prelude() {

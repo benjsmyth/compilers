@@ -1,0 +1,34 @@
+/* Test file for symbol table stuff*/
+
+int e;
+int arr[5];
+int i;
+
+
+int reduce(int i) {
+  return 1;
+}
+
+
+void main(void) {
+
+int i;
+int j;
+bool k;
+
+i = 6;
+j = 3;
+m = 8;
+
+while(j < i){
+    int y;
+    i = reduce(i);
+}
+
+if(j < i){
+
+    int h;
+    i = reduce(i);
+}
+
+}

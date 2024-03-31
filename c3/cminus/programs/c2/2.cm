@@ -1,0 +1,5 @@
+/* Missing main */
+
+void notmain(void) {
+  return;
+}

@@ -107,6 +107,8 @@ public class CodeGenerator implements AbsynVisitor {
     this.ST(this.ac, 0, this.ac, "Clear maximum address");
   }
   public void io() {
+    
+    int savedLoc = emitSkip(1);
     emitComment("IO");
     emitComment("code for input routine");
     this.ST(0, -1, 5, "Store Return");
@@ -118,7 +120,11 @@ public class CodeGenerator implements AbsynVisitor {
     this.LD(0, -2, 5, "load output value");
     this.emitRM("OUT", 0, 0, 0, "output");
     this.LD(7, -1, 5, "return to caller");
-    this.LDA(7, 7, 7, "jump around i/o code");
+
+    int savedLoc2 = emitSkip(0);
+    emitBackup( savedLoc );
+    emitRMA( "LDA", pc, savedLoc2, "jump around i/o code" );
+    emitRestore();
     // ...
   }
   public void finale() {

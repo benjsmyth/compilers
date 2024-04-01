@@ -103,7 +103,6 @@ class Main {
        if (result != null && SemanticAnalyzer.valid) {
          CodeGenerator codeGenerator = new CodeGenerator(old, ps3);
          result.accept( (AbsynVisitor)codeGenerator, 0, false );
-         codeGenerator.finale();
        }
       }
     } catch (Exception e) {

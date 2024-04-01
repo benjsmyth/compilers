@@ -2,15 +2,18 @@ import absyn.*;
 import java.io.PrintStream;
 
 public class CodeGenerator implements AbsynVisitor {
-  public static boolean valid = true;
-  public static PrintStream console, stream;
+  protected static boolean valid = true;
+  protected static PrintStream console, stream;
 
   // Internal addresses
-  public static int emitLoc = 0;       // Emit location
-  public static int frameOffset = 0;   // Difference from fp
-  public static int globalOffset = 0;  // Difference from gp
-  public static int highEmitLoc = 0;   // High emit location
-  public static int mainEntry = 0;     // Main address
+  private static int ioAddr = 0;        // IO address
+  private static int mainAddr = 0;      // Main address
+  private static int finaleAddr = 0;    // Finale address
+  private static int emitLoc = 0;       // Emit location
+  private static int dataOffset = 0;    // Difference from ac
+  private static int frameOffset = 0;   // Difference from fp
+  private static int globalOffset = 0;  // Difference from gp
+  private static int highEmitLoc = 0;   // High emit location
 
   // Simulator addresses
   private static final int ac = 0;  // Data address 0
@@ -27,7 +30,7 @@ public class CodeGenerator implements AbsynVisitor {
 
   // Emitting shortcuts
   private void HALT() {
-    this.emitComment("HALT"); this.emitHalt();
+    this.emitHalt();
   }
   private void JUMP(int d, String comment) {
     this.LDA(this.pc, d, this.pc, comment);
@@ -54,7 +57,7 @@ public class CodeGenerator implements AbsynVisitor {
     System.err.println( String.format("Error: %s at emit location %d", message, location) );
   }
   private void emitHalt() {
-    this.emitCode( String.format("HALT 0, 0, 0") );
+    this.emitCode("HALT 0, 0, 0");
   }
 
   // Emitting routines
@@ -64,7 +67,8 @@ public class CodeGenerator implements AbsynVisitor {
     this.emitUpdate();
   }
   private void emitRMA(String command, int r, int a, String comment) {
-    String code = String.format("%5s %d, %d(%d)", command, r, a-(this.emitLoc + 1), this.pc);
+    final int d = a-(this.emitLoc + 1);
+    String code = String.format("%5s %d, %d(%d)", command, r, d, this.pc);
     this.emitCode(code, comment);
     this.emitUpdate();
   }
@@ -98,20 +102,21 @@ public class CodeGenerator implements AbsynVisitor {
   // Prelude, IO, and finale
   public void prelude() {
     emitComment("PRELUDE");
-    this.LD(this.gp, 0, this.ac, "Load global pointer with address 1023");
+    this.LD(this.gp, 0, this.ac, "Load global pointer with maximum address");
     this.LDA(this.fp, 0, this.gp, "Copy global pointer to frame pointer");
-    this.ST(this.ac, 0, this.ac, "Clear data address 0");
+    this.ST(this.ac, 0, this.ac, "Clear maximum address");
   }
   public void io() {
     emitComment("IO");
     // ...
   }
   public void finale() {
+    this.finaleAddr = this.emitLoc;
     emitComment("FINALE");
-    this.ST(this.fp, -1, this.fp, "Push original frame pointer");
-    this.LDA(this.fp, -1, this.fp, "Push original frame");
-    this.LDA(this.ac, 1, this.pc, "Load data address 0 with return pointer");
-    this.JUMP(this.mainEntry-this.emitLoc, "Jump to main");
+    this.ST(this.fp, this.globalOffset, this.fp, "Push original frame pointer");
+    this.LDA(this.fp, this.globalOffset, this.fp, "Push original frame");
+    this.LDA(this.ac, 1, this.pc, "Load data with return pointer");
+    this.JUMP(this.mainAddr-this.emitLoc, "Jump to main");
     this.LD(this.fp, 0, this.fp, "Pop frame");
     this.HALT();
   }
@@ -176,20 +181,22 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(FunctionDec functionDec, int level, boolean isAddr) {
-    --this.frameOffset;
-
-    functionDec.funaddr = this.emitLoc;
-    this.emitComment( String.format("FUNCTION %s", functionDec.func) );
-    this.ST(this.ac, this.frameOffset, this.fp, "Store return address");
-    if ( functionDec.func.equals("main") )
-      this.mainEntry = this.emitLoc;
     if (functionDec.params != null)
       functionDec.params.accept(this, level, isAddr);
-    if (functionDec.body != null)
-      functionDec.body.accept(this, level, isAddr);
-    this.LD(this.pc, this.frameOffset, this.fp, "Return to caller");
-
-    ++this.frameOffset;
+    if (functionDec.body != null) {
+      int bodySize = 3;  // Minimum number of instructions (but need to measure dynamically)
+      functionDec.funaddr = this.emitSkip(bodySize);  // Skip function body
+      if ( functionDec.func.equals("main") ) {
+        this.mainAddr = functionDec.funaddr;  // Set main address
+        this.finale();  // Generate finale
+        this.emitBackup(this.mainAddr);  // Backup to main
+      }
+      this.emitComment( String.format("FUNCTION %s", functionDec.func) );
+      this.ST(this.dataOffset++, this.frameOffset, this.fp, "Store control link");
+      this.ST(this.dataOffset, --this.frameOffset, this.fp, "Store return address");
+      functionDec.body.accept(this, level, isAddr);  // Generate body code
+      this.LD(this.pc, this.frameOffset, this.fp, "Return to caller");
+    }
   }
 
   public void visit(IfExp ifExp, int level, boolean isAddress) {

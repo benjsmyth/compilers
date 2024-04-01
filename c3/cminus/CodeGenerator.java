@@ -112,13 +112,13 @@ public class CodeGenerator implements AbsynVisitor {
     emitComment("IO");
     emitComment("code for input routine");
     this.ST(0, -1, 5, "Store Return");
-    this.emitRM("IN", 0, 0, 0, "input");
+    this.emitRO("IN", 0, 0, 0, "input");
     this.LD(7, -1, 5, "return to caller");
 
     emitComment("code for output routine");
     this.ST(0, -1, 5, "Store Return");
     this.LD(0, -2, 5, "load output value");
-    this.emitRM("OUT", 0, 0, 0, "output");
+    this.emitRO("OUT", 0, 0, 0, "output");
     this.LD(7, -1, 5, "return to caller");
 
     int savedLoc2 = emitSkip(0);
@@ -201,18 +201,26 @@ public class CodeGenerator implements AbsynVisitor {
     if (functionDec.params != null)
       functionDec.params.accept(this, level, isAddr);
     if (functionDec.body != null) {
-      int bodySize = 3;  // Minimum number of instructions (but need to measure dynamically)
+      int bodySize = 1;  // Minimum number of instructions (but need to measure dynamically)
       functionDec.funaddr = this.emitSkip(bodySize);  // Skip function body
+      
+
+      this.emitComment( String.format("FUNCTION %s", functionDec.func) );
+      //this.ST(this.dataOffset++, this.frameOffset, this.fp, "Store control link");       
+      this.ST(this.dataOffset, --this.frameOffset, this.fp, "Store return address");
+      functionDec.body.accept(this, level, isAddr);  // Generate body code
+      this.LD(this.pc, this.frameOffset, this.fp, "Return to caller");
+
+      int savedLoc2 = emitSkip(0);
+      emitBackup( functionDec.funaddr );
+      emitRMA( "LDA", pc, savedLoc2, "jump around function" );
+      emitRestore();
+
       if ( functionDec.func.equals("main") ) {
         this.mainAddr = functionDec.funaddr;  // Set main address
         this.finale();  // Generate finale
         this.emitBackup(this.mainAddr);  // Backup to main
       }
-      this.emitComment( String.format("FUNCTION %s", functionDec.func) );
-      this.ST(this.dataOffset++, this.frameOffset, this.fp, "Store control link");
-      this.ST(this.dataOffset, --this.frameOffset, this.fp, "Store return address");
-      functionDec.body.accept(this, level, isAddr);  // Generate body code
-      this.LD(this.pc, this.frameOffset, this.fp, "Return to caller");
     }
   }
 

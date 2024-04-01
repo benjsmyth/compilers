@@ -13,10 +13,10 @@ public class CodeGenerator implements AbsynVisitor {
   public static int mainEntry = 0;     // Main address
 
   // Simulator addresses
-  private static int ac = 0;  // Data address 0
-  private static int fp = 5;  // Register 5 (frame pointer)
-  private static int gp = 6;  // Register 6 (global pointer)
-  private static int pc = 7;  // Register 7 (program counter)
+  private static final int ac = 0;  // Data address 0
+  private static final int fp = 5;  // Register 5 (frame pointer)
+  private static final int gp = 6;  // Register 6 (global pointer)
+  private static final int pc = 7;  // Register 7 (program counter)
 
   public CodeGenerator(PrintStream console, PrintStream stream) {
     this.console = console;

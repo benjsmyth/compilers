@@ -108,6 +108,17 @@ public class CodeGenerator implements AbsynVisitor {
   }
   public void io() {
     emitComment("IO");
+    emitComment("code for input routine");
+    this.ST(0, -1, 5, "Store Return");
+    this.emitRM("IN", 0, 0, 0, "input");
+    this.LD(7, -1, 5, "return to caller");
+
+    emitComment("code for output routine");
+    this.ST(0, -1, 5, "Store Return");
+    this.LD(0, -2, 5, "load output value");
+    this.emitRM("OUT", 0, 0, 0, "output");
+    this.LD(7, -1, 5, "return to caller");
+    this.LDA(7, 7, 7, "jump around i/o code");
     // ...
   }
   public void finale() {

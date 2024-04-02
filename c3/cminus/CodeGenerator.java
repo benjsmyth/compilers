@@ -308,10 +308,12 @@ public class CodeGenerator implements AbsynVisitor {
       ST(this.pc, --this.frameOffset, this.fp, String.format(
           "declare variable %s", simpleDec.name));
     }
+    simpleDec.offset = this.frameOffset;
   }
 
   public void visit(SimpleVar simpleVar, int level, boolean isAddress) {
     level++;
+    printConsole(((SimpleDec)simpleVar.dtype).name);
   }
 
   public void visit(VarDecList varDecList, int level, boolean isAddress) {

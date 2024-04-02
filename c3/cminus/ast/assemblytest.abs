@@ -15,5 +15,14 @@ DecList
                         type: INT
                     name: y
             ExpList
+                VarExp
+                    SimpleVar
+                        name: x
+                VarExp
+                    SimpleVar
+                        name: y
+                VarExp
+                    SimpleVar
+                        name: i
                 ReturnExp
                     NilExp

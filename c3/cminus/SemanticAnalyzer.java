@@ -300,6 +300,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     if ((func = lookup(callExp.func)) != null && func.get(0).def instanceof FunctionDec) {
       NodeType node = func.get(0);
       VarDecList params = ((FunctionDec) node.def).params;
+      callExp.dtype = node.def;
 
       indent(level);
       System.out.println(
@@ -664,6 +665,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
       System.out.println("index variable: " + indexVar.name);
       level++;
 
+      indexVar.dtype = node.get(0).def;
+
       if (indexVar.index != null) {
         indexVar.index.accept(this, level, flag);
       }
@@ -997,6 +1000,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
               simpleVar.row + 1, simpleVar.col, simpleVar.name));
     } else {
       NodeType newNode = new NodeType(simpleVar.name, 0, node.get(0).typ, null, level);
+      simpleVar.dtype = node.get(0).def;
       insert(simpleVar.name, newNode);
       indent(level);
       switch (newNode.typ.type) {

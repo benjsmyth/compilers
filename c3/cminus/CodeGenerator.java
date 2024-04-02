@@ -157,16 +157,14 @@ public class CodeGenerator implements AbsynVisitor {
   // Visitor methods
   public void visit(ArrayDec arrayDec, int level, boolean isAddr) {
     level++;
-    switch (arrayDec.typ.type) {
-      case 0:
-        break;
-      case 1:
-        break;
-      case 2:
-        break;
-      default:
-        break;
+    if (arrayDec.nestLevel == 0) {
+      ST(this.pc, --this.frameOffset, this.gp, String.format(
+          "declare variable %s", simpleDec.name));
+    } else {
+      ST(this.pc, --this.frameOffset, this.fp, String.format(
+          "declare variable %s", simpleDec.name));
     }
+    arrayDec.offset = this.frameOffset;
   }
 
   public void visit(AssignExp assignExp, int level, boolean isAddress) {

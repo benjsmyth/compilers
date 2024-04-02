@@ -231,21 +231,21 @@ public class CodeGenerator implements AbsynVisitor {
     if (ifExp.thenpart != null)
       ifExp.thenpart.accept(this, level, isAddress);
     if (ifExp.elsepart != null) {
-       System.out.println("ELSE");
+      printConsole("ELSE");
        ifExp.elsepart.accept(this, level, isAddress);
     }
   }
 
   public void visit(IndexVar indexVar, int level, boolean isAddress) {
     level++;
-    System.out.println("name: " + indexVar.name);
+    printConsole("name: " + indexVar.name);
     indexVar.index.accept(this, level, isAddress);
   }
 
 
   public void visit(IntExp intExp, int level, boolean isAddress) {
     level++;
-    System.out.println("value: " + intExp.value);
+    printConsole("value: " + intExp.value);
   }
 
   public void visit(NameTy nameTy, int level, boolean isAddress) {
@@ -271,7 +271,7 @@ public class CodeGenerator implements AbsynVisitor {
     if (opExp.left != null)
       opExp.left.accept(this, level, isAddress);
     if (opExp.op != -1) {}
-    System.out.println();
+    printConsole("");
     if (opExp.right != null)
       opExp.right.accept(this, level, isAddress);
   }
@@ -315,10 +315,9 @@ public class CodeGenerator implements AbsynVisitor {
       whileExp.body.accept(this, level, isAddress);
   }
 
-  public void printError(String err) {
-    SemanticAnalyzer.valid = false;
+  public void printConsole(String string) {
     System.setOut(this.console);
-    System.err.println(err);
+    System.out.println(string);
     System.setOut(this.stream);
   }
 }

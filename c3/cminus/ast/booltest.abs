@@ -1,0 +1,86 @@
+DecList
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: x
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: fac
+                SimpleDec
+                    NameTy
+                        type: BOOL
+                    name: test
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: x
+                    CallExp
+                        function name: input
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: fac
+                    IntExp
+                        value: 1
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: test
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: x
+                        Operator: >
+                        IntExp
+                            value: 1
+                WhileExp
+                    VarExp
+                        SimpleVar
+                            name: test
+                    CompoundExp
+                        ExpList
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: fac
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: fac
+                                    Operator: *
+                                    VarExp
+                                        SimpleVar
+                                            name: x
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: x
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: x
+                                    Operator: -
+                                    IntExp
+                                        value: 1
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: test
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: x
+                                    Operator: >
+                                    IntExp
+                                        value: 1
+                CallExp
+                    function name: output
+                    ExpList
+                        VarExp
+                            SimpleVar
+                                name: fac

@@ -1,0 +1,24 @@
+DecList
+    FunctionDec
+        CompoundExp
+            ExpList
+                ReturnExp
+                    BoolExp
+                        value: true
+    FunctionDec
+        CompoundExp
+            ExpList
+                IfExp:
+                    BoolExp
+                        value: true
+                    CompoundExp
+                        ExpList
+                            ReturnExp
+                                IntExp
+                                    value: 1
+                    ELSE
+                    CompoundExp
+                        ExpList
+                            ReturnExp
+                                IntExp
+                                    value: 1

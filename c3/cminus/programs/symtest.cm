@@ -6,9 +6,9 @@ bool foo(void){
 int main(void) { 
     
     if (true){
-        return true;
+        return 1;
     }
     else{
-        return true;
+        return 1;
     }
 }

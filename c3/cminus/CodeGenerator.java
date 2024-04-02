@@ -159,10 +159,10 @@ public class CodeGenerator implements AbsynVisitor {
     level++;
     if (arrayDec.nestLevel == 0) {
       ST(this.pc, --this.frameOffset, this.gp, String.format(
-          "declare variable %s", simpleDec.name));
+          "declare variable %s", arrayDec.name));
     } else {
       ST(this.pc, --this.frameOffset, this.fp, String.format(
-          "declare variable %s", simpleDec.name));
+          "declare variable %s", arrayDec.name));
     }
     arrayDec.offset = this.frameOffset;
   }

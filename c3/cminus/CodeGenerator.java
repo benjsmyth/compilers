@@ -159,10 +159,10 @@ public class CodeGenerator implements AbsynVisitor {
     level++;
     if (arrayDec.nestLevel == 0) {
       ST(this.pc, --this.frameOffset, this.gp, String.format(
-          "declare variable %s", arrayDec.name));
+          "declare array %s", arrayDec.name));
     } else {
       ST(this.pc, --this.frameOffset, this.fp, String.format(
-          "declare variable %s", arrayDec.name));
+          "declare array %s", arrayDec.name));
     }
     arrayDec.offset = this.frameOffset;
   }
@@ -300,7 +300,7 @@ public class CodeGenerator implements AbsynVisitor {
   public void visit(SimpleDec simpleDec, int level, boolean isAddress) {
     level++;
     if (simpleDec.nestLevel == 0) {
-      ST(this.pc, --this.frameOffset, this.gp, String.format(
+      ST(this.pc, this.frameOffset, this.gp, String.format(
           "declare variable %s", simpleDec.name));
     } else {
       ST(this.pc, --this.frameOffset, this.fp, String.format(

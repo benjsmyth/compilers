@@ -3,9 +3,9 @@ int i;
 
 void main(void){
     int x;
-    int y;
+    bool y;
     x = 10;
-    y = x + 4 + 2 - 4 - 2 * 10 - 3 / 3;
+    y = ~(x == 9);
     i;
     return;
 }

@@ -12,7 +12,7 @@ DecList
                     name: x
                 SimpleDec
                     NameTy
-                        type: INT
+                        type: BOOL
                     name: y
             ExpList
                 AssignExp
@@ -27,35 +27,13 @@ DecList
                             name: y
                     OpExp
                         OpExp
-                            OpExp
-                                OpExp
-                                    OpExp
-                                        VarExp
-                                            SimpleVar
-                                                name: x
-                                        Operator: +
-                                        IntExp
-                                            value: 4
-                                    Operator: +
-                                    IntExp
-                                        value: 2
-                                Operator: -
-                                IntExp
-                                    value: 4
-                            Operator: -
-                            OpExp
-                                IntExp
-                                    value: 2
-                                Operator: *
-                                IntExp
-                                    value: 10
-                        Operator: -
-                        OpExp
+                            VarExp
+                                SimpleVar
+                                    name: x
+                            Operator: =
                             IntExp
-                                value: 3
-                            Operator: /
-                            IntExp
-                                value: 3
+                                value: 9
+                        Operator: ~
                 VarExp
                     SimpleVar
                         name: i

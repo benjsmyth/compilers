@@ -186,7 +186,8 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(BoolExp boolExp, int offset, boolean isAddress) {
-
+    emitRM("LDC", 0, boolExp.value ? 1 : 0, 0, "load bool into register 0");
+    ST(0, --this.frameOffset, 5, "store bool");
   }
 
   public void visit(CallExp callExp, int offset, boolean isAddress) {
@@ -294,90 +295,127 @@ public class CodeGenerator implements AbsynVisitor {
   public void visit(OpExp opExp, int offset, boolean isAddress) {
     emitComment("Operation Expression");
     int currentOffset = --this.frameOffset;
-    boolean isLeft = false;
-    Exp opSide;
-    if (opExp.left instanceof OpExp){
-      opSide = opExp.left;
-      opExp.right.accept(this, offset, isAddress);
-    }
-    else {
-      opSide = opExp.right;
-      opExp.left.accept(this, offset, isAddress);
-      isLeft = true;
-    }
 
-    int highestFrame = this.frameOffset - 1;
+    if (opExp.right != null) {
+      boolean isLeft = false;
+      Exp opSide;
+      if (opExp.left instanceof OpExp) {
+        opSide = opExp.left;
+        opExp.right.accept(this, offset, isAddress);
+      } else {
+        opSide = opExp.right;
+        opExp.left.accept(this, offset, isAddress);
+        isLeft = true;
+      }
 
-    if (opSide != null){
+      int highestFrame = this.frameOffset - 1;
       opSide.accept(this, offset, isAddress);
       LD(0, currentOffset - 1, 5, "load leftside op");
       LD(1, highestFrame, 5, "load rightside op");
 
-      switch(opExp.op){
+      switch (opExp.op) {
         case OpExp.PLUS:
           emitRO("ADD", 0, 0, 1, "add");
-        break;
+          break;
 
         case OpExp.MINUS:
-        if (isLeft)
-          emitRO("SUB", 0, 0, 1, "sub");
-        else
-          emitRO("SUB", 0, 1, 0, "sub");
-        break;
+          if (isLeft)
+            emitRO("SUB", 0, 0, 1, "sub");
+          else
+            emitRO("SUB", 0, 1, 0, "sub");
+          break;
 
         case OpExp.MULT:
           emitRO("MUL", 0, 0, 1, "mult");
-        break;
+          break;
 
         case OpExp.DIV:
           if (isLeft)
             emitRO("DIV", 0, 0, 1, "div");
           else
             emitRO("DIV", 0, 1, 0, "div");
-        break;
+          break;
 
         case OpExp.EQUAL:
-
-        break;
+          emitRO("SUB", 0, 0, 1, "sub");
+          emitRM("JNE", 0, 2, this.pc, "equal");
+          emitRM("LDC", 0, 1, 0, "true");
+          JUMP(1, "jumping over 0 assignment");
+          emitRM("LDC", 0, 0, 0, "false");
+          break;
 
         case OpExp.NEQUAL:
-
-        break;
+          emitRO("SUB", 0, 0, 1, "sub");
+          emitRM("JEQ", 0, 2, this.pc, "equal");
+          emitRM("LDC", 0, 1, 0, "true");
+          JUMP(1, "jumping over 0 assignment");
+          emitRM("LDC", 0, 0, 0, "false");
+          break;
 
         case OpExp.LESS:
-
-        break;
+          emitRO("SUB", 0, 0, 1, "sub");
+          emitRM("JGE", 0, 2, this.pc, "equal");
+          emitRM("LDC", 0, 1, 0, "true");
+          JUMP(1, "jumping over 0 assignment");
+          emitRM("LDC", 0, 0, 0, "false");
+          break;
 
         case OpExp.LESSEQ:
-
-        break;
+          emitRO("SUB", 0, 0, 1, "sub");
+          emitRM("JGT", 0, 2, this.pc, "equal");
+          emitRM("LDC", 0, 1, 0, "true");
+          JUMP(1, "jumping over 0 assignment");
+          emitRM("LDC", 0, 0, 0, "false");
+          break;
 
         case OpExp.GREATER:
-
-        break;
+          emitRO("SUB", 0, 0, 1, "sub");
+          emitRM("JLE", 0, 2, this.pc, "equal");
+          emitRM("LDC", 0, 1, 0, "true");
+          JUMP(1, "jumping over 0 assignment");
+          emitRM("LDC", 0, 0, 0, "false");
+          break;
 
         case OpExp.GREATEREQ:
-
-        break;
-
-        case OpExp.NOT:
-
-        break;
+          emitRO("SUB", 0, 0, 1, "sub");
+          emitRM("JLT", 0, 2, this.pc, "equal");
+          emitRM("LDC", 0, 1, 0, "true");
+          JUMP(1, "jumping over 0 assignment");
+          emitRM("LDC", 0, 0, 0, "false");
+          break;
 
         case OpExp.AND:
-
-        break;
+          emitRO("MUL", 0, 0, 1, "mult");
+          emitRM("JNE", 0, 2, this.pc, "equal");
+          emitRM("LDC", 0, 1, 0, "true");
+          JUMP(1, "jumping over 0 assignment");
+          emitRM("LDC", 0, 0, 0, "false");
+          break;
 
         case OpExp.OR:
-
-        break;
+          emitRO("ADD", 0, 0, 1, "add");
+          emitRM("JEQ", 0, 2, this.pc, "equal");
+          emitRM("LDC", 0, 1, 0, "true");
+          JUMP(1, "jumping over 0 assignment");
+          emitRM("LDC", 0, 0, 0, "false");
+          break;
       }
 
-      ST(0, currentOffset, 5, "store value in opexp");
-    }
-    else {
+    } else {
 
+      opExp.left.accept(this, offset, isAddress);
+      LD(0, currentOffset - 1, 5, "load leftside op");
+      if (opExp.op == OpExp.UMINUS) {
+        emitRM("LDC", 1, -1, 0, "negative number to multiply by");
+        emitRO("MUL", 0, 0, 1, "mult");
+      } else {
+        emitRM("JNE", 0, 2, this.pc, "equal");
+        emitRM("LDC", 0, 1, 0, "true");
+        JUMP(1, "jumping over 0 assignment");
+        emitRM("LDC", 0, 0, 0, "false");
+      }
     }
+    ST(0, currentOffset, 5, "store value in opexp");
   }
 
   public void visit(ReturnExp returnExp, int offset, boolean isAddress) {
@@ -399,7 +437,7 @@ public class CodeGenerator implements AbsynVisitor {
 
   public void visit(SimpleVar simpleVar, int offset, boolean isAddress) {
     SimpleDec type = (SimpleDec) simpleVar.dtype;
-    if (isAddress){
+    if (isAddress) {
       if (type.nestLevel == 0) {
         LDA(0, type.offset, 6, "load simplevar");
         ST(0, --this.globalOffset, 6, "store simplevar");
@@ -407,8 +445,7 @@ public class CodeGenerator implements AbsynVisitor {
         LDA(0, type.offset, 5, "load simplevar");
         ST(0, --this.frameOffset, 5, "store simplevar");
       }
-    }
-    else {
+    } else {
       if (type.nestLevel == 0) {
         LD(0, type.offset, 6, "load simplevar");
         ST(0, --this.globalOffset, 6, "store simplevar");

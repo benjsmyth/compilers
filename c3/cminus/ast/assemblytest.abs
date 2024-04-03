@@ -20,14 +20,30 @@ DecList
                         SimpleVar
                             name: x
                     IntExp
-                        value: 1
+                        value: 5
                 AssignExp
                     VarExp
                         SimpleVar
                             name: y
-                    VarExp
-                        SimpleVar
-                            name: x
+                    OpExp
+                        OpExp
+                            OpExp
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: x
+                                    Operator: +
+                                    IntExp
+                                        value: 1
+                                Operator: +
+                                IntExp
+                                    value: 10
+                            Operator: +
+                            IntExp
+                                value: 2
+                        Operator: +
+                        IntExp
+                            value: 3
                 VarExp
                     SimpleVar
                         name: i

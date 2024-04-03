@@ -181,8 +181,8 @@ public class CodeGenerator implements AbsynVisitor {
     ST(1, 0, 0, "store into simpleVar");
     ST(1, currentOffset, 5, "store into assign expression");
 
-    LD(0, currentOffset + 1, 5, null);
-    //emitRO("OUT", 0, 0, 0, "output");
+    LD(0, currentOffset + 4, 5, "");
+    emitRO("OUT", 0, 0, 0, "output");
   }
 
   public void visit(BoolExp boolExp, int offset, boolean isAddress) {
@@ -292,15 +292,74 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(OpExp opExp, int offset, boolean isAddress) {
+    emitComment("Operation Expression");
+    int currentOffset = --this.frameOffset;
+    opExp.right.accept(this, offset, isAddress);
 
-    String code = "";
-    if (opExp.left != null)
+    if (opExp.left != null){
       opExp.left.accept(this, offset, isAddress);
-    if (opExp.op != -1) {
+      LD(0, currentOffset - 1, 5, "load leftside op");
+      LD(1, currentOffset - 2, 5, "load rightside op");
+
+      switch(opExp.op){
+        case OpExp.PLUS:
+          emitRO("ADD", 0, 0, 1, "add");
+        break;
+
+        case OpExp.MINUS:
+
+        break;
+
+        case OpExp.MULT:
+
+        break;
+
+        case OpExp.DIV:
+
+        break;
+
+        case OpExp.EQUAL:
+
+        break;
+
+        case OpExp.NEQUAL:
+
+        break;
+
+        case OpExp.LESS:
+
+        break;
+
+        case OpExp.LESSEQ:
+
+        break;
+
+        case OpExp.GREATER:
+
+        break;
+
+        case OpExp.GREATEREQ:
+
+        break;
+
+        case OpExp.NOT:
+
+        break;
+
+        case OpExp.AND:
+
+        break;
+
+        case OpExp.OR:
+
+        break;
+      }
+
+      ST(0, currentOffset, 5, "store value in opexp");
     }
-    printConsole("");
-    if (opExp.right != null)
-      opExp.right.accept(this, offset, isAddress);
+    else {
+
+    }
   }
 
   public void visit(ReturnExp returnExp, int offset, boolean isAddress) {
@@ -324,20 +383,20 @@ public class CodeGenerator implements AbsynVisitor {
     SimpleDec type = (SimpleDec) simpleVar.dtype;
     if (isAddress){
       if (type.nestLevel == 0) {
-        LDA(0, type.offset, 6, "load");
-        ST(0, --this.globalOffset, 6, "store");
+        LDA(0, type.offset, 6, "load simplevar");
+        ST(0, --this.globalOffset, 6, "store simplevar");
       } else {
-        LDA(0, type.offset, 5, "load");
-        ST(0, --this.frameOffset, 5, "store");
+        LDA(0, type.offset, 5, "load simplevar");
+        ST(0, --this.frameOffset, 5, "store simplevar");
       }
     }
     else {
       if (type.nestLevel == 0) {
-        LD(0, type.offset, 6, "load");
-        ST(0, --this.globalOffset, 6, "store");
+        LD(0, type.offset, 6, "load simplevar");
+        ST(0, --this.globalOffset, 6, "store simplevar");
       } else {
-        LD(0, type.offset, 5, "load");
-        ST(0, --this.frameOffset, 5, "store");
+        LD(0, type.offset, 5, "load simplevar");
+        ST(0, --this.frameOffset, 5, "store simplevar");
       }
     }
   }

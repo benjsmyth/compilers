@@ -161,6 +161,7 @@ public class CodeGenerator implements AbsynVisitor {
         "declare array %s", arrayDec.name));
     if (arrayDec.nestLevel == 0) {
       arrayDec.offset = --this.globalOffset;
+      printConsole(Integer.toString(this.globalOffset));
       this.globalOffset -= arrayDec.size;
     } else {
       arrayDec.offset = --this.frameOffset;
@@ -183,7 +184,7 @@ public class CodeGenerator implements AbsynVisitor {
     ST(1, 0, 0, "store into var");
     ST(1, currentOffset, 5, "store into assign expression");
 
-    LD(0, -4, 5, "");
+    LD(0, -5, 5, "");
     emitRO("OUT", 0, 0, 0, "output");
   }
 
@@ -277,7 +278,8 @@ public class CodeGenerator implements AbsynVisitor {
       if (type.nestLevel == 0) {
         LDA(0, type.offset - 1, 6, "load indexVar");
         emitRO("SUB", 0, 0, 1, "get proper offset");
-        ST(0, currentOffset - 1, 6, "store indexVar");
+        ST(0, currentOffset - 1, 5, "store indexVar");
+        emitRO("OUT", 0, 0, 0, "output");
       } else {
         LDA(0, type.offset - 1, 5, "load indexVar");
         emitRO("SUB", 0, 0, 1, "get proper offset");
@@ -288,7 +290,7 @@ public class CodeGenerator implements AbsynVisitor {
         LDA(0, type.offset - 1, 6, "load indexVar");
         emitRO("SUB", 0, 0, 1, "get proper offset");
         LD(0, 0, 0, "get value from index in array");
-        ST(0, currentOffset - 1, 6, "store indexVar");
+        ST(0, currentOffset - 1, 5, "store indexVar");
       } else {
         LDA(0, type.offset - 1, 5, "load indexVar");
         emitRO("SUB", 0, 0, 1, "get proper offset");

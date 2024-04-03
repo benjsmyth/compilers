@@ -1,11 +1,13 @@
 
-int i;
+bool i[10];
 
 void main(void){
     bool x;
     bool y[1];
-    x = false;
-    y[0] = x;
-    i;
+    bool z;
+    x = true;
+    i[0] = x;
+    z = i[0];
+
     return;
 }

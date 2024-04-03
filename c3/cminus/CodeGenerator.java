@@ -156,9 +156,9 @@ public class CodeGenerator implements AbsynVisitor {
 
   // Visitor methods
   public void visit(ArrayDec arrayDec, int offset, boolean isAddr) {
-    
+
     emitComment(String.format(
-          "declare array %s", arrayDec.name));
+        "declare array %s", arrayDec.name));
     if (arrayDec.nestLevel == 0) {
       arrayDec.offset = --this.globalOffset;
       this.globalOffset -= arrayDec.size;
@@ -169,24 +169,24 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(AssignExp assignExp, int offset, boolean isAddress) {
-    
+
     emitComment("Assign Expression");
     assignExp.lhs.accept(this, offset - 1, isAddress);
     assignExp.rhs.accept(this, offset - 2, isAddress);
   }
 
   public void visit(BoolExp boolExp, int offset, boolean isAddress) {
-    
+
   }
 
   public void visit(CallExp callExp, int offset, boolean isAddress) {
-    
+
     if (callExp.args != null)
       callExp.args.accept(this, offset, isAddress);
   }
 
   public void visit(CompoundExp compoundExp, int offset, boolean isAddress) {
-    
+
     if (compoundExp.decs != null)
       compoundExp.decs.accept(this, offset, isAddress);
     if (compoundExp.exps != null)
@@ -194,7 +194,7 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(DecList decList, int offset, boolean isAddress) {
-    
+
     while (decList != null) {
       if (decList.head != null)
         decList.head.accept(this, offset, isAddress);
@@ -203,7 +203,7 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(ExpList expList, int offset, boolean isAddress) {
-    
+
     while (expList != null) {
       if (expList.head != null)
         expList.head.accept(this, offset, isAddress);
@@ -241,7 +241,7 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(IfExp ifExp, int offset, boolean isAddress) {
-    
+
     if (ifExp.test != null)
       ifExp.test.accept(this, offset, isAddress);
     if (ifExp.thenpart != null)
@@ -253,18 +253,18 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(IndexVar indexVar, int offset, boolean isAddress) {
-    
+
     printConsole("name: " + indexVar.name);
     indexVar.index.accept(this, offset, isAddress);
   }
 
   public void visit(IntExp intExp, int offset, boolean isAddress) {
-    
+
     printConsole("value: " + intExp.value);
   }
 
   public void visit(NameTy nameTy, int offset, boolean isAddress) {
-    
+
     switch (nameTy.type) {
       case 0:
         break;
@@ -281,7 +281,7 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(OpExp opExp, int offset, boolean isAddress) {
-    
+
     String code = "";
     if (opExp.left != null)
       opExp.left.accept(this, offset, isAddress);
@@ -293,15 +293,15 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(ReturnExp returnExp, int offset, boolean isAddress) {
-    
+
     if (returnExp != null)
       returnExp.exp.accept(this, offset, isAddress);
   }
 
   public void visit(SimpleDec simpleDec, int offset, boolean isAddress) {
-    
+
     emitComment(String.format(
-          "declare variable %s", simpleDec.name));
+        "declare variable %s", simpleDec.name));
     if (simpleDec.nestLevel == 0) {
       simpleDec.offset = --this.globalOffset;
     } else {
@@ -310,15 +310,20 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(SimpleVar simpleVar, int offset, boolean isAddress) {
-    SimpleDec type = (SimpleDec)simpleVar.dtype;
-    LDA(0, type.offset, 5, "load");
-    ST(0, --this.frameOffset, 5, "store");
+    SimpleDec type = (SimpleDec) simpleVar.dtype;
+    if (type.nestLevel == 0) {
+      LDA(0, type.offset, 6, "load");
+      ST(0, --this.globalOffset, 6, "store");
+    } else {
+      LDA(0, type.offset, 5, "load");
+      ST(0, --this.frameOffset, 5, "store");
+    }
   }
 
   public void visit(VarDecList varDecList, int offset, boolean isAddress) {
-    
+
     while (varDecList != null) {
-      if (varDecList.head != null){
+      if (varDecList.head != null) {
         varDecList.head.nestLevel = 1;
         varDecList.head.accept(this, offset, isAddress);
       }
@@ -327,13 +332,13 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(VarExp varExp, int offset, boolean isAddress) {
-    
+
     if (varExp.variable != null)
       varExp.variable.accept(this, offset, isAddress);
   }
 
   public void visit(WhileExp whileExp, int offset, boolean isAddress) {
-    
+
     if (whileExp.test != null)
       whileExp.test.accept(this, offset, isAddress);
     if (whileExp.body != null)

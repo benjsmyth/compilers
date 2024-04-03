@@ -10,10 +10,6 @@ DecList
                     NameTy
                         type: INT
                     name: x
-                ArrayDec
-                    type: INT
-                    name: z
-                    size: 10
                 SimpleDec
                     NameTy
                         type: INT

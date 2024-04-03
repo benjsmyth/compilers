@@ -155,65 +155,66 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   // Visitor methods
-  public void visit(ArrayDec arrayDec, int level, boolean isAddr) {
-    level++;
+  public void visit(ArrayDec arrayDec, int offset, boolean isAddr) {
+    
+    emitComment(String.format(
+          "declare array %s", arrayDec.name));
     if (arrayDec.nestLevel == 0) {
-      ST(this.pc, --this.frameOffset, this.gp, String.format(
-          "declare array %s", arrayDec.name));
+      arrayDec.offset = --this.globalOffset;
+      this.globalOffset -= arrayDec.size;
     } else {
-      ST(this.pc, --this.frameOffset, this.fp, String.format(
-          "declare array %s", arrayDec.name));
+      arrayDec.offset = --this.frameOffset;
+      this.frameOffset -= arrayDec.size;
     }
-    arrayDec.offset = this.frameOffset;
   }
 
-  public void visit(AssignExp assignExp, int level, boolean isAddress) {
-    level++;
-    if (assignExp.lhs != null)
-      assignExp.lhs.accept(this, level, isAddress);
-    if (assignExp.rhs != null)
-      assignExp.rhs.accept(this, level, isAddress);
+  public void visit(AssignExp assignExp, int offset, boolean isAddress) {
+    
+    emitComment("Assign Expression");
+    assignExp.lhs.accept(this, offset - 1, isAddress);
+    assignExp.rhs.accept(this, offset - 2, isAddress);
   }
 
-  public void visit(BoolExp boolExp, int level, boolean isAddress) {
-    level++;
+  public void visit(BoolExp boolExp, int offset, boolean isAddress) {
+    
   }
 
-  public void visit(CallExp callExp, int level, boolean isAddress) {
-    level++;
+  public void visit(CallExp callExp, int offset, boolean isAddress) {
+    
     if (callExp.args != null)
-      callExp.args.accept(this, level, isAddress);
+      callExp.args.accept(this, offset, isAddress);
   }
 
-  public void visit(CompoundExp compoundExp, int level, boolean isAddress) {
-    level++;
+  public void visit(CompoundExp compoundExp, int offset, boolean isAddress) {
+    
     if (compoundExp.decs != null)
-      compoundExp.decs.accept(this, level, isAddress);
+      compoundExp.decs.accept(this, offset, isAddress);
     if (compoundExp.exps != null)
-      compoundExp.exps.accept(this, level, isAddress);
+      compoundExp.exps.accept(this, offset, isAddress);
   }
 
-  public void visit(DecList decList, int level, boolean isAddress) {
-    level++;
+  public void visit(DecList decList, int offset, boolean isAddress) {
+    
     while (decList != null) {
       if (decList.head != null)
-        decList.head.accept(this, level, isAddress);
+        decList.head.accept(this, offset, isAddress);
       decList = decList.tail;
     }
   }
 
-  public void visit(ExpList expList, int level, boolean isAddress) {
-    level++;
+  public void visit(ExpList expList, int offset, boolean isAddress) {
+    
     while (expList != null) {
       if (expList.head != null)
-        expList.head.accept(this, level, isAddress);
+        expList.head.accept(this, offset, isAddress);
       expList = expList.tail;
     }
   }
 
-  public void visit(FunctionDec functionDec, int level, boolean isAddr) {
+  public void visit(FunctionDec functionDec, int offset, boolean isAddr) {
+    this.frameOffset = 0;
     if (functionDec.params != null)
-      functionDec.params.accept(this, level, isAddr);
+      functionDec.params.accept(this, offset, isAddr);
     if (functionDec.body != null) {
       int bodySize = 1; // Minimum number of instructions (but need to measure dynamically)
       functionDec.funaddr = this.emitSkip(bodySize); // Skip function body
@@ -222,7 +223,7 @@ public class CodeGenerator implements AbsynVisitor {
       // this.ST(this.dataOffset++, this.frameOffset, this.fp, "Store control link");
       this.ST(this.dataOffset, --this.frameOffset, this.fp, "Store return address");
       int returnOffset = this.frameOffset;
-      functionDec.body.accept(this, level, isAddr); // Generate body code
+      functionDec.body.accept(this, offset, isAddr); // Generate body code
       this.LD(this.pc, returnOffset, this.fp, "Return to caller");
 
       int savedLoc2 = emitSkip(0);
@@ -239,31 +240,31 @@ public class CodeGenerator implements AbsynVisitor {
     }
   }
 
-  public void visit(IfExp ifExp, int level, boolean isAddress) {
-    level++;
+  public void visit(IfExp ifExp, int offset, boolean isAddress) {
+    
     if (ifExp.test != null)
-      ifExp.test.accept(this, level, isAddress);
+      ifExp.test.accept(this, offset, isAddress);
     if (ifExp.thenpart != null)
-      ifExp.thenpart.accept(this, level, isAddress);
+      ifExp.thenpart.accept(this, offset, isAddress);
     if (ifExp.elsepart != null) {
       printConsole("ELSE");
-      ifExp.elsepart.accept(this, level, isAddress);
+      ifExp.elsepart.accept(this, offset, isAddress);
     }
   }
 
-  public void visit(IndexVar indexVar, int level, boolean isAddress) {
-    level++;
+  public void visit(IndexVar indexVar, int offset, boolean isAddress) {
+    
     printConsole("name: " + indexVar.name);
-    indexVar.index.accept(this, level, isAddress);
+    indexVar.index.accept(this, offset, isAddress);
   }
 
-  public void visit(IntExp intExp, int level, boolean isAddress) {
-    level++;
+  public void visit(IntExp intExp, int offset, boolean isAddress) {
+    
     printConsole("value: " + intExp.value);
   }
 
-  public void visit(NameTy nameTy, int level, boolean isAddress) {
-    level++;
+  public void visit(NameTy nameTy, int offset, boolean isAddress) {
+    
     switch (nameTy.type) {
       case 0:
         break;
@@ -276,67 +277,67 @@ public class CodeGenerator implements AbsynVisitor {
     }
   }
 
-  public void visit(NilExp nilExp, int level, boolean isAddress) {
+  public void visit(NilExp nilExp, int offset, boolean isAddress) {
   }
 
-  public void visit(OpExp opExp, int level, boolean isAddress) {
-    level++;
+  public void visit(OpExp opExp, int offset, boolean isAddress) {
+    
     String code = "";
     if (opExp.left != null)
-      opExp.left.accept(this, level, isAddress);
+      opExp.left.accept(this, offset, isAddress);
     if (opExp.op != -1) {
     }
     printConsole("");
     if (opExp.right != null)
-      opExp.right.accept(this, level, isAddress);
+      opExp.right.accept(this, offset, isAddress);
   }
 
-  public void visit(ReturnExp returnExp, int level, boolean isAddress) {
-    level++;
+  public void visit(ReturnExp returnExp, int offset, boolean isAddress) {
+    
     if (returnExp != null)
-      returnExp.exp.accept(this, level, isAddress);
+      returnExp.exp.accept(this, offset, isAddress);
   }
 
-  public void visit(SimpleDec simpleDec, int level, boolean isAddress) {
-    level++;
+  public void visit(SimpleDec simpleDec, int offset, boolean isAddress) {
+    
+    emitComment(String.format(
+          "declare variable %s", simpleDec.name));
     if (simpleDec.nestLevel == 0) {
-      ST(this.pc, this.frameOffset, this.gp, String.format(
-          "declare variable %s", simpleDec.name));
+      simpleDec.offset = --this.globalOffset;
     } else {
-      ST(this.pc, --this.frameOffset, this.fp, String.format(
-          "declare variable %s", simpleDec.name));
+      simpleDec.offset = --this.frameOffset;
     }
-    simpleDec.offset = this.frameOffset;
   }
 
-  public void visit(SimpleVar simpleVar, int level, boolean isAddress) {
-    level++;
-    printConsole(((SimpleDec)simpleVar.dtype).name);
+  public void visit(SimpleVar simpleVar, int offset, boolean isAddress) {
+    SimpleDec type = (SimpleDec)simpleVar.dtype;
+    LDA(0, type.offset, 5, "load");
+    ST(0, --this.frameOffset, 5, "store");
   }
 
-  public void visit(VarDecList varDecList, int level, boolean isAddress) {
-    level++;
+  public void visit(VarDecList varDecList, int offset, boolean isAddress) {
+    
     while (varDecList != null) {
       if (varDecList.head != null){
         varDecList.head.nestLevel = 1;
-        varDecList.head.accept(this, level, isAddress);
+        varDecList.head.accept(this, offset, isAddress);
       }
       varDecList = varDecList.tail;
     }
   }
 
-  public void visit(VarExp varExp, int level, boolean isAddress) {
-    level++;
+  public void visit(VarExp varExp, int offset, boolean isAddress) {
+    
     if (varExp.variable != null)
-      varExp.variable.accept(this, level, isAddress);
+      varExp.variable.accept(this, offset, isAddress);
   }
 
-  public void visit(WhileExp whileExp, int level, boolean isAddress) {
-    level++;
+  public void visit(WhileExp whileExp, int offset, boolean isAddress) {
+    
     if (whileExp.test != null)
-      whileExp.test.accept(this, level, isAddress);
+      whileExp.test.accept(this, offset, isAddress);
     if (whileExp.body != null)
-      whileExp.body.accept(this, level, isAddress);
+      whileExp.body.accept(this, offset, isAddress);
   }
 
   public void printConsole(String string) {

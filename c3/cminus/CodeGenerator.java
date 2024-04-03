@@ -184,7 +184,7 @@ public class CodeGenerator implements AbsynVisitor {
     ST(1, 0, 0, "store into var");
     ST(1, currentOffset, 5, "store into assign expression");
 
-    LD(0, -5, 5, "");
+    LD(0, -2, 5, "");
     emitRO("OUT", 0, 0, 0, "output");
   }
 
@@ -471,7 +471,7 @@ public class CodeGenerator implements AbsynVisitor {
     if (isAddress) {
       if (type.nestLevel == 0) {
         LDA(0, type.offset, 6, "load simplevar");
-        ST(0, --this.globalOffset, 6, "store simplevar");
+        ST(0, --this.frameOffset, 5, "store simplevar");
       } else {
         LDA(0, type.offset, 5, "load simplevar");
         ST(0, --this.frameOffset, 5, "store simplevar");
@@ -479,7 +479,7 @@ public class CodeGenerator implements AbsynVisitor {
     } else {
       if (type.nestLevel == 0) {
         LD(0, type.offset, 6, "load simplevar");
-        ST(0, --this.globalOffset, 6, "store simplevar");
+        ST(0, --this.frameOffset, 5, "store simplevar");
       } else {
         LD(0, type.offset, 5, "load simplevar");
         ST(0, --this.frameOffset, 5, "store simplevar");

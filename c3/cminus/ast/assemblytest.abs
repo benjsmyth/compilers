@@ -3,45 +3,30 @@ DecList
         type: BOOL
         name: i
         size: 10
+    SimpleDec
+        NameTy
+            type: INT
+        name: k
     FunctionDec
         CompoundExp
             VarDecList
                 SimpleDec
                     NameTy
-                        type: BOOL
+                        type: INT
                     name: x
-                ArrayDec
-                    type: BOOL
-                    name: y
-                    size: 1
-                SimpleDec
-                    NameTy
-                        type: BOOL
-                    name: z
             ExpList
                 AssignExp
                     VarExp
                         SimpleVar
-                            name: x
-                    BoolExp
-                        value: true
-                AssignExp
-                    VarExp
-                        IndexVar
-                            name: i
-                            IntExp
-                                value: 0
-                    VarExp
-                        SimpleVar
-                            name: x
+                            name: k
+                    IntExp
+                        value: 1
                 AssignExp
                     VarExp
                         SimpleVar
-                            name: z
+                            name: x
                     VarExp
-                        IndexVar
-                            name: i
-                            IntExp
-                                value: 0
+                        SimpleVar
+                            name: k
                 ReturnExp
                     NilExp

@@ -18,18 +18,36 @@
  12:    ST 0, -1(5)	* Store return address
 * declare variable x
 * declare variable y
+* Assign Expression
  13:   LDA 0, -2(5)	* load
- 14:    ST 0, -4(5)	* store
- 15:   LDA 0, -3(5)	* load
- 16:    ST 0, -5(5)	* store
- 17:   LDA 0, -1(6)	* load
- 18:    ST 0, -2(6)	* store
- 19:    LD 7, -1(5)	* Return to caller
- 11:   LDA 7, 8(7)	* jump around function
+ 14:    ST 0, -5(5)	* store
+ 15:   LDC 0, 1(0)	* load int into register 0
+ 16:    ST 0, -6(5)	* store int
+ 17:    LD 0, -5(5)	* load leftside into reg 0
+ 18:    LD 1, -6(5)	* load rightside into reg 1
+ 19:    ST 1, 0(0)	* store into simpleVar
+ 20:    ST 1, -4(5)	* store into assign expression
+ 21:    LD 0, -3(5)	* null
+ 22:   OUT 0, 0, 0	* output
+* Assign Expression
+ 23:   LDA 0, -3(5)	* load
+ 24:    ST 0, -8(5)	* store
+ 25:    LD 0, -2(5)	* load
+ 26:    ST 0, -9(5)	* store
+ 27:    LD 0, -8(5)	* load leftside into reg 0
+ 28:    LD 1, -9(5)	* load rightside into reg 1
+ 29:    ST 1, 0(0)	* store into simpleVar
+ 30:    ST 1, -7(5)	* store into assign expression
+ 31:    LD 0, -6(5)	* null
+ 32:   OUT 0, 0, 0	* output
+ 33:    LD 0, -1(6)	* load
+ 34:    ST 0, -2(6)	* store
+ 35:    LD 7, -1(5)	* Return to caller
+ 11:   LDA 7, 24(7)	* jump around function
 * FINALE
- 20:    ST 5, -2(5)	* Push original frame pointer
- 21:   LDA 5, -2(5)	* Push original frame
- 22:   LDA 0, 1(7)	* Load data with return pointer
- 23:   LDA 7, -12(7)	* Jump to main
- 24:    LD 5, 0(5)	* Pop frame
- 25: HALT 0, 0, 0
+ 36:    ST 5, -2(5)	* Push original frame pointer
+ 37:   LDA 5, -2(5)	* Push original frame
+ 38:   LDA 0, 1(7)	* Load data with return pointer
+ 39:   LDA 7, -28(7)	* Jump to main
+ 40:    LD 5, 0(5)	* Pop frame
+ 41: HALT 0, 0, 0

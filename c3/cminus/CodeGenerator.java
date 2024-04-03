@@ -171,8 +171,18 @@ public class CodeGenerator implements AbsynVisitor {
   public void visit(AssignExp assignExp, int offset, boolean isAddress) {
 
     emitComment("Assign Expression");
-    assignExp.lhs.accept(this, offset - 1, isAddress);
-    assignExp.rhs.accept(this, offset - 2, isAddress);
+    int currentOffset = --this.frameOffset;
+    assignExp.lhs.accept(this, offset, true);
+
+    assignExp.rhs.accept(this, offset, false);
+    LD(0, currentOffset - 1, 5, "load leftside into reg 0");
+    LD(1, currentOffset - 2, 5, "load rightside into reg 1");
+
+    ST(1, 0, 0, "store into simpleVar");
+    ST(1, currentOffset, 5, "store into assign expression");
+
+    LD(0, currentOffset + 1, 5, null);
+    //emitRO("OUT", 0, 0, 0, "output");
   }
 
   public void visit(BoolExp boolExp, int offset, boolean isAddress) {
@@ -260,7 +270,8 @@ public class CodeGenerator implements AbsynVisitor {
 
   public void visit(IntExp intExp, int offset, boolean isAddress) {
 
-    printConsole("value: " + intExp.value);
+    emitRM("LDC", 0, intExp.value, 0, "load int into register 0");
+    ST(0, --this.frameOffset, 5, "store int");
   }
 
   public void visit(NameTy nameTy, int offset, boolean isAddress) {
@@ -311,12 +322,23 @@ public class CodeGenerator implements AbsynVisitor {
 
   public void visit(SimpleVar simpleVar, int offset, boolean isAddress) {
     SimpleDec type = (SimpleDec) simpleVar.dtype;
-    if (type.nestLevel == 0) {
-      LDA(0, type.offset, 6, "load");
-      ST(0, --this.globalOffset, 6, "store");
-    } else {
-      LDA(0, type.offset, 5, "load");
-      ST(0, --this.frameOffset, 5, "store");
+    if (isAddress){
+      if (type.nestLevel == 0) {
+        LDA(0, type.offset, 6, "load");
+        ST(0, --this.globalOffset, 6, "store");
+      } else {
+        LDA(0, type.offset, 5, "load");
+        ST(0, --this.frameOffset, 5, "store");
+      }
+    }
+    else {
+      if (type.nestLevel == 0) {
+        LD(0, type.offset, 6, "load");
+        ST(0, --this.globalOffset, 6, "store");
+      } else {
+        LD(0, type.offset, 5, "load");
+        ST(0, --this.frameOffset, 5, "store");
+      }
     }
   }
 

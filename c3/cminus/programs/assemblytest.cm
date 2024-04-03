@@ -4,8 +4,8 @@ int i;
 void main(void){
     int x;
     int y;
-    x;
-    y;
+    x = 1;
+    y = x;
     i;
     return;
 }

@@ -15,12 +15,19 @@ DecList
                         type: INT
                     name: y
             ExpList
-                VarExp
-                    SimpleVar
-                        name: x
-                VarExp
-                    SimpleVar
-                        name: y
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: x
+                    IntExp
+                        value: 1
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: y
+                    VarExp
+                        SimpleVar
+                            name: x
                 VarExp
                     SimpleVar
                         name: i

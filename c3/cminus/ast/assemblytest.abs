@@ -20,7 +20,7 @@ DecList
                         SimpleVar
                             name: x
                     IntExp
-                        value: 5
+                        value: 10
                 AssignExp
                     VarExp
                         SimpleVar
@@ -29,21 +29,33 @@ DecList
                         OpExp
                             OpExp
                                 OpExp
-                                    VarExp
-                                        SimpleVar
-                                            name: x
+                                    OpExp
+                                        VarExp
+                                            SimpleVar
+                                                name: x
+                                        Operator: +
+                                        IntExp
+                                            value: 4
                                     Operator: +
                                     IntExp
-                                        value: 1
-                                Operator: +
+                                        value: 2
+                                Operator: -
+                                IntExp
+                                    value: 4
+                            Operator: -
+                            OpExp
+                                IntExp
+                                    value: 2
+                                Operator: *
                                 IntExp
                                     value: 10
-                            Operator: +
+                        Operator: -
+                        OpExp
                             IntExp
-                                value: 2
-                        Operator: +
-                        IntExp
-                            value: 3
+                                value: 3
+                            Operator: /
+                            IntExp
+                                value: 3
                 VarExp
                     SimpleVar
                         name: i

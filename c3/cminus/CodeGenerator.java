@@ -294,12 +294,24 @@ public class CodeGenerator implements AbsynVisitor {
   public void visit(OpExp opExp, int offset, boolean isAddress) {
     emitComment("Operation Expression");
     int currentOffset = --this.frameOffset;
-    opExp.right.accept(this, offset, isAddress);
-
-    if (opExp.left != null){
+    boolean isLeft = false;
+    Exp opSide;
+    if (opExp.left instanceof OpExp){
+      opSide = opExp.left;
+      opExp.right.accept(this, offset, isAddress);
+    }
+    else {
+      opSide = opExp.right;
       opExp.left.accept(this, offset, isAddress);
+      isLeft = true;
+    }
+
+    int highestFrame = this.frameOffset - 1;
+
+    if (opSide != null){
+      opSide.accept(this, offset, isAddress);
       LD(0, currentOffset - 1, 5, "load leftside op");
-      LD(1, currentOffset - 2, 5, "load rightside op");
+      LD(1, highestFrame, 5, "load rightside op");
 
       switch(opExp.op){
         case OpExp.PLUS:
@@ -307,15 +319,21 @@ public class CodeGenerator implements AbsynVisitor {
         break;
 
         case OpExp.MINUS:
-
+        if (isLeft)
+          emitRO("SUB", 0, 0, 1, "sub");
+        else
+          emitRO("SUB", 0, 1, 0, "sub");
         break;
 
         case OpExp.MULT:
-
+          emitRO("MUL", 0, 0, 1, "mult");
         break;
 
         case OpExp.DIV:
-
+          if (isLeft)
+            emitRO("DIV", 0, 0, 1, "div");
+          else
+            emitRO("DIV", 0, 1, 0, "div");
         break;
 
         case OpExp.EQUAL:
@@ -431,6 +449,7 @@ public class CodeGenerator implements AbsynVisitor {
     System.out.println(string);
     System.setOut(this.stream);
   }
+
 }
 
 // private String newTemp(int n) {return String.format("t%d", n);}

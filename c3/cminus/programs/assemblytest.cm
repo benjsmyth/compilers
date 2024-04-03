@@ -4,8 +4,8 @@ int i;
 void main(void){
     int x;
     int y;
-    x = 5;
-    y = x + 1 + 10 + 2 + 3;
+    x = 10;
+    y = x + 4 + 2 - 4 - 2 * 10 - 3 / 3;
     i;
     return;
 }

@@ -8,32 +8,28 @@ DecList
             VarDecList
                 SimpleDec
                     NameTy
-                        type: INT
-                    name: x
-                SimpleDec
-                    NameTy
                         type: BOOL
+                    name: x
+                ArrayDec
+                    type: BOOL
                     name: y
+                    size: 1
             ExpList
                 AssignExp
                     VarExp
                         SimpleVar
                             name: x
-                    IntExp
-                        value: 10
+                    BoolExp
+                        value: false
                 AssignExp
                     VarExp
-                        SimpleVar
+                        IndexVar
                             name: y
-                    OpExp
-                        OpExp
-                            VarExp
-                                SimpleVar
-                                    name: x
-                            Operator: =
                             IntExp
-                                value: 9
-                        Operator: ~
+                                value: 0
+                    VarExp
+                        SimpleVar
+                            name: x
                 VarExp
                     SimpleVar
                         name: i

@@ -174,14 +174,16 @@ public class CodeGenerator implements AbsynVisitor {
     int currentOffset = --this.frameOffset;
     assignExp.lhs.accept(this, offset, true);
 
+    int highestFrame = this.frameOffset - 1;
+
     assignExp.rhs.accept(this, offset, false);
     LD(0, currentOffset - 1, 5, "load leftside into reg 0");
-    LD(1, currentOffset - 2, 5, "load rightside into reg 1");
+    LD(1, highestFrame, 5, "load rightside into reg 1");
 
-    ST(1, 0, 0, "store into simpleVar");
+    ST(1, 0, 0, "store into var");
     ST(1, currentOffset, 5, "store into assign expression");
 
-    LD(0, currentOffset + 4, 5, "");
+    LD(0, -4, 5, "");
     emitRO("OUT", 0, 0, 0, "output");
   }
 
@@ -265,8 +267,35 @@ public class CodeGenerator implements AbsynVisitor {
 
   public void visit(IndexVar indexVar, int offset, boolean isAddress) {
 
-    printConsole("name: " + indexVar.name);
-    indexVar.index.accept(this, offset, isAddress);
+    ArrayDec type = (ArrayDec)indexVar.dtype;
+    int currentOffset = this.frameOffset;
+    indexVar.index.accept(this, offset, false);
+
+    LD(1, currentOffset - 1, 5, "load index expression");
+
+    if (isAddress) {
+      if (type.nestLevel == 0) {
+        LDA(0, type.offset - 1, 6, "load indexVar");
+        emitRO("SUB", 0, 0, 1, "get proper offset");
+        ST(0, currentOffset - 1, 6, "store indexVar");
+      } else {
+        LDA(0, type.offset - 1, 5, "load indexVar");
+        emitRO("SUB", 0, 0, 1, "get proper offset");
+        ST(0, currentOffset - 1, 5, "store indexVar");
+      }
+    } else {
+      if (type.nestLevel == 0) {
+        LDA(0, type.offset - 1, 6, "load indexVar");
+        emitRO("SUB", 0, 0, 1, "get proper offset");
+        LD(0, 0, 0, "get value from index in array");
+        ST(0, currentOffset - 1, 6, "store indexVar");
+      } else {
+        LDA(0, type.offset - 1, 5, "load indexVar");
+        emitRO("SUB", 0, 0, 1, "get proper offset");
+        LD(0, 0, 0, "get value from index in array");
+        ST(0, currentOffset - 1, 5, "store indexVar");
+      }
+    }
   }
 
   public void visit(IntExp intExp, int offset, boolean isAddress) {

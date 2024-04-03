@@ -2,10 +2,10 @@
 int i;
 
 void main(void){
-    int x;
-    bool y;
-    x = 10;
-    y = ~(x == 9);
+    bool x;
+    bool y[1];
+    x = false;
+    y[0] = x;
     i;
     return;
 }

@@ -1,24 +1,15 @@
-int foo(int x, int y) {
+int foo(void) {
   int a[10];
   int i = 0;
   while (i < 10) {
     a[i] = 0;
     i = i + 1;
   }
-  while (x < 10) {
-    a[x] = y;
-    x = x + 1;
-  }
-  int c = 0;
-  i = 0;
-  while (i < 10) {
-    c = c + a[i];
-  }
-  return c;
+  return i;
 }
 
 int main(void) {
   int c;
-  c = foo(5, 1);
+  c = foo();
   return c;
 }

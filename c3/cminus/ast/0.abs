@@ -1,0 +1,93 @@
+DecList
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: x
+                ArrayDec
+                    type: INT
+                    name: arr
+                    size: 10
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: i
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: i
+                    IntExp
+                        value: 8
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: x
+                    IntExp
+                        value: 0
+                AssignExp
+                    VarExp
+                        IndexVar
+                            name: arr
+                            VarExp
+                                SimpleVar
+                                    name: i
+                    IntExp
+                        value: 0
+                WhileExp
+                    OpExp
+                        VarExp
+                            IndexVar
+                                name: arr
+                                VarExp
+                                    SimpleVar
+                                        name: i
+                        Operator: <
+                        IntExp
+                            value: 10
+                    CompoundExp
+                        ExpList
+                            AssignExp
+                                VarExp
+                                    IndexVar
+                                        name: arr
+                                        VarExp
+                                            SimpleVar
+                                                name: i
+                                OpExp
+                                    VarExp
+                                        IndexVar
+                                            name: arr
+                                            VarExp
+                                                SimpleVar
+                                                    name: i
+                                    Operator: +
+                                    IntExp
+                                        value: 1
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: x
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: x
+                                    Operator: -
+                                    IntExp
+                                        value: 1
+                            IfExp:
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: x
+                                    Operator: <=
+                                    OpExp
+                                        IntExp
+                                            value: 5
+                                        Operator: uminus
+                                CompoundExp
+                                    ExpList
+                                        ReturnExp
+                                            NilExp

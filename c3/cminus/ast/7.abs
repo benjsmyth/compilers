@@ -1,0 +1,23 @@
+DecList
+    FunctionDec
+        CompoundExp
+            VarDecList
+                ArrayDec
+                    type: INT
+                    name: a
+                    size: 10
+            ExpList
+                AssignExp
+                    VarExp
+                        IndexVar
+                            name: a
+                            IntExp
+                                value: 0
+                    OpExp
+                        IntExp
+                            value: 1
+                        Operator: +
+                        IntExp
+                            value: 5
+                ReturnExp
+                    NilExp

@@ -1,14 +1,9 @@
-/* Syntactic/Semantic Errors
-    -Undefined error
-    -redefined error
-    -invalid assignment
- */
 
 void main(void) {
-  int a;
-  int a;  /* Redefined */
-  b = 1;  /* Undefined */
+  bool x;
+  bool y;
+  y = false;
 
-  a = true; /* invalid assignment */
+  x = true && y;
   return;
 }

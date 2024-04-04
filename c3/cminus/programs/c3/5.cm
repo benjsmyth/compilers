@@ -1,20 +1,7 @@
-/* Syntactic/Semantic Errors
-    - Missing Index for Array
-    - Invalid Argument list for Function
-    - Missing Semicolon
-*/
-
-int gcd(int u, int v) {
-  if (v == 0) return u;
-  else return gcd(v, u - u/v*v);
-}
 
 void main(void) {
-  int x;  
-  int y
+  int x;
 
-  int arr[5];
-  x = arr[];
-
-  gcd(x, );
+  x = 2 * 4 + 6 / 3;
+  return;
 }

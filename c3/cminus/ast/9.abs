@@ -1,0 +1,61 @@
+DecList
+    FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: v
+            SimpleDec
+                NameTy
+                    type: INT
+                name: u
+        CompoundExp
+            ExpList
+                IfExp:
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: v
+                        Operator: <=
+                        IntExp
+                            value: 0
+                    ReturnExp
+                        IntExp
+                            value: 1
+                    ELSE
+                    ReturnExp
+                        CallExp
+                            function name: foo
+                            ExpList
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: v
+                                    Operator: -
+                                    VarExp
+                                        SimpleVar
+                                            name: u
+                                VarExp
+                                    SimpleVar
+                                        name: u
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: x
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: x
+                    CallExp
+                        function name: foo
+                        ExpList
+                            IntExp
+                                value: 10
+                            IntExp
+                                value: 3
+                ReturnExp
+                    NilExp

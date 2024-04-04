@@ -1,13 +1,14 @@
 
-int foo(void){
-    int x;
-    x = 1 + 2 * 4 + 1;
+int foo(int x){
+    x = x + 2 * 4 + 1;
     return x;
 }
 
 void main(void){
     int y;
-    y = foo();
+    int x;
+    y = foo(15);
+    x = foo(15);
 
     return;
 }

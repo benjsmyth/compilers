@@ -1,9 +1,9 @@
-void fun(void){} 
+int fun(int x, int y){
+    return x*y;
+} 
 void main(void) {
     int x;
-    x = 7;
-    if (x > 3) {
-        fun();
-    }
+    x = fun(2, 3);
+    
     return;
 }

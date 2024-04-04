@@ -184,7 +184,7 @@ public class CodeGenerator implements AbsynVisitor {
     ST(1, 0, 0, "store into var");
     ST(1, currentOffset, 5, "store into assign expression");
 
-    LD(0, -5, 5, "");
+    LD(0, -2, 5, "");
     emitRO("OUT", 0, 0, 0, "output");
   }
 
@@ -195,17 +195,32 @@ public class CodeGenerator implements AbsynVisitor {
 
   public void visit(CallExp callExp, int offset, boolean isAddress) {
     FunctionDec func = (FunctionDec) callExp.dtype;
-    int currentOffset = this.frameOffset;
+    int currentOffset = --this.frameOffset;
 
-    this.ST(this.fp, --this.frameOffset, this.fp, "Push original frame pointer");
+    this.ST(this.fp, this.frameOffset, this.fp, "Push original frame pointer");
     this.LDA(this.fp, this.frameOffset, this.fp, "Push original frame");
+
+    ExpList expList = (ExpList) callExp.args;
+    int counter = -1;
+
+    while (expList != null) {
+      if (expList.head != null){
+        this.frameOffset = counter;
+        expList.head.accept(this, offset, isAddress);
+        counter--;
+      }
+      expList = expList.tail;
+    }
+
+    this.frameOffset = 0;
+
     this.LDA(this.ac, 1, this.pc, "Load data with return pointer");
     this.JUMP(func.funaddr - this.emitLoc, "Jump to function");
     this.LD(this.fp, 0, this.fp, "Pop frame");
-    if (callExp.args != null)
-      callExp.args.accept(this, offset, isAddress);
-    ST(0, this.frameOffset, 5, "store return value");
+
     this.frameOffset = currentOffset;
+
+    ST(0, this.frameOffset, 5, "store return value");
   }
 
   public void visit(CompoundExp compoundExp, int offset, boolean isAddress) {
@@ -236,8 +251,6 @@ public class CodeGenerator implements AbsynVisitor {
 
   public void visit(FunctionDec functionDec, int offset, boolean isAddr) {
     this.frameOffset = 0;
-    if (functionDec.params != null)
-      functionDec.params.accept(this, offset, isAddr);
     if (functionDec.body != null) {
       int bodySize = 1; // Minimum number of instructions (but need to measure dynamically)
       functionDec.funaddr = this.emitSkip(bodySize); // Skip function body
@@ -246,6 +259,8 @@ public class CodeGenerator implements AbsynVisitor {
       // this.ST(this.dataOffset++, this.frameOffset, this.fp, "Store control link");
       this.ST(this.dataOffset, --this.frameOffset, this.fp, "Store return address");
       int returnOffset = this.frameOffset;
+      if (functionDec.params != null)
+        functionDec.params.accept(this, offset, isAddr);
       functionDec.body.accept(this, offset, isAddr); // Generate body code
       this.LD(this.pc, returnOffset, this.fp, "Return to caller");
 
@@ -388,10 +403,19 @@ public class CodeGenerator implements AbsynVisitor {
           break;
 
         case OpExp.DIV:
-          if (isLeft)
+          if (isLeft){
+
+            emitRM("JEQ", 1, 2, this.pc, "equal");
             emitRO("DIV", 0, 0, 1, "div");
-          else
+            JUMP(1, "jump");
+            emitRM("LDC", 0, 0, 0, "zero");
+          }
+          else{
+            emitRM("JEQ", 0, 2, this.pc, "equal");
             emitRO("DIV", 0, 1, 0, "div");
+            JUMP(1, "jump");
+            emitRM("LDC", 0, 0, 0, "zero");
+          }
           break;
 
         case OpExp.EQUAL:
@@ -443,7 +467,9 @@ public class CodeGenerator implements AbsynVisitor {
           break;
 
         case OpExp.AND:
-          emitRO("MUL", 0, 0, 1, "mult");
+          emitRO("ADD", 0, 0, 1, "add");
+          emitRM("LDC", 1, 2, 0, "2");
+          emitRO("SUB", 0, 0, 1, "sub");
           emitRM("JNE", 0, 2, this.pc, "equal");
           emitRM("LDC", 0, 1, 0, "true");
           JUMP(1, "jumping over 0 assignment");
@@ -484,6 +510,7 @@ public class CodeGenerator implements AbsynVisitor {
 
     LD(0, currentOffset - 1, 5, "load return value");
 
+    this.LD(this.pc, -1, this.fp, "Return to caller");
 
 
   }
@@ -541,15 +568,16 @@ public class CodeGenerator implements AbsynVisitor {
 
     emitComment("WHILE STATEMENT");
     int currentOffset = this.frameOffset;
-    int whileAddr = emitSkip(1);
+    int restart = emitSkip(0);
 
     whileExp.test.accept(this, offset, isAddress);
 
     LD(0, currentOffset - 1, 5, "load while expression test");
+    int whileAddr = emitSkip(1);
     
     whileExp.body.accept(this, offset, isAddress);
 
-    JUMP(whileAddr - this.emitLoc - 1, "loop");
+    JUMP(restart - this.emitLoc - 1, "loop");
 
     int savedLoc = emitSkip(0);
     emitBackup(whileAddr);

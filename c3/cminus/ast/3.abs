@@ -1,0 +1,99 @@
+DecList
+    FunctionDec
+        CompoundExp
+            VarDecList
+                ArrayDec
+                    type: INT
+                    name: a
+                    size: 10
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: i
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: i
+                    IntExp
+                        value: 0
+                WhileExp
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: i
+                        Operator: <
+                        IntExp
+                            value: 10
+                    CompoundExp
+                        ExpList
+                            AssignExp
+                                VarExp
+                                    IndexVar
+                                        name: a
+                                        VarExp
+                                            SimpleVar
+                                                name: i
+                                IntExp
+                                    value: 0
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: i
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: i
+                                    Operator: +
+                                    IntExp
+                                        value: 1
+                ReturnExp
+                    VarExp
+                        SimpleVar
+                            name: i
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: c
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: i
+            ExpList
+                WhileExp
+                    OpExp
+                        VarExp
+                            SimpleVar
+                                name: i
+                        Operator: <
+                        IntExp
+                            value: 10
+                    CompoundExp
+                        ExpList
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: c
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: c
+                                    Operator: +
+                                    IntExp
+                                        value: 1
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: i
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: i
+                                    Operator: +
+                                    IntExp
+                                        value: 1
+                ReturnExp
+                    NilExp

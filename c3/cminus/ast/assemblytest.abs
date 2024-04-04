@@ -1,11 +1,11 @@
 DecList
     FunctionDec
+        VarDecList
+            SimpleDec
+                NameTy
+                    type: INT
+                name: x
         CompoundExp
-            VarDecList
-                SimpleDec
-                    NameTy
-                        type: INT
-                    name: x
             ExpList
                 AssignExp
                     VarExp
@@ -13,8 +13,9 @@ DecList
                             name: x
                     OpExp
                         OpExp
-                            IntExp
-                                value: 1
+                            VarExp
+                                SimpleVar
+                                    name: x
                             Operator: +
                             OpExp
                                 IntExp
@@ -36,6 +37,10 @@ DecList
                     NameTy
                         type: INT
                     name: y
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: x
             ExpList
                 AssignExp
                     VarExp
@@ -43,5 +48,17 @@ DecList
                             name: y
                     CallExp
                         function name: foo
+                        ExpList
+                            IntExp
+                                value: 15
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: x
+                    CallExp
+                        function name: foo
+                        ExpList
+                            IntExp
+                                value: 15
                 ReturnExp
                     NilExp

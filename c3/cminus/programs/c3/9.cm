@@ -1,33 +1,13 @@
-/*
-    Syntactic/Semantic Errors
-    
-    - Missing semicolon
-    - Invalid type specifier
-    - Invalid parameter list
-    - Invalid argument list
 
-*/
-
-
-int gcd() {
-  if (v == 0) return u;
-  else return gcd(v, u - u/v*v);
+int foo(int v, int u) {
+  if (v <= 0) return 1;
+  else return foo(v - u, u);
 }
 
 void main(void) {
 
-  it z;
   int x;  
-  int y
 
-  x = input();
-
-  while(){
-
-  }
-
-  int a[s];
-
-  y = input();
-  output(gcd(x y));
+  x = foo(10, 3);
+  return;
 }

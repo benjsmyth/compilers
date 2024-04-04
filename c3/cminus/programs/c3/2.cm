@@ -1,0 +1,9 @@
+void fun(void){} 
+void main(void) {
+    int x;
+    x = 7;
+    if (x > 3) {
+        fun();
+    }
+    return;
+}

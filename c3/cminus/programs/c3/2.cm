@@ -6,7 +6,7 @@ void main(void) {
     int x;
     x = 7;
     if (x > 3){
-       fun(x, true);
+       fun(x, 1);
     }
     return;
 }

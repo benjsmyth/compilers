@@ -1,0 +1,19 @@
+/* Syntactic/Semantic Errors
+    -Array index is not an int
+    -Invalid Function return
+    -Main not at end of File
+*/
+
+
+void main(void) {
+
+  int a[10];
+
+  a[true] = 1; 
+
+  return;
+}
+
+int foo(void) {
+  return;
+}

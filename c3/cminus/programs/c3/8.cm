@@ -1,0 +1,30 @@
+/* Syntactic/Semantic Errors
+    -Mismatched type assignment
+    -invalid if statement condition
+    -function call does not match params
+    -undefined function
+*/
+
+int fun(int a, int b){
+
+    return a * b;
+}
+
+void main(void) {
+
+    int x;
+    x = 7;
+
+
+    if (x > 3){
+       fun(x, true);
+    }
+
+    if(x == true){
+
+    }
+
+    foo();
+
+    return;
+}

@@ -261,23 +261,26 @@ public class CodeGenerator implements AbsynVisitor {
     ifExp.test.accept(this, offset, isAddress);
 
     LD(0, currentOffset - 1, 5, "load if expression test");
+    emitRM("JNE", 0, 1, this.pc, "jump to if statement");
     int ifAddr = emitSkip(1);
-    int elseAddr = emitSkip(1);
 
     ifExp.thenpart.accept(this, offset, isAddress);
 
+    int elseSkip = emitSkip(1);
     int savedLoc = emitSkip(0);
     emitBackup(ifAddr);
-    emitRM("JNE", 0, 1, this.pc, "jump to after if statement");
+    JUMP(savedLoc - this.emitLoc - 1, "jump to after if statement");
     emitRestore();
+
 
     if (ifExp.elsepart != null) {
       printConsole("ELSE");
       ifExp.elsepart.accept(this, offset, isAddress);
     }
+
     savedLoc = emitSkip(0);
-    emitBackup(elseAddr);
-    emitRM("JEQ", 0, savedLoc - this.emitLoc - 1, this.pc, "jump to after else statement");
+    emitBackup(elseSkip);
+    JUMP(savedLoc - this.emitLoc - 1, "jump to after else");
     emitRestore();
   }
 

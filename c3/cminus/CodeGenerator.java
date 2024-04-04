@@ -184,7 +184,7 @@ public class CodeGenerator implements AbsynVisitor {
     ST(1, 0, 0, "store into var");
     ST(1, currentOffset, 5, "store into assign expression");
 
-    LD(0, -2, 5, "");
+    LD(0, -5, 5, "");
     emitRO("OUT", 0, 0, 0, "output");
   }
 
@@ -194,9 +194,18 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(CallExp callExp, int offset, boolean isAddress) {
+    FunctionDec func = (FunctionDec) callExp.dtype;
+    int currentOffset = this.frameOffset;
 
+    this.ST(this.fp, --this.frameOffset, this.fp, "Push original frame pointer");
+    this.LDA(this.fp, this.frameOffset, this.fp, "Push original frame");
+    this.LDA(this.ac, 1, this.pc, "Load data with return pointer");
+    this.JUMP(func.funaddr - this.emitLoc, "Jump to function");
+    this.LD(this.fp, 0, this.fp, "Pop frame");
     if (callExp.args != null)
       callExp.args.accept(this, offset, isAddress);
+    ST(0, this.frameOffset, 5, "store return value");
+    this.frameOffset = currentOffset;
   }
 
   public void visit(CompoundExp compoundExp, int offset, boolean isAddress) {
@@ -468,9 +477,15 @@ public class CodeGenerator implements AbsynVisitor {
   }
 
   public void visit(ReturnExp returnExp, int offset, boolean isAddress) {
+    emitComment("RETURN");
 
-    if (returnExp != null)
-      returnExp.exp.accept(this, offset, isAddress);
+    int currentOffset = this.frameOffset;
+    returnExp.exp.accept(this, offset, isAddress);
+
+    LD(0, currentOffset - 1, 5, "load return value");
+
+
+
   }
 
   public void visit(SimpleDec simpleDec, int offset, boolean isAddress) {

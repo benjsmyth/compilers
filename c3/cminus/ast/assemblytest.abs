@@ -11,27 +11,37 @@ DecList
                     VarExp
                         SimpleVar
                             name: x
-                    IntExp
-                        value: 10
-                IfExp:
-                    BoolExp
-                        value: false
-                    CompoundExp
-                        ExpList
-                            AssignExp
-                                VarExp
-                                    SimpleVar
-                                        name: x
-                                IntExp
-                                    value: 1
-                    ELSE
-                    CompoundExp
-                        ExpList
-                            AssignExp
-                                VarExp
-                                    SimpleVar
-                                        name: x
+                    OpExp
+                        OpExp
+                            IntExp
+                                value: 1
+                            Operator: +
+                            OpExp
                                 IntExp
                                     value: 2
+                                Operator: *
+                                IntExp
+                                    value: 4
+                        Operator: +
+                        IntExp
+                            value: 1
+                ReturnExp
+                    VarExp
+                        SimpleVar
+                            name: x
+    FunctionDec
+        CompoundExp
+            VarDecList
+                SimpleDec
+                    NameTy
+                        type: INT
+                    name: y
+            ExpList
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: y
+                    CallExp
+                        function name: foo
                 ReturnExp
                     NilExp

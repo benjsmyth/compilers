@@ -1,0 +1,45 @@
+/*
+    Syntactic/Semantic Errors
+    
+    - Redefined variable
+    - Invalid Array Access
+    - Invalid Function Return value
+    - Missing Function Return value
+    - Undeclared variable
+
+*/
+
+
+int fun1(int y, int z) {
+
+    int y;
+    y = 9;
+
+    return y + z;
+}
+
+bool fun2(int x){
+    if(x > 5){
+        return true;
+    }
+    return 10;
+}
+
+bool fun3(void){
+    notdec = 0;
+}
+
+void main(void) {
+  
+  int arr[10];
+  int i;
+  i = 8;
+
+  while(arr[i] > 10){
+
+    arr[true] = 5;
+  }
+
+  
+
+}

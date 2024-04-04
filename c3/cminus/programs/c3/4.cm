@@ -1,0 +1,25 @@
+/* Syntactic/Semantic Errors
+    - Misspelled/Invalid Type
+    - invalid While loop condition
+*/
+
+void square(void){
+  return 1;
+}
+void main(void) {
+  in x; 
+  int x;
+  int fac;
+  bool test;
+
+  test = true;
+
+  fac = 1;
+  while () {
+    fac = fac * x;
+    x = x - 1;
+  } 
+
+
+
+}

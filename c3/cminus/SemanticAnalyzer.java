@@ -805,6 +805,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
         set = NameTy.BOOL;
       }
     }
+    else {
+      if (opExp.op >= 5) {
+        set = NameTy.BOOL;
+      }
+    }
     deleteLevelEntries(level);
 
     level--;

@@ -1,8 +1,4 @@
 DecList
-    SimpleDec
-        NameTy
-            type: INT
-        name: i
     FunctionDec
         CompoundExp
             VarDecList
@@ -10,23 +6,27 @@ DecList
                     NameTy
                         type: INT
                     name: x
-                ArrayDec
-                    type: INT
-                    name: z
-                    size: 10
-                SimpleDec
-                    NameTy
-                        type: INT
-                    name: y
             ExpList
-                VarExp
-                    SimpleVar
-                        name: x
-                VarExp
-                    SimpleVar
-                        name: y
-                VarExp
-                    SimpleVar
-                        name: i
+                AssignExp
+                    VarExp
+                        SimpleVar
+                            name: x
+                    IntExp
+                        value: 0
+                IfExp:
+                    OpExp
+                        IntExp
+                            value: 1
+                        Operator: =
+                        IntExp
+                            value: 1
+                    CompoundExp
+                        ExpList
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: x
+                                IntExp
+                                    value: 1
                 ReturnExp
                     NilExp

@@ -1,12 +1,4 @@
 DecList
-    ArrayDec
-        type: BOOL
-        name: i
-        size: 10
-    SimpleDec
-        NameTy
-            type: INT
-        name: k
     FunctionDec
         CompoundExp
             VarDecList
@@ -18,15 +10,23 @@ DecList
                 AssignExp
                     VarExp
                         SimpleVar
-                            name: k
-                    IntExp
-                        value: 1
-                AssignExp
-                    VarExp
-                        SimpleVar
                             name: x
-                    VarExp
-                        SimpleVar
-                            name: k
+                    IntExp
+                        value: 0
+                IfExp:
+                    OpExp
+                        IntExp
+                            value: 1
+                        Operator: =
+                        IntExp
+                            value: 1
+                    CompoundExp
+                        ExpList
+                            AssignExp
+                                VarExp
+                                    SimpleVar
+                                        name: x
+                                IntExp
+                                    value: 1
                 ReturnExp
                     NilExp

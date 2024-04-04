@@ -12,21 +12,27 @@ DecList
                         SimpleVar
                             name: x
                     IntExp
-                        value: 0
-                IfExp:
+                        value: 10
+                WhileExp
                     OpExp
+                        VarExp
+                            SimpleVar
+                                name: x
+                        Operator: >
                         IntExp
-                            value: 1
-                        Operator: =
-                        IntExp
-                            value: 1
+                            value: 0
                     CompoundExp
                         ExpList
                             AssignExp
                                 VarExp
                                     SimpleVar
                                         name: x
-                                IntExp
-                                    value: 1
+                                OpExp
+                                    VarExp
+                                        SimpleVar
+                                            name: x
+                                    Operator: -
+                                    IntExp
+                                        value: 1
                 ReturnExp
                     NilExp

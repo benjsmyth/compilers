@@ -521,10 +521,23 @@ public class CodeGenerator implements AbsynVisitor {
 
   public void visit(WhileExp whileExp, int offset, boolean isAddress) {
 
-    if (whileExp.test != null)
-      whileExp.test.accept(this, offset, isAddress);
-    if (whileExp.body != null)
-      whileExp.body.accept(this, offset, isAddress);
+    emitComment("WHILE STATEMENT");
+    int currentOffset = this.frameOffset;
+    int whileAddr = emitSkip(1);
+
+    whileExp.test.accept(this, offset, isAddress);
+
+    LD(0, currentOffset - 1, 5, "load while expression test");
+    
+    whileExp.body.accept(this, offset, isAddress);
+
+    JUMP(whileAddr - this.emitLoc - 1, "loop");
+
+    int savedLoc = emitSkip(0);
+    emitBackup(whileAddr);
+    emitRM("JEQ", 0, savedLoc - this.emitLoc - 1, this.pc, "jump to after while statement");
+    emitRestore();
+
   }
 
   public void printConsole(String string) {
